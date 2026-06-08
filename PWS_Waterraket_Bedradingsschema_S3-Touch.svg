@@ -1,0 +1,80 @@
+<svg viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <style>
+    .box{fill:#f7fafd;stroke:#333;stroke-width:2}
+    .name{font-size:15px;font-weight:bold;fill:#222}
+    .sub{font-size:11px;fill:#666}
+    .pin{font-size:12px;fill:#222}
+    .ttl{font-size:19px;font-weight:bold;fill:#1F6FB2}
+    .cap{font-size:12px;fill:#555}
+    .leg{font-size:12px;fill:#222}
+    .warn{font-size:12px;font-weight:bold;fill:#c0392b}
+    .w3{stroke:#c0392b;stroke-width:2.5;fill:none}
+    .wg{stroke:#222;stroke-width:2.5;fill:none}
+    .wd{stroke:#1f6fb2;stroke-width:2.5;fill:none}
+    .wc{stroke:#27ae60;stroke-width:2.5;fill:none}
+    .wb{stroke:#e67e22;stroke-width:2.5;fill:none}
+    .dash{stroke:#9aa7b3;stroke-width:1.3;stroke-dasharray:5 4;fill:none}
+  </style>
+
+  <rect x="6" y="6" width="948" height="588" fill="#ffffff" stroke="#1F6FB2" stroke-width="2"/>
+  <text x="26" y="38" class="ttl">Bedradingsschema &#8211; ESP32-S3-Touch-LCD-1.69 + BMP388</text>
+  <text x="26" y="56" class="cap">Alleen de BMP388 wordt bijgeprikt; IMU, touch-LCD en accu-laden zitten al op het bord.</text>
+
+  <!-- ===== BOARD ===== -->
+  <rect class="box" x="60" y="118" width="310" height="320" rx="8"/>
+  <text x="215" y="150" class="name" text-anchor="middle">Waveshare ESP32-S3</text>
+  <text x="215" y="168" class="name" text-anchor="middle">Touch-LCD 1.69</text>
+
+  <!-- onboard inset -->
+  <rect class="dash" x="78" y="184" width="200" height="74" rx="6"/>
+  <text x="86" y="202" class="sub">Onboard (zelfde I2C-bus):</text>
+  <text x="86" y="220" class="sub">&#8226; LCD + touch CST816  (0x15)</text>
+  <text x="86" y="238" class="sub">&#8226; QMI8658 IMU         (0x6B)</text>
+  <text x="86" y="252" class="sub">&#8226; MX1.25 accu-lader (USB-C)</text>
+
+  <!-- board pins on right edge -->
+  <text x="366" y="292" class="pin" text-anchor="end">3V3</text>
+  <text x="366" y="324" class="pin" text-anchor="end">GND</text>
+  <text x="366" y="356" class="pin" text-anchor="end">GPIO11 (SDA)</text>
+  <text x="366" y="388" class="pin" text-anchor="end">GPIO10 (SCL)</text>
+  <line class="w3" x1="370" y1="288" x2="560" y2="288"/>
+  <line class="wg" x1="370" y1="320" x2="560" y2="320"/>
+  <line class="wd" x1="370" y1="352" x2="560" y2="352"/>
+  <line class="wc" x1="370" y1="384" x2="560" y2="384"/>
+
+  <!-- BAT connector bottom -->
+  <text x="150" y="432" class="pin">MX1.25 accu</text>
+  <line class="wb" x1="150" y1="438" x2="150" y2="486"/>
+  <line class="wg" x1="180" y1="438" x2="180" y2="486"/>
+
+  <!-- ===== BMP388 ===== -->
+  <rect class="box" x="560" y="250" width="210" height="170" rx="8"/>
+  <text x="665" y="300" class="name" text-anchor="middle">BMP388</text>
+  <text x="665" y="320" class="sub" text-anchor="middle">barometer (hoogte)</text>
+  <text x="566" y="292" class="pin">VCC</text>
+  <text x="566" y="324" class="pin">GND</text>
+  <text x="566" y="356" class="pin">SDA</text>
+  <text x="566" y="388" class="pin">SCL</text>
+
+  <!-- ===== LiPo ===== -->
+  <rect class="box" x="84" y="486" width="172" height="64" rx="6"/>
+  <text x="170" y="512" class="name" text-anchor="middle">LiPo 3,7V</text>
+  <text x="170" y="530" class="sub" text-anchor="middle">MX1.25-stekker</text>
+  <text x="150" y="556" class="warn" text-anchor="middle">+</text>
+  <text x="180" y="556" class="warn" text-anchor="middle">&#8722;</text>
+  <text x="300" y="512" class="warn">Controleer de polariteit</text>
+  <text x="300" y="528" class="warn">vóór het insteken!</text>
+
+  <!-- ===== legend ===== -->
+  <rect x="560" y="92" width="370" height="120" rx="6" fill="#f7fafd" stroke="#cdddea"/>
+  <text x="576" y="114" class="ttl" font-size="14">Legenda (draadkleuren)</text>
+  <line class="w3" x1="576" y1="132" x2="608" y2="132"/><text x="616" y="136" class="leg">3V3 (voeding +)</text>
+  <line class="wg" x1="576" y1="154" x2="608" y2="154"/><text x="616" y="158" class="leg">GND (massa)</text>
+  <line class="wd" x1="576" y1="176" x2="608" y2="176"/><text x="616" y="180" class="leg">SDA (I2C-data, GPIO11)</text>
+  <line class="wc" x1="576" y1="198" x2="608" y2="198"/><text x="616" y="202" class="leg">SCL (I2C-klok, GPIO10)</text>
+  <line class="wb" x1="780" y1="132" x2="812" y2="132"/><text x="820" y="136" class="leg">accu (MX1.25)</text>
+  <text x="616" y="200" class="leg"></text>
+
+  <!-- note -->
+  <text x="26" y="578" class="cap">Adressen botsen niet: BMP388 0x76/0x77, QMI8658 0x6B, touch 0x15. Een externe aan/uit-schakelaar is optioneel (het bord heeft een eigen aan/uit-knop).</text>
+</svg>
