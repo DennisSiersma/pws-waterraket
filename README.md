@@ -6,14 +6,17 @@ Profielwerkstuk natuurkunde (vwo) over de **waterraket**: welke factoren bepalen
 
 ```
 docs/
-  PWS_Waterraket_Onderzoeksplan.docx            Onderzoeksplan (theorie, testplan, BOM, bijlagen)
-  PWS_Waterraket_Bouwtekening_Lanceerinstallatie.svg   Bouwtekening lanceerinstallatie
-  PWS_Waterraket_Bedradingsschema.svg           Bedradingsschema vluchtcomputer (I2C)
+  PWS_Waterraket_Onderzoeksplan.docx                   Onderzoeksplan (theorie, testplan, BOM, bijlagen)
+  PWS_Waterraket_Lanceerinstallatie.docx               Lanceerinstallatie: bouwtekening + onderdelenlijst + bronnen
+  PWS_Waterraket_Bouwtekening_Launcher_Clark.svg       Detailtekening launcher (Clark cable-tie / Gardena, manometer + aftapventiel)
+  PWS_Waterraket_Bouwtekening_Lanceerinstallatie.svg   Overzichtstekening lanceerinstallatie
+  PWS_Waterraket_Bedradingsschema_S3-Touch.svg         Bedrading: ESP32-S3-Touch-LCD-1.69 + BMP388
+  PWS_Waterraket_Bedradingsschema_XIAO.svg             Bedrading: XIAO ESP32-S3 + BMP280 (+ optioneel MPU6050)
 logsheets/
-  PWS_Waterraket_Logsheets.xlsx                 Vluchtlog + automatische hoogte-/spreidingsberekening
+  PWS_Waterraket_Logsheets.xlsx                        Vluchtlog + automatische hoogte-/spreidingsberekening
 firmware/
-  PWS_Waterraket_ESP32-S3-Touch_sketch.ino      Waveshare ESP32-S3-Touch-LCD-1.69 + BMP388 + QMI8658 + LCD
-  PWS_Waterraket_ESP32_sketch.ino               Lichte variant: XIAO ESP32-S3 + BMP280 (+ optioneel MPU6050)
+  PWS_Waterraket_ESP32-S3-Touch_sketch.ino            Waveshare ESP32-S3-Touch-LCD-1.69 + BMP388 + QMI8658 + touch-UI
+  PWS_Waterraket_ESP32_sketch.ino                     Lichte variant: XIAO ESP32-S3 + BMP280 (+ optioneel MPU6050)
 ```
 
 ## Hardware (twee routes)

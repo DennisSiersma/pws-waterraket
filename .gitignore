@@ -1,0 +1,4 @@
+# build / OS artefacten
+.DS_Store
+build/
+*.tmp
