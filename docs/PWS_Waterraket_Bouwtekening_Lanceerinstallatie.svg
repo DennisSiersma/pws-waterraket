@@ -1,0 +1,135 @@
+<svg viewBox="0 0 980 740" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <style>
+    .ln{stroke:#333;stroke-width:2;fill:none}
+    .thin{stroke:#555;stroke-width:1;fill:none}
+    .lead{stroke:#888;stroke-width:1;fill:none}
+    .dim{stroke:#c0392b;stroke-width:1;fill:none}
+    .lbl{font-size:13px;fill:#222}
+    .leg{font-size:13px;fill:#222}
+    .num{font-size:12px;fill:#fff;font-weight:bold}
+    .dimt{font-size:11px;fill:#c0392b}
+    .ttl{font-size:20px;font-weight:bold;fill:#1F6FB2}
+    .sub{font-size:12px;fill:#555}
+    .sec{font-size:13px;font-weight:bold;fill:#1F6FB2}
+  </style>
+
+  <rect x="6" y="6" width="968" height="728" fill="#ffffff" stroke="#1F6FB2" stroke-width="2"/>
+  <text x="28" y="40" class="ttl">Bouwtekening &#8211; Lanceerinstallatie waterraket</text>
+  <text x="28" y="60" class="sub">Kabelbinder-/Gardena-type, doorsnede (niet op schaal)</text>
+  <line x1="28" y1="72" x2="500" y2="72" stroke="#1F6FB2" stroke-width="1"/>
+
+  <path class="ln" d="M186,150 Q240,96 294,150"/>
+  <path class="ln" d="M186,150 L186,372 Q186,410 222,432 L222,452 M294,150 L294,372 Q294,410 258,432 L258,452"/>
+  <line class="ln" x1="222" y1="452" x2="222" y2="470"/>
+  <line class="ln" x1="258" y1="452" x2="258" y2="470"/>
+  <line class="ln" x1="216" y1="470" x2="222" y2="470"/>
+  <line class="ln" x1="258" y1="470" x2="264" y2="470"/>
+
+  <path d="M188,152 Q240,100 292,152 L292,300 L188,300 Z" fill="#eaf3fb"/>
+  <path d="M188,300 L292,300 L292,372 Q292,408 258,430 L222,430 Q188,408 188,372 Z" fill="#9fcdec"/>
+  <line class="thin" x1="188" y1="300" x2="292" y2="300" stroke-dasharray="4 3"/>
+  <text x="120" y="304" class="lbl" text-anchor="end">vulniveau &#8776; &#8531;</text>
+  <line class="lead" x1="122" y1="300" x2="188" y2="300"/>
+
+  <path class="ln" d="M186,330 L156,392 L186,378 Z"/>
+  <path class="ln" d="M294,330 L324,392 L294,378 Z"/>
+  <line class="ln" x1="240" y1="330" x2="240" y2="392"/>
+  <line class="ln" x1="232" y1="392" x2="248" y2="392"/>
+
+  <rect class="ln" x="232" y="466" width="16" height="150" fill="#f4f4f4"/>
+  <line class="thin" x1="234" y1="466" x2="234" y2="448" stroke-dasharray="3 3"/>
+  <line class="thin" x1="246" y1="466" x2="246" y2="448" stroke-dasharray="3 3"/>
+
+  <circle cx="232" cy="466" r="4" fill="#333"/>
+  <circle cx="248" cy="466" r="4" fill="#333"/>
+
+  <path class="ln" d="M216,470 Q206,486 214,506"/>
+  <path class="ln" d="M264,470 Q274,486 266,506"/>
+  <path class="thin" d="M222,470 Q214,488 220,506"/>
+  <path class="thin" d="M258,470 Q266,488 260,506"/>
+
+  <rect class="ln" x="210" y="500" width="60" height="22" rx="3" fill="#e9e9e9"/>
+
+  <path class="ln" d="M270,511 C 330,511 360,540 430,560"/>
+  <text x="300" y="540" class="lbl">trekkoord</text>
+
+  <rect class="ln" x="226" y="560" width="28" height="26" fill="#f4f4f4"/>
+  <line class="ln" x1="254" y1="573" x2="300" y2="573"/>
+  <rect class="ln" x="300" y="568" width="14" height="10" fill="#ddd"/>
+
+  <path class="ln" d="M254,586 C 300,640 360,650 410,650"/>
+
+  <rect class="ln" x="150" y="616" width="180" height="16" fill="#efe7da"/>
+  <circle class="thin" cx="240" cy="624" r="5" fill="#fff"/>
+  <line class="dim" x1="330" y1="624" x2="372" y2="624"/>
+  <path class="dim" d="M372,624 A 40 40 0 0 0 360 596"/>
+  <text x="360" y="592" class="dimt">instelbare hoek 70&#8211;90&#176;</text>
+
+  <rect class="ln" x="410" y="628" width="40" height="44" fill="#f4f4f4"/>
+  <line class="ln" x1="430" y1="628" x2="430" y2="610"/>
+  <rect class="ln" x="420" y="600" width="20" height="12" fill="#ddd"/>
+  <circle class="ln" cx="460" cy="636" r="12" fill="#fff"/>
+  <line class="thin" x1="460" y1="636" x2="466" y2="630"/>
+  <text x="362" y="690" class="lbl">fietspomp + manometer</text>
+
+  <line class="dim" x1="232" y1="640" x2="248" y2="640"/>
+  <line class="dim" x1="232" y1="636" x2="232" y2="644"/>
+  <line class="dim" x1="248" y1="636" x2="248" y2="644"/>
+  <text x="206" y="660" class="dimt">&#216; ~22 mm</text>
+
+  <g>
+    <circle cx="318" cy="120" r="11" fill="#1F6FB2"/><text x="318" y="124" class="num" text-anchor="middle">1</text>
+    <line class="lead" x1="294" y1="132" x2="308" y2="123"/>
+    <circle cx="150" cy="210" r="11" fill="#1F6FB2"/><text x="150" y="214" class="num" text-anchor="middle">2</text>
+    <line class="lead" x1="161" y1="210" x2="200" y2="220"/>
+    <circle cx="150" cy="350" r="11" fill="#1F6FB2"/><text x="150" y="354" class="num" text-anchor="middle">3</text>
+    <line class="lead" x1="161" y1="350" x2="196" y2="350"/>
+    <circle cx="312" cy="452" r="11" fill="#1F6FB2"/><text x="312" y="456" class="num" text-anchor="middle">4</text>
+    <line class="lead" x1="301" y1="452" x2="260" y2="458"/>
+    <circle cx="318" cy="488" r="11" fill="#1F6FB2"/><text x="318" y="492" class="num" text-anchor="middle">5</text>
+    <line class="lead" x1="307" y1="486" x2="252" y2="470"/>
+    <circle cx="190" cy="540" r="11" fill="#1F6FB2"/><text x="190" y="544" class="num" text-anchor="middle">6</text>
+    <line class="lead" x1="201" y1="540" x2="232" y2="540"/>
+    <circle cx="178" cy="480" r="11" fill="#1F6FB2"/><text x="178" y="484" class="num" text-anchor="middle">7</text>
+    <line class="lead" x1="189" y1="482" x2="214" y2="488"/>
+    <circle cx="160" cy="511" r="11" fill="#1F6FB2"/><text x="160" y="515" class="num" text-anchor="middle">8</text>
+    <line class="lead" x1="171" y1="511" x2="210" y2="511"/>
+    <circle cx="392" cy="556" r="11" fill="#1F6FB2"/><text x="392" y="560" class="num" text-anchor="middle">9</text>
+    <line class="lead" x1="384" y1="558" x2="360" y2="560"/>
+    <circle cx="200" cy="600" r="11" fill="#1F6FB2"/><text x="200" y="604" class="num" text-anchor="middle">10</text>
+    <line class="lead" x1="211" y1="598" x2="226" y2="582"/>
+    <circle cx="330" cy="556" r="11" fill="#1F6FB2"/><text x="330" y="560" class="num" text-anchor="middle">11</text>
+    <line class="lead" x1="324" y1="562" x2="307" y2="570"/>
+    <circle cx="392" cy="700" r="11" fill="#1F6FB2"/><text x="392" y="704" class="num" text-anchor="middle">12</text>
+    <line class="lead" x1="392" y1="689" x2="392" y2="660"/>
+    <circle cx="138" cy="624" r="11" fill="#1F6FB2"/><text x="138" y="628" class="num" text-anchor="middle">13</text>
+    <line class="lead" x1="149" y1="624" x2="170" y2="624"/>
+  </g>
+
+  <line x1="528" y1="96" x2="528" y2="712" stroke="#ddd" stroke-width="1"/>
+  <text x="556" y="112" class="sec">Onderdelenlijst</text>
+  <g class="leg">
+    <g><circle cx="566" cy="140" r="10" fill="#1F6FB2"/><text x="566" y="144" class="num" text-anchor="middle">1</text><text x="586" y="144">PET-fles (frisdrank, ondersteboven) &#8211; het drukvat</text></g>
+    <g><circle cx="566" cy="170" r="10" fill="#1F6FB2"/><text x="566" y="174" class="num" text-anchor="middle">2</text><text x="586" y="174">Luchtkussen (samengeperste lucht) &#8211; de energiebron</text></g>
+    <g><circle cx="566" cy="200" r="10" fill="#1F6FB2"/><text x="566" y="204" class="num" text-anchor="middle">3</text><text x="586" y="204">Water (&#8776; &#8531; van het flesvolume) &#8211; de terugstootmassa</text></g>
+    <g><circle cx="566" cy="230" r="10" fill="#1F6FB2"/><text x="566" y="234" class="num" text-anchor="middle">4</text><text x="586" y="234">Flesopening / nozzle (eventueel 3D-geprint, &#216; 4&#8211;10 mm)</text></g>
+    <g><circle cx="566" cy="260" r="10" fill="#1F6FB2"/><text x="566" y="264" class="num" text-anchor="middle">5</text><text x="586" y="264">O-ring &#8211; luchtdichte afsluiting tussen fles en buis</text></g>
+    <g><circle cx="566" cy="290" r="10" fill="#1F6FB2"/><text x="566" y="294" class="num" text-anchor="middle">6</text><text x="586" y="294">Lanceerbuis (PVC, &#216; ~22 mm) &#8211; geleidt en houdt druk</text></g>
+    <g><circle cx="566" cy="320" r="10" fill="#1F6FB2"/><text x="566" y="324" class="num" text-anchor="middle">7</text><text x="586" y="324">Kabelbinders &#8211; grijpen onder de flesrand (vergrendeling)</text></g>
+    <g><circle cx="566" cy="350" r="10" fill="#1F6FB2"/><text x="566" y="354" class="num" text-anchor="middle">8</text><text x="586" y="354">Verschuifbare kraag &#8211; houdt de kabelbinders dicht</text></g>
+    <g><circle cx="566" cy="380" r="10" fill="#1F6FB2"/><text x="566" y="384" class="num" text-anchor="middle">9</text><text x="586" y="384">Trekkoord &#8211; ontgrendelen vanaf veilige afstand (&#8805; 5 m)</text></g>
+    <g><circle cx="566" cy="410" r="10" fill="#1F6FB2"/><text x="566" y="414" class="num" text-anchor="middle">10</text><text x="586" y="414">T-stuk / verloopstuk &#8211; verbindt buis, ventiel en slang</text></g>
+    <g><circle cx="566" cy="440" r="10" fill="#1F6FB2"/><text x="566" y="444" class="num" text-anchor="middle">11</text><text x="586" y="444">Schrader-ventiel (auto-/fietsventiel) &#8211; lucht erin pompen</text></g>
+    <g><circle cx="566" cy="470" r="10" fill="#1F6FB2"/><text x="566" y="474" class="num" text-anchor="middle">12</text><text x="586" y="474">Tuinslang naar fietspomp met manometer</text></g>
+    <g><circle cx="566" cy="500" r="10" fill="#1F6FB2"/><text x="566" y="504" class="num" text-anchor="middle">13</text><text x="586" y="504">Voet/basis (waterpas) met instelbare lanceerhoek</text></g>
+  </g>
+
+  <rect x="548" y="540" width="404" height="168" rx="6" fill="#f7fafd" stroke="#cdddea"/>
+  <text x="566" y="566" class="sec">Werking in het kort</text>
+  <text x="566" y="590" class="leg">1. Vul de fles tot ~&#8531; met water en plaats op de buis (4&#8211;6).</text>
+  <text x="566" y="612" class="leg">2. Kabelbinders + kraag vergrendelen de fles (7&#8211;8).</text>
+  <text x="566" y="634" class="leg">3. Pomp lucht in via het ventiel tot de ingestelde druk (11&#8211;12).</text>
+  <text x="566" y="656" class="leg">4. Ga &#8805; 5 m terug en trek aan het koord (9): de kraag schuift</text>
+  <text x="586" y="674" class="leg">weg, de kabelbinders klappen open en de raket lanceert.</text>
+  <text x="566" y="698" class="leg" font-style="italic" fill="#c0392b">Veiligheidsbril op; nooit boven de fles buigen tijdens het pompen.</text>
+</svg>
