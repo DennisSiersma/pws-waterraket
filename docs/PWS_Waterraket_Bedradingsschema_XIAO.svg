@@ -1,0 +1,92 @@
+<svg viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <style>
+    .box{fill:#f7fafd;stroke:#333;stroke-width:2}
+    .chip{fill:#eef2f6;stroke:#333;stroke-width:2}
+    .pin{font-size:11px;fill:#222}
+    .name{font-size:14px;font-weight:bold;fill:#222}
+    .sub{font-size:11px;fill:#666}
+    .rl{font-size:12px;font-weight:bold}
+    .ttl{font-size:19px;font-weight:bold;fill:#1F6FB2}
+    .cap{font-size:12px;fill:#555}
+    .leg{font-size:12px;fill:#222}
+    .w3{stroke:#c0392b;stroke-width:2.5;fill:none}
+    .wg{stroke:#222;stroke-width:2.5;fill:none}
+    .wd{stroke:#1f6fb2;stroke-width:2.5;fill:none}
+    .wc{stroke:#27ae60;stroke-width:2.5;fill:none}
+    .wb{stroke:#e67e22;stroke-width:2.5;fill:none}
+  </style>
+
+  <rect x="6" y="6" width="888" height="588" fill="#ffffff" stroke="#1F6FB2" stroke-width="2"/>
+  <text x="26" y="38" class="ttl">Bedradingsschema &#8211; ESP32-vluchtcomputer (I2C)</text>
+  <text x="26" y="56" class="cap">BMP280 en MPU6050 delen dezelfde I2C-bus; adressen verschillen (0x76/0x77 en 0x68).</text>
+
+  <line class="w3" x1="150" y1="100" x2="770" y2="100"/>
+  <line class="wg" x1="150" y1="128" x2="770" y2="128"/>
+  <line class="wd" x1="150" y1="156" x2="770" y2="156"/>
+  <line class="wc" x1="150" y1="184" x2="770" y2="184"/>
+  <text x="92" y="104" class="rl" fill="#c0392b">3V3</text>
+  <text x="92" y="132" class="rl" fill="#222">GND</text>
+  <text x="92" y="160" class="rl" fill="#1f6fb2">SDA</text>
+  <text x="92" y="188" class="rl" fill="#27ae60">SCL</text>
+
+  <rect class="box" x="120" y="300" width="170" height="120" rx="6"/>
+  <text x="205" y="350" class="name" text-anchor="middle">BMP280</text>
+  <text x="205" y="370" class="sub" text-anchor="middle">barometer (niveau 1)</text>
+  <text x="150" y="296" class="pin" text-anchor="middle">VCC</text>
+  <text x="186" y="296" class="pin" text-anchor="middle">GND</text>
+  <text x="222" y="296" class="pin" text-anchor="middle">SDA</text>
+  <text x="258" y="296" class="pin" text-anchor="middle">SCL</text>
+  <path class="w3" d="M150,300 L150,100"/><circle cx="150" cy="100" r="3.5" fill="#c0392b"/>
+  <path class="wg" d="M186,300 L186,128"/><circle cx="186" cy="128" r="3.5" fill="#222"/>
+  <path class="wd" d="M222,300 L222,156"/><circle cx="222" cy="156" r="3.5" fill="#1f6fb2"/>
+  <path class="wc" d="M258,300 L258,184"/><circle cx="258" cy="184" r="3.5" fill="#27ae60"/>
+
+  <rect class="chip" x="370" y="300" width="170" height="150" rx="6"/>
+  <text x="455" y="360" class="name" text-anchor="middle">XIAO ESP32-S3</text>
+  <text x="455" y="380" class="sub" text-anchor="middle">microcontroller + wifi</text>
+  <rect x="438" y="292" width="34" height="10" fill="#999"/>
+  <text x="455" y="288" class="sub" text-anchor="middle">USB-C</text>
+  <text x="392" y="316" class="pin" text-anchor="middle">3V3</text>
+  <text x="428" y="316" class="pin" text-anchor="middle">GND</text>
+  <text x="486" y="316" class="pin" text-anchor="middle">D4</text>
+  <text x="520" y="316" class="pin" text-anchor="middle">D5</text>
+  <path class="w3" d="M392,300 L392,100"/><circle cx="392" cy="100" r="3.5" fill="#c0392b"/>
+  <path class="wg" d="M428,300 L428,128"/><circle cx="428" cy="128" r="3.5" fill="#222"/>
+  <path class="wd" d="M486,300 L486,156"/><circle cx="486" cy="156" r="3.5" fill="#1f6fb2"/>
+  <path class="wc" d="M520,300 L520,184"/><circle cx="520" cy="184" r="3.5" fill="#27ae60"/>
+  <text x="486" y="334" class="sub" text-anchor="middle">(SDA)</text>
+  <text x="520" y="334" class="sub" text-anchor="middle">(SCL)</text>
+  <text x="430" y="468" class="pin" text-anchor="middle">BAT+</text>
+  <text x="478" y="468" class="pin" text-anchor="middle">BAT&#8722;</text>
+
+  <rect class="box" x="620" y="300" width="170" height="120" rx="6"/>
+  <text x="705" y="350" class="name" text-anchor="middle">MPU6050</text>
+  <text x="705" y="370" class="sub" text-anchor="middle">IMU (niveau 2, optioneel)</text>
+  <text x="650" y="296" class="pin" text-anchor="middle">VCC</text>
+  <text x="686" y="296" class="pin" text-anchor="middle">GND</text>
+  <text x="722" y="296" class="pin" text-anchor="middle">SDA</text>
+  <text x="758" y="296" class="pin" text-anchor="middle">SCL</text>
+  <path class="w3" d="M650,300 L650,100"/><circle cx="650" cy="100" r="3.5" fill="#c0392b"/>
+  <path class="wg" d="M686,300 L686,128"/><circle cx="686" cy="128" r="3.5" fill="#222"/>
+  <path class="wd" d="M722,300 L722,156"/><circle cx="722" cy="156" r="3.5" fill="#1f6fb2"/>
+  <path class="wc" d="M758,300 L758,184"/><circle cx="758" cy="184" r="3.5" fill="#27ae60"/>
+
+  <rect class="box" x="380" y="500" width="150" height="64" rx="6"/>
+  <text x="455" y="528" class="name" text-anchor="middle">LiPo 1S</text>
+  <text x="455" y="546" class="sub" text-anchor="middle">3,7 V &#183; 300&#8211;500 mAh</text>
+  <text x="398" y="496" class="pin">+</text>
+  <text x="506" y="496" class="pin">&#8722;</text>
+  <path class="wg" d="M510,500 L510,476 L478,476 L478,452"/>
+  <path class="wb" d="M400,500 L400,476 L360,476 L360,452"/>
+  <rect x="344" y="440" width="32" height="14" rx="3" fill="#fff" stroke="#e67e22" stroke-width="2"/>
+  <text x="360" y="436" class="sub" text-anchor="middle">schakelaar</text>
+  <path class="wb" d="M360,440 L360,432 L430,432 L430,452"/>
+
+  <rect x="600" y="470" width="276" height="106" rx="6" fill="#f7fafd" stroke="#cdddea"/>
+  <text x="616" y="492" class="rl" fill="#1F6FB2">Legenda (draadkleuren)</text>
+  <line class="w3" x1="616" y1="508" x2="648" y2="508"/><text x="656" y="512" class="leg">3V3 (voeding +)</text>
+  <line class="wg" x1="616" y1="528" x2="648" y2="528"/><text x="656" y="532" class="leg">GND (massa)</text>
+  <line class="wd" x1="616" y1="548" x2="648" y2="548"/><text x="656" y="552" class="leg">SDA (I2C-data, naar D4)</text>
+  <line class="wc" x1="616" y1="568" x2="648" y2="568"/><text x="656" y="572" class="leg">SCL (I2C-klok, naar D5)</text>
+  <line class="wb" x1="760" y1="508" x2="792" y2="508"/><text x="800" y="512" class="leg">accu</text>
+</svg>
