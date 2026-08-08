@@ -36,8 +36,8 @@
 #define BMP_ADDR     0x77      // BMP388: 0x77 of 0x76
 
 // --- touch (CST816) ---
-#define TP_RST       -1        // reset-pin (zet op juiste GPIO als touch niet reageert)
-#define TP_INT       -1        // interrupt-pin (mag -1 = polling)
+#define TP_RST       13        // CST816 reset  (schematic: TP_RST = GPIO13)
+#define TP_INT       14        // CST816 interrupt (schematic: TP_INT = GPIO14)
 #define TOUCH_FLIP_X 0
 #define TOUCH_FLIP_Y 0
 
@@ -65,10 +65,10 @@
 // Het bord start NIET vanzelf op de accu: de PWR-knop geeft de accuvoeding
 // kortstondig vrij, daarna moet de firmware SYS_EN hoog houden. Zonder deze
 // latch valt de voeding weg zodra je PWR loslaat (op USB merk je hier niets van).
-// NIEUW bord (bordmodel staat op de print gedrukt): SYS_EN 41, SYS_OUT 40
-// OUD  bord (geen opdruk op de print):              SYS_EN 35, SYS_OUT 36
-#define BOARD_NEW    1
-#if BOARD_NEW
+// Volgens het officiele schema van dit bord: SYS_EN = GPIO35, SYS_OUT = GPIO36.
+// Werkt de accuvoeding niet, probeer dan BOARD_ALT 1 (SYS_EN 41 / SYS_OUT 40).
+#define BOARD_ALT    0
+#if BOARD_ALT
   #define SYS_EN     41
   #define SYS_OUT    40
 #else
@@ -302,8 +302,29 @@ void setup() {
   pinMode(LCD_BL, OUTPUT); digitalWrite(LCD_BL, HIGH);
   gfx->begin(); gfx->fillScreen(COL_BLACK);
 
+  // STARTMARKERING: bewijst dat DEZE firmware draait. Zie je dit niet, dan is
+  // de oude sketch nog actief of blijft het oude beeld in het LCD staan.
+  Serial.begin(115200);
+  delay(300);
+  Serial.println();
+  Serial.println("=== Waterraket build " __DATE__ " " __TIME__ " ===");
+  gfx->fillScreen(COL_BLUE);
+  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2);
+  gfx->setCursor(10, 40); gfx->print("BOOT OK");
+  gfx->setCursor(10, 70); gfx->print(__TIME__);
+  delay(1200);
+  gfx->fillScreen(COL_BLACK);
+
   Wire.begin(I2C_SDA, I2C_SCL);
   LittleFS.begin(true);
+
+  // I2C-scan: welke chips reageren er echt?
+  Serial.print("I2C gevonden:");
+  for (uint8_t a = 1; a < 127; a++) {
+    Wire.beginTransmission(a);
+    if (Wire.endTransmission() == 0) { Serial.print(" 0x"); Serial.print(a, HEX); }
+  }
+  Serial.println("  (verwacht: 0x15 touch, 0x6B IMU, 0x76 of 0x77 BMP388)");
 
   if (!bmp.begin_I2C(BMP_ADDR, &Wire)) bmp.begin_I2C(0x76, &Wire);
   bmp.setPressureOversampling(BMP3_OVERSAMPLING_8X);
