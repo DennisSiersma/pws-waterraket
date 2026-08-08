@@ -25,6 +25,8 @@
     3,7V LiPo met MX1.25 (1,25 mm) stekker. CONTROLEER DE POLARITEIT tegen de
     markering op het bord VOORDAT je insteekt; omgekeerd kan het bord beschadigen.
     Laden via USB-C (ETA6098-lader op het bord).
+    Op accu: sluit de accu aan, druk op de PWR-knop, daarna houdt de SYS_EN-latch
+    hieronder de voeding vast.
 */
 
 // ====================== CONFIG ======================
@@ -58,6 +60,21 @@
 
 // --- fysieke knop als START-fallback ---
 #define BOOT_BTN     0
+
+// --- voedingslatch accu ---
+// Het bord start NIET vanzelf op de accu: de PWR-knop geeft de accuvoeding
+// kortstondig vrij, daarna moet de firmware SYS_EN hoog houden. Zonder deze
+// latch valt de voeding weg zodra je PWR loslaat (op USB merk je hier niets van).
+// NIEUW bord (bordmodel staat op de print gedrukt): SYS_EN 41, SYS_OUT 40
+// OUD  bord (geen opdruk op de print):              SYS_EN 35, SYS_OUT 36
+#define BOARD_NEW    1
+#if BOARD_NEW
+  #define SYS_EN     41
+  #define SYS_OUT    40
+#else
+  #define SYS_EN     35
+  #define SYS_OUT    36
+#endif
 
 // --- gedrag ---
 #define SAMPLE_HZ       50
@@ -262,6 +279,11 @@ void startAP() {
 
 // ====================== SETUP ======================
 void setup() {
+  // Accuvoeding vasthouden. MOET als allereerste, voor de trage init van
+  // LCD/sensoren, anders valt het bord uit zodra je de PWR-knop loslaat.
+  pinMode(SYS_EN, OUTPUT);
+  digitalWrite(SYS_EN, HIGH);
+
   pinMode(BOOT_BTN, INPUT_PULLUP);
 #if USE_BUZZER
   pinMode(BUZZER_PIN, OUTPUT); digitalWrite(BUZZER_PIN, LOW);
