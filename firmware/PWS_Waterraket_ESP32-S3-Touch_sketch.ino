@@ -52,9 +52,10 @@
 #define LCD_W        240
 #define LCD_H        280
 #define LCD_OFFX     0
-// Verticale offset van het paneel. Gemeten op dit bord: met 20 stond het beeld
-// ~22 px te laag op het glas (kruis getekend op y=140 werd aangeraakt op 162).
-#define LCD_OFFY     0
+// 20 is juist voor dit paneel (met 0 loopt de titel van het scherm).
+// De ~22 px afwijking zit in de TOUCH, niet in het beeld: die corrigeer je
+// met het ijkscherm (INFO -> lang BOOT -> lang BOOT).
+#define LCD_OFFY     20
 
 // --- buzzer (optioneel; pin verifiëren) ---
 #define USE_BUZZER   0
@@ -146,12 +147,13 @@ const char* CALPATH = "/touchcal.txt";
 
 // ====================== KNOPPEN ======================
 struct Btn { int x, y, w, h; const char* label; uint16_t col; };
-Btn BTN_START  = { 20, 120, 200, 56, "START",   COL_GREEN };
-Btn BTN_INFO   = { 20, 184, 200, 52, "INFO",    COL_BLUE };
-Btn BTN_CANCEL = { 30, 206, 180, 58, "ANNULEER", COL_DARKGREY };
-Btn BTN_SEND   = { 16, 206, 100, 58, "VERZEND", COL_BLUE };
-Btn BTN_NEW    = { 124, 206, 100, 58, "NIEUW",  COL_DARKGREY };
-Btn BTN_BACK   = { 30, 206, 180, 58, "TERUG",   COL_DARKGREY };
+// Knoppen blijven boven y=230: dat is het gebied dat de touch betrouwbaar haalt.
+Btn BTN_START  = { 20, 108, 200, 54, "START",   COL_GREEN };
+Btn BTN_INFO   = { 20, 170, 200, 50, "INFO",    COL_BLUE };
+Btn BTN_CANCEL = { 20, 170, 200, 50, "ANNULEER", COL_DARKGREY };
+Btn BTN_SEND   = { 16, 170, 100, 50, "VERZEND", COL_BLUE };
+Btn BTN_NEW    = { 124, 170, 100, 50, "NIEUW",  COL_DARKGREY };
+Btn BTN_BACK   = { 20, 170, 200, 50, "TERUG",   COL_DARKGREY };
 
 void drawBtn(Btn b) {
   gfx->fillRoundRect(b.x, b.y, b.w, b.h, 10, b.col);
@@ -232,8 +234,14 @@ String mORdash(float v) { return haveFlight ? String(v, 1) : String("--"); }
 void screenHome() {
   gfx->fillScreen(COL_BLACK);
   title("WATERRAKET", COL_CYAN);
-  stat("Apogeum (m)", mORdash(maxAlt), 50, COL_YELLOW);
-  stat("Max versn. (g)", mORdash(maxG), 100, COL_ORANGE);
+  // compacte stats, zodat ze niet onder de knoppen lopen
+  gfx->setTextSize(1); gfx->setTextColor(COL_WHITE);
+  gfx->setCursor(14, 48); gfx->print("Apogeum (m)");
+  gfx->setCursor(14, 76); gfx->print("Max versn. (g)");
+  gfx->setTextSize(2); gfx->setTextColor(COL_YELLOW);
+  gfx->setCursor(140, 44); gfx->print(mORdash(maxAlt));
+  gfx->setTextColor(COL_ORANGE);
+  gfx->setCursor(140, 72); gfx->print(mORdash(maxG));
   drawBtn(BTN_START);
   drawBtn(BTN_INFO);
 }
@@ -242,36 +250,36 @@ void screenHome() {
 void screenInfo() {
   gfx->fillScreen(COL_BLACK);
   title("SENSOREN", COL_CYAN);
-  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2);
-  gfx->setCursor(10, 48);  gfx->print("Druk (hPa)");
-  gfx->setCursor(10, 92);  gfx->print("Hoogte (m)");
-  gfx->setCursor(10, 136); gfx->print("Temp (C)");
-  gfx->setCursor(10, 180); gfx->print("Versn. (g)");
+  gfx->setTextColor(COL_WHITE); gfx->setTextSize(1);
+  gfx->setCursor(10, 52);  gfx->print("Druk (hPa)");
+  gfx->setCursor(10, 82);  gfx->print("Hoogte (m)");
+  gfx->setCursor(10, 112); gfx->print("Temp (C)");
+  gfx->setCursor(10, 142); gfx->print("Versn. (g)");
   drawBtn(BTN_BACK);
 }
 void liveInfo() {
   float alt, pres, temp;
   bool ok = readBaro(alt, pres, temp);
   readImu();
-  gfx->setTextSize(3);
-  gfx->fillRect(150, 44, 90, 26, COL_BLACK);
+  gfx->setTextSize(2);
+  gfx->fillRect(120, 46, 116, 18, COL_BLACK);
   gfx->setTextColor(ok ? COL_GREEN : COL_ORANGE);
-  gfx->setCursor(150, 46); gfx->print(ok ? String(pres, 1) : String("FOUT"));
-  gfx->fillRect(150, 88, 90, 26, COL_BLACK);
+  gfx->setCursor(120, 46); gfx->print(ok ? String(pres, 1) : String("FOUT"));
+  gfx->fillRect(120, 76, 116, 18, COL_BLACK);
   gfx->setTextColor(COL_CYAN);
-  gfx->setCursor(150, 90); gfx->print(alt, 1);
-  gfx->fillRect(150, 132, 90, 26, COL_BLACK);
+  gfx->setCursor(120, 76); gfx->print(alt, 1);
+  gfx->fillRect(120, 106, 116, 18, COL_BLACK);
   gfx->setTextColor(COL_YELLOW);
-  gfx->setCursor(150, 134); gfx->print(temp, 1);
-  gfx->fillRect(150, 176, 90, 26, COL_BLACK);
+  gfx->setCursor(120, 106); gfx->print(temp, 1);
+  gfx->fillRect(120, 136, 116, 18, COL_BLACK);
   gfx->setTextColor(COL_ORANGE);
-  gfx->setCursor(150, 178); gfx->print(curG, 2);
-  // touch-diagnose onderin
-  gfx->fillRect(10, 274, 220, 14, COL_BLACK);
+  gfx->setCursor(120, 136); gfx->print(curG, 2);
+  // touch-diagnose
+  gfx->fillRect(10, 226, 220, 12, COL_BLACK);
   gfx->setTextSize(1); gfx->setTextColor(touchOK ? COL_GREEN : COL_ORANGE);
-  gfx->setCursor(10, 276);
-  gfx->print(touchOK ? "touch init OK" : "touch init FOUT");
-  gfx->print("  taps:"); gfx->print(tapCount);
+  gfx->setCursor(10, 228);
+  gfx->print(touchOK ? "touch OK" : "touch FOUT");
+  gfx->print(" taps:"); gfx->print(tapCount);
   gfx->print(" x:"); gfx->print(lastTx); gfx->print(" y:"); gfx->print(lastTy);
 }
 // Raakpunttest: tekent een kruisje op de gerapporteerde coordinaten.
