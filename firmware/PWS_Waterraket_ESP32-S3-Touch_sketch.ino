@@ -123,7 +123,7 @@ Arduino_GFX *gfx = new Arduino_ST7789(bus, LCD_RST, 0, true, LCD_W, LCD_H,
                                       LCD_OFFX, LCD_OFFY, LCD_OFFX, LCD_OFFY);
 
 // ====================== TOESTAND ======================
-enum State { HOME, ARMED, LOGGING, RESULT, SENDING };
+enum State { HOME, INFO, ARMED, LOGGING, RESULT, SENDING };
 State state = HOME;
 bool entered = false;            // is het huidige scherm al getekend?
 
@@ -135,10 +135,13 @@ uint32_t samples = 0;
 int landCount = 0, uiCount = 0;
 bool haveFlight = false;
 bool touchWasDown = false, bootWasDown = false;
+int  lastTx = -1, lastTy = -1;   // laatste aanraakcoordinaten (diagnose)
+uint32_t tapCount = 0;           // hoeveel aanrakingen ooit gezien
 
 // ====================== KNOPPEN ======================
 struct Btn { int x, y, w, h; const char* label; uint16_t col; };
-Btn BTN_START  = { 30, 206, 180, 58, "START",   COL_GREEN };
+Btn BTN_START  = { 20, 150, 200, 56, "START",   COL_GREEN };
+Btn BTN_INFO   = { 20, 214, 200, 52, "INFO",    COL_BLUE };
 Btn BTN_CANCEL = { 30, 206, 180, 58, "ANNULEER", COL_DARKGREY };
 Btn BTN_SEND   = { 16, 206, 100, 58, "VERZEND", COL_BLUE };
 Btn BTN_NEW    = { 124, 206, 100, 58, "NIEUW",  COL_DARKGREY };
@@ -171,6 +174,8 @@ bool getTap(int &gx, int &gy) {
       gy = LCD_H - 1 - gy;
 #endif
       tap = true;
+      lastTx = gx; lastTy = gy; tapCount++;
+      Serial.printf("touch: x=%d y=%d\n", gx, gy);
     }
     touchWasDown = down;
   }
@@ -218,10 +223,47 @@ String mORdash(float v) { return haveFlight ? String(v, 1) : String("--"); }
 void screenHome() {
   gfx->fillScreen(COL_BLACK);
   title("WATERRAKET", COL_CYAN);
-  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2); gfx->setCursor(14, 52); gfx->print("Laatste vlucht:");
-  stat("Apogeum (m)", mORdash(maxAlt), 80, COL_YELLOW);
-  stat("Max versn. (g)", mORdash(maxG), 130, COL_ORANGE);
+  stat("Apogeum (m)", mORdash(maxAlt), 50, COL_YELLOW);
+  stat("Max versn. (g)", mORdash(maxG), 100, COL_ORANGE);
   drawBtn(BTN_START);
+  drawBtn(BTN_INFO);
+}
+
+// Live sensordata zonder te lanceren
+void screenInfo() {
+  gfx->fillScreen(COL_BLACK);
+  title("SENSOREN", COL_CYAN);
+  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2);
+  gfx->setCursor(10, 48);  gfx->print("Druk (hPa)");
+  gfx->setCursor(10, 92);  gfx->print("Hoogte (m)");
+  gfx->setCursor(10, 136); gfx->print("Temp (C)");
+  gfx->setCursor(10, 180); gfx->print("Versn. (g)");
+  drawBtn(BTN_BACK);
+}
+void liveInfo() {
+  float alt, pres, temp;
+  bool ok = readBaro(alt, pres, temp);
+  readImu();
+  gfx->setTextSize(3);
+  gfx->fillRect(150, 44, 90, 26, COL_BLACK);
+  gfx->setTextColor(ok ? COL_GREEN : COL_ORANGE);
+  gfx->setCursor(150, 46); gfx->print(ok ? String(pres, 1) : String("FOUT"));
+  gfx->fillRect(150, 88, 90, 26, COL_BLACK);
+  gfx->setTextColor(COL_CYAN);
+  gfx->setCursor(150, 90); gfx->print(alt, 1);
+  gfx->fillRect(150, 132, 90, 26, COL_BLACK);
+  gfx->setTextColor(COL_YELLOW);
+  gfx->setCursor(150, 134); gfx->print(temp, 1);
+  gfx->fillRect(150, 176, 90, 26, COL_BLACK);
+  gfx->setTextColor(COL_ORANGE);
+  gfx->setCursor(150, 178); gfx->print(curG, 2);
+  // touch-diagnose onderin
+  gfx->fillRect(10, 274, 220, 14, COL_BLACK);
+  gfx->setTextSize(1); gfx->setTextColor(touchOK ? COL_GREEN : COL_ORANGE);
+  gfx->setCursor(10, 276);
+  gfx->print(touchOK ? "touch init OK" : "touch init FOUT");
+  gfx->print("  taps:"); gfx->print(tapCount);
+  gfx->print(" x:"); gfx->print(lastTx); gfx->print(" y:"); gfx->print(lastTy);
 }
 void screenArmed() {
   gfx->fillScreen(COL_BLACK);
@@ -340,6 +382,7 @@ void setup() {
 
   touch.setPins(TP_RST, TP_INT);
   touchOK = touch.begin(Wire, CST816_SLAVE_ADDRESS, I2C_SDA, I2C_SCL);
+  Serial.print("touch init: "); Serial.println(touchOK ? "OK" : "MISLUKT");
 
   state = HOME; entered = false;
 }
@@ -351,14 +394,35 @@ void loop() {
 
   switch (state) {
 
-    case HOME:
+    case HOME: {
       if (!entered) { screenHome(); entered = true; }
-      if ((getTap(gx, gy) && hit(BTN_START, gx, gy)) || bootTap()) {
+      bool go = false, wantInfo = false;
+      if (getTap(gx, gy)) {
+        if (hit(BTN_START, gx, gy))     go = true;
+        else if (hit(BTN_INFO, gx, gy)) wantInfo = true;
+      }
+      // BOOT-knop als touch niet werkt: kort = INFO, lang (>1,2 s) = START
+      static uint32_t bootDown = 0;
+      bool bd = (digitalRead(BOOT_BTN) == LOW);
+      if (bd && bootDown == 0) bootDown = millis();
+      if (!bd && bootDown) {
+        uint32_t held = millis() - bootDown; bootDown = 0;
+        if (held > 1200) go = true; else wantInfo = true;
+      }
+      if (wantInfo) { state = INFO; entered = false; }
+      else if (go) {
         title("KALIBREREN...", COL_WHITE);          // even feedback
         calibrate(); beep(80);
         state = ARMED; entered = false;
       }
       delay(30);
+    } break;
+
+    case INFO:
+      if (!entered) { screenInfo(); entered = true; }
+      liveInfo();
+      if ((getTap(gx, gy) && hit(BTN_BACK, gx, gy)) || bootTap()) { state = HOME; entered = false; }
+      delay(150);
       break;
 
     case ARMED:
