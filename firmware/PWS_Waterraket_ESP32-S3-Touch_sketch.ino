@@ -148,12 +148,12 @@ const char* CALPATH = "/touchcal.txt";
 // ====================== KNOPPEN ======================
 struct Btn { int x, y, w, h; const char* label; uint16_t col; };
 // Knoppen blijven boven y=230: dat is het gebied dat de touch betrouwbaar haalt.
-Btn BTN_START  = { 20, 108, 200, 54, "START",   COL_GREEN };
-Btn BTN_INFO   = { 20, 170, 200, 50, "INFO",    COL_BLUE };
-Btn BTN_CANCEL = { 20, 170, 200, 50, "ANNULEER", COL_DARKGREY };
-Btn BTN_SEND   = { 16, 170, 100, 50, "VERZEND", COL_BLUE };
-Btn BTN_NEW    = { 124, 170, 100, 50, "NIEUW",  COL_DARKGREY };
-Btn BTN_BACK   = { 20, 170, 200, 50, "TERUG",   COL_DARKGREY };
+Btn BTN_START  = { 30, 148, 180, 50, "START",   COL_GREEN };
+Btn BTN_INFO   = { 40, 208, 160, 44, "INFO",    COL_BLUE };
+Btn BTN_CANCEL = { 30, 190, 180, 46, "ANNULEER", COL_DARKGREY };
+Btn BTN_SEND   = { 24, 190, 92, 46, "VERZEND", COL_BLUE };
+Btn BTN_NEW    = { 124, 190, 92, 46, "NIEUW",  COL_DARKGREY };
+Btn BTN_BACK   = { 30, 190, 180, 46, "TERUG",   COL_DARKGREY };
 
 void drawBtn(Btn b) {
   gfx->fillRoundRect(b.x, b.y, b.w, b.h, 10, b.col);
@@ -240,12 +240,12 @@ void screenHome() {
   title("WATERRAKET", COL_CYAN);
   // compacte stats, zodat ze niet onder de knoppen lopen
   gfx->setTextSize(1); gfx->setTextColor(COL_WHITE);
-  gfx->setCursor(SAFE_M, 66); gfx->print("Apogeum (m)");
-  gfx->setCursor(SAFE_M, 92); gfx->print("Max versn. (g)");
-  gfx->setTextSize(2); gfx->setTextColor(COL_YELLOW);
-  gfx->setCursor(140, 62); gfx->print(mORdash(maxAlt));
+  gfx->setCursor(SAFE_M, 62); gfx->print("Apogeum (m)");
+  gfx->setCursor(SAFE_M, 104); gfx->print("Max versn. (g)");
+  gfx->setTextSize(3); gfx->setTextColor(COL_YELLOW);
+  gfx->setCursor(SAFE_M, 74); gfx->print(mORdash(maxAlt));
   gfx->setTextColor(COL_ORANGE);
-  gfx->setCursor(140, 88); gfx->print(mORdash(maxG));
+  gfx->setCursor(SAFE_M, 116); gfx->print(mORdash(maxG));
   drawBtn(BTN_START);
   drawBtn(BTN_INFO);
 }
@@ -279,9 +279,9 @@ void liveInfo() {
   gfx->setTextColor(COL_ORANGE);
   gfx->setCursor(120, 138); gfx->print(curG, 2);
   // touch-diagnose
-  gfx->fillRect(SAFE_M, 228, 200, 12, COL_BLACK);
+  gfx->fillRect(SAFE_M, 246, 190, 12, COL_BLACK);
   gfx->setTextSize(1); gfx->setTextColor(touchOK ? COL_GREEN : COL_ORANGE);
-  gfx->setCursor(SAFE_M, 230);
+  gfx->setCursor(SAFE_M, 248);
   gfx->print(touchOK ? "touch OK" : "touch FOUT");
   gfx->print(" taps:"); gfx->print(tapCount);
   gfx->print(" x:"); gfx->print(lastTx); gfx->print(" y:"); gfx->print(lastTy);
@@ -451,11 +451,19 @@ void setup() {
   }
   Serial.println("  (verwacht: 0x15 touch, 0x6B IMU, 0x76 of 0x77 BMP388)");
 
-  if (!bmp.begin_I2C(BMP_ADDR, &Wire)) bmp.begin_I2C(0x76, &Wire);
-  bmp.setPressureOversampling(BMP3_OVERSAMPLING_8X);
-  bmp.setTemperatureOversampling(BMP3_OVERSAMPLING_2X);
+  bool bmpOK = bmp.begin_I2C(BMP_ADDR, &Wire);
+  if (!bmpOK) bmpOK = bmp.begin_I2C(0x76, &Wire);
+  Serial.print("BMP388 init: "); Serial.println(bmpOK ? "OK" : "MISLUKT");
+  // LET OP: oversampling en meetfrequentie moeten bij elkaar passen.
+  // 8x druk kost ~27 ms per meting en haalt 50 Hz (20 ms) NIET; de sensor
+  // geeft dan een configuratiefout en levert geen metingen. 4x past wel.
+  bmp.setPressureOversampling(BMP3_OVERSAMPLING_4X);
+  bmp.setTemperatureOversampling(BMP3_NO_OVERSAMPLING);
   bmp.setIIRFilterCoeff(BMP3_IIR_FILTER_COEFF_3);
   bmp.setOutputDataRate(BMP3_ODR_50_HZ);
+  float ta, tp, tt;
+  Serial.print("BMP388 eerste meting: ");
+  Serial.println(readBaro(ta, tp, tt) ? String(tp, 1) + " hPa" : String("MISLUKT"));
 
   qmi.begin(Wire, QMI8658_L_SLAVE_ADDRESS, I2C_SDA, I2C_SCL);
   qmi.configAccelerometer(SensorQMI8658::ACC_RANGE_16G,
