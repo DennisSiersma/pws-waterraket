@@ -222,12 +222,16 @@ void beep(int ms) {
 }
 
 // ====================== SCHERMEN ======================
+// Het glas heeft AFGERONDE HOEKEN: houd tekst en knoppen binnen deze marge,
+// anders loopt er in de hoeken een stuk af.
+#define SAFE_M       22
+
 void title(const char* t, uint16_t col) {
-  gfx->setTextColor(col); gfx->setTextSize(3); gfx->setCursor(14, 14); gfx->print(t);
+  gfx->setTextColor(col); gfx->setTextSize(3); gfx->setCursor(SAFE_M, 26); gfx->print(t);
 }
 void stat(const char* label, String val, int y, uint16_t col) {
-  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2); gfx->setCursor(14, y); gfx->print(label);
-  gfx->setTextColor(col); gfx->setTextSize(3); gfx->setCursor(14, y + 22); gfx->print(val);
+  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2); gfx->setCursor(SAFE_M, y); gfx->print(label);
+  gfx->setTextColor(col); gfx->setTextSize(3); gfx->setCursor(SAFE_M, y + 22); gfx->print(val);
 }
 String mORdash(float v) { return haveFlight ? String(v, 1) : String("--"); }
 
@@ -236,12 +240,12 @@ void screenHome() {
   title("WATERRAKET", COL_CYAN);
   // compacte stats, zodat ze niet onder de knoppen lopen
   gfx->setTextSize(1); gfx->setTextColor(COL_WHITE);
-  gfx->setCursor(14, 48); gfx->print("Apogeum (m)");
-  gfx->setCursor(14, 76); gfx->print("Max versn. (g)");
+  gfx->setCursor(SAFE_M, 66); gfx->print("Apogeum (m)");
+  gfx->setCursor(SAFE_M, 92); gfx->print("Max versn. (g)");
   gfx->setTextSize(2); gfx->setTextColor(COL_YELLOW);
-  gfx->setCursor(140, 44); gfx->print(mORdash(maxAlt));
+  gfx->setCursor(140, 62); gfx->print(mORdash(maxAlt));
   gfx->setTextColor(COL_ORANGE);
-  gfx->setCursor(140, 72); gfx->print(mORdash(maxG));
+  gfx->setCursor(140, 88); gfx->print(mORdash(maxG));
   drawBtn(BTN_START);
   drawBtn(BTN_INFO);
 }
@@ -251,10 +255,10 @@ void screenInfo() {
   gfx->fillScreen(COL_BLACK);
   title("SENSOREN", COL_CYAN);
   gfx->setTextColor(COL_WHITE); gfx->setTextSize(1);
-  gfx->setCursor(10, 52);  gfx->print("Druk (hPa)");
-  gfx->setCursor(10, 82);  gfx->print("Hoogte (m)");
-  gfx->setCursor(10, 112); gfx->print("Temp (C)");
-  gfx->setCursor(10, 142); gfx->print("Versn. (g)");
+  gfx->setCursor(SAFE_M, 66);  gfx->print("Druk (hPa)");
+  gfx->setCursor(SAFE_M, 92);  gfx->print("Hoogte (m)");
+  gfx->setCursor(SAFE_M, 118); gfx->print("Temp (C)");
+  gfx->setCursor(SAFE_M, 144); gfx->print("Versn. (g)");
   drawBtn(BTN_BACK);
 }
 void liveInfo() {
@@ -262,22 +266,22 @@ void liveInfo() {
   bool ok = readBaro(alt, pres, temp);
   readImu();
   gfx->setTextSize(2);
-  gfx->fillRect(120, 46, 116, 18, COL_BLACK);
+  gfx->fillRect(120, 60, 100, 18, COL_BLACK);
   gfx->setTextColor(ok ? COL_GREEN : COL_ORANGE);
-  gfx->setCursor(120, 46); gfx->print(ok ? String(pres, 1) : String("FOUT"));
-  gfx->fillRect(120, 76, 116, 18, COL_BLACK);
+  gfx->setCursor(120, 60); gfx->print(ok ? String(pres, 1) : String("FOUT"));
+  gfx->fillRect(120, 86, 100, 18, COL_BLACK);
   gfx->setTextColor(COL_CYAN);
-  gfx->setCursor(120, 76); gfx->print(alt, 1);
-  gfx->fillRect(120, 106, 116, 18, COL_BLACK);
+  gfx->setCursor(120, 86); gfx->print(alt, 1);
+  gfx->fillRect(120, 112, 100, 18, COL_BLACK);
   gfx->setTextColor(COL_YELLOW);
-  gfx->setCursor(120, 106); gfx->print(temp, 1);
-  gfx->fillRect(120, 136, 116, 18, COL_BLACK);
+  gfx->setCursor(120, 112); gfx->print(temp, 1);
+  gfx->fillRect(120, 138, 100, 18, COL_BLACK);
   gfx->setTextColor(COL_ORANGE);
-  gfx->setCursor(120, 136); gfx->print(curG, 2);
+  gfx->setCursor(120, 138); gfx->print(curG, 2);
   // touch-diagnose
-  gfx->fillRect(10, 226, 220, 12, COL_BLACK);
+  gfx->fillRect(SAFE_M, 228, 200, 12, COL_BLACK);
   gfx->setTextSize(1); gfx->setTextColor(touchOK ? COL_GREEN : COL_ORANGE);
-  gfx->setCursor(10, 228);
+  gfx->setCursor(SAFE_M, 230);
   gfx->print(touchOK ? "touch OK" : "touch FOUT");
   gfx->print(" taps:"); gfx->print(tapCount);
   gfx->print(" x:"); gfx->print(lastTx); gfx->print(" y:"); gfx->print(lastTy);
@@ -289,21 +293,21 @@ void screenTouchTest() {
   gfx->fillScreen(COL_BLACK);
   title("RAAKTEST", COL_MAGENTA);
   gfx->setTextColor(COL_WHITE); gfx->setTextSize(1);
-  gfx->setCursor(10, 44); gfx->print("Tik ergens: kruisje moet");
-  gfx->setCursor(10, 56); gfx->print("onder je vinger vallen.");
-  gfx->setCursor(10, 68); gfx->print("BOOT = terug");
-  // hoekmarkeringen als referentie
-  gfx->drawRect(0, 0, LCD_W, LCD_H, COL_DARKGREY);
-  gfx->drawFastHLine(0, LCD_H / 2, LCD_W, COL_DARKGREY);
-  gfx->drawFastVLine(LCD_W / 2, 0, LCD_H, COL_DARKGREY);
+  gfx->setCursor(SAFE_M, 60); gfx->print("Tik: kruisje moet onder");
+  gfx->setCursor(SAFE_M, 72); gfx->print("je vinger vallen.");
+  gfx->setCursor(SAFE_M, 84); gfx->print("BOOT kort=terug lang=ijken");
+  // veilig gebied (binnen de afgeronde hoeken) en middenkruis
+  gfx->drawRoundRect(SAFE_M - 8, 34, LCD_W - 2 * (SAFE_M - 8), LCD_H - 60, 12, COL_DARKGREY);
+  gfx->drawFastHLine(SAFE_M, LCD_H / 2, LCD_W - 2 * SAFE_M, COL_DARKGREY);
+  gfx->drawFastVLine(LCD_W / 2, 40, LCD_H - 80, COL_DARKGREY);
 }
 void drawCross(int x, int y) {
   gfx->drawFastHLine(x - 10, y, 21, COL_GREEN);
   gfx->drawFastVLine(x, y - 10, 21, COL_GREEN);
   gfx->fillCircle(x, y, 3, COL_YELLOW);
-  gfx->fillRect(60, 82, 130, 12, COL_BLACK);
+  gfx->fillRect(SAFE_M, 96, 190, 12, COL_BLACK);
   gfx->setTextSize(1); gfx->setTextColor(COL_CYAN);
-  gfx->setCursor(60, 84); gfx->print("x="); gfx->print(x);
+  gfx->setCursor(SAFE_M, 98); gfx->print("x="); gfx->print(x);
   gfx->print("  y="); gfx->print(y);
 }
 
@@ -327,16 +331,16 @@ void saveCal() {
                 calAx, calBx, calAy, calBy);
 }
 // twee ijkpunten, ruim van de randen af
-const int CAL_X1 = 40,  CAL_Y1 = 50;
-const int CAL_X2 = 200, CAL_Y2 = 230;
+const int CAL_X1 = 60,  CAL_Y1 = 70;
+const int CAL_X2 = 180, CAL_Y2 = 210;
 
 void drawTarget(int x, int y, const char* txt) {
   gfx->fillScreen(COL_BLACK);
   title("IJKEN", COL_MAGENTA);
   gfx->setTextSize(1); gfx->setTextColor(COL_WHITE);
-  gfx->setCursor(10, 110); gfx->print(txt);
-  gfx->setCursor(10, 124); gfx->print("Tik precies op het midden");
-  gfx->setCursor(10, 138); gfx->print("van de cirkel.");
+  gfx->setCursor(SAFE_M, 110); gfx->print(txt);
+  gfx->setCursor(SAFE_M, 124); gfx->print("Tik precies op het midden");
+  gfx->setCursor(SAFE_M, 138); gfx->print("van de cirkel.");
   gfx->drawCircle(x, y, 12, COL_GREEN);
   gfx->drawCircle(x, y, 4, COL_GREEN);
   gfx->drawFastHLine(x - 18, y, 37, COL_GREEN);
@@ -346,14 +350,14 @@ void drawTarget(int x, int y, const char* txt) {
 void screenArmed() {
   gfx->fillScreen(COL_BLACK);
   title("GEREED", COL_GREEN);
-  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2); gfx->setCursor(14, 60); gfx->print("Wacht op lancering");
+  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2); gfx->setCursor(SAFE_M, 80); gfx->print("Wacht op lancering");
   drawBtn(BTN_CANCEL);
 }
 void screenLogging() {
   gfx->fillScreen(COL_BLACK);
   title("VLUCHT", COL_ORANGE);
-  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2); gfx->setCursor(14, 70); gfx->print("Hoogte (m)");
-  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2); gfx->setCursor(14, 150); gfx->print("Versn. (g)");
+  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2); gfx->setCursor(SAFE_M, 74); gfx->print("Hoogte (m)");
+  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2); gfx->setCursor(SAFE_M, 146); gfx->print("Versn. (g)");
 }
 void screenResult() {
   gfx->fillScreen(COL_BLACK);
@@ -367,20 +371,20 @@ void screenSending() {
   gfx->fillScreen(COL_BLACK);
   title("VERZENDEN", COL_BLUE);
   gfx->setTextColor(COL_WHITE); gfx->setTextSize(2);
-  gfx->setCursor(14, 56);  gfx->print("WiFi-netwerk:");
-  gfx->setTextColor(COL_GREEN); gfx->setCursor(14, 78); gfx->print(AP_SSID);
-  gfx->setTextColor(COL_WHITE); gfx->setCursor(14, 104); gfx->print("Wachtwoord:");
-  gfx->setTextColor(COL_GREEN); gfx->setCursor(14, 126); gfx->print(AP_PASS);
-  gfx->setTextColor(COL_WHITE); gfx->setCursor(14, 152); gfx->print("Open in browser:");
-  gfx->setTextColor(COL_CYAN);  gfx->setCursor(14, 174); gfx->print(WiFi.softAPIP().toString());
+  gfx->setCursor(SAFE_M, 56);  gfx->print("WiFi-netwerk:");
+  gfx->setTextColor(COL_GREEN); gfx->setCursor(SAFE_M, 78); gfx->print(AP_SSID);
+  gfx->setTextColor(COL_WHITE); gfx->setCursor(SAFE_M, 104); gfx->print("Wachtwoord:");
+  gfx->setTextColor(COL_GREEN); gfx->setCursor(SAFE_M, 126); gfx->print(AP_PASS);
+  gfx->setTextColor(COL_WHITE); gfx->setCursor(SAFE_M, 152); gfx->print("Open in browser:");
+  gfx->setTextColor(COL_CYAN);  gfx->setCursor(SAFE_M, 174); gfx->print(WiFi.softAPIP().toString());
   drawBtn(BTN_BACK);
 }
 // dynamische waarden bijwerken (alleen het getalvlak overtekenen)
 void liveLogging() {
-  gfx->fillRect(14, 96, 224, 40, COL_BLACK);
-  gfx->setTextColor(COL_CYAN); gfx->setTextSize(4); gfx->setCursor(14, 100); gfx->print(curAlt, 1);
-  gfx->fillRect(14, 176, 224, 40, COL_BLACK);
-  gfx->setTextColor(COL_ORANGE); gfx->setTextSize(4); gfx->setCursor(14, 176); gfx->print(curG, 1);
+  gfx->fillRect(SAFE_M, 96, 224, 40, COL_BLACK);
+  gfx->setTextColor(COL_CYAN); gfx->setTextSize(4); gfx->setCursor(SAFE_M, 100); gfx->print(curAlt, 1);
+  gfx->fillRect(SAFE_M, 176, 224, 40, COL_BLACK);
+  gfx->setTextColor(COL_ORANGE); gfx->setTextSize(4); gfx->setCursor(SAFE_M, 176); gfx->print(curG, 1);
 }
 
 // ====================== LOGGING / AP ======================
@@ -430,8 +434,8 @@ void setup() {
   Serial.println("=== Waterraket build " __DATE__ " " __TIME__ " ===");
   gfx->fillScreen(COL_BLUE);
   gfx->setTextColor(COL_WHITE); gfx->setTextSize(2);
-  gfx->setCursor(10, 40); gfx->print("BOOT OK");
-  gfx->setCursor(10, 70); gfx->print(__TIME__);
+  gfx->setCursor(SAFE_M, 40); gfx->print("BOOT OK");
+  gfx->setCursor(SAFE_M, 70); gfx->print(__TIME__);
   delay(1200);
   gfx->fillScreen(COL_BLACK);
 
@@ -562,14 +566,14 @@ void loop() {
             gfx->fillScreen(COL_BLACK);
             title("GEIJKT", COL_GREEN);
             gfx->setTextSize(1); gfx->setTextColor(COL_WHITE);
-            gfx->setCursor(10, 120); gfx->print("Opgeslagen. Controleer met");
-            gfx->setCursor(10, 134); gfx->print("de raaktest.");
+            gfx->setCursor(SAFE_M, 120); gfx->print("Opgeslagen. Controleer met");
+            gfx->setCursor(SAFE_M, 134); gfx->print("de raaktest.");
           } else {
             gfx->fillScreen(COL_BLACK);
             title("MISLUKT", COL_ORANGE);
             gfx->setTextSize(1); gfx->setTextColor(COL_WHITE);
-            gfx->setCursor(10, 120); gfx->print("Punten lagen te dicht bij");
-            gfx->setCursor(10, 134); gfx->print("elkaar. Probeer opnieuw.");
+            gfx->setCursor(SAFE_M, 120); gfx->print("Punten lagen te dicht bij");
+            gfx->setCursor(SAFE_M, 134); gfx->print("elkaar. Probeer opnieuw.");
           }
           delay(2000);
           state = TOUCHTEST; entered = false;
