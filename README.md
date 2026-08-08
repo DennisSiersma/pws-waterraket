@@ -1,6 +1,22 @@
 # PWS Waterraket
 
-Profielwerkstuk natuurkunde (vwo) over de **waterraket**: welke factoren bepalen de prestatie (apogeumhoogte), met een strak testplan, een lanceerinstallatie, meet-logsheets en een optionele in-flight datalogger op een ESP32.
+Profielwerkstuk natuurkunde (vwo) over de **waterraket**: welke factoren bepalen de prestatie (apogeumhoogte), met een strak testplan, een lanceerinstallatie, meet-logsheets en een in-flight datalogger op een ESP32.
+
+## Gekozen hardware
+
+De vluchtcomputer is de **Waveshare ESP32-S3-Touch-LCD-1.69** met een losse **BMP388** barometer. Dat is de route die daadwerkelijk gebouwd wordt.
+
+| Onderdeel | Keuze | Toelichting |
+|---|---|---|
+| Microcontroller | Waveshare ESP32-S3-Touch-LCD-1.69 | ESP32-S3R8, 8MB PSRAM, 16MB flash |
+| Scherm + bediening | 240x280 LCD met touch (onboard) | HOME / vlucht / resultaat via touch-UI |
+| Hoogte | **BMP388** (los bijgeprikt op I2C) | het bord heeft zelf geen barometer |
+| Versnelling | QMI8658 6-assig (onboard) | klipt bij +/-16 g tijdens de stuwfase |
+| Voeding | 3,7V LiPo met **MX1.25**-stekker | laden via USB-C (ETA6098 onboard) |
+
+> **Accu:** controleer de polariteit tegen de markering op het bord **voordat** je insteekt; omgekeerd kan het bord beschadigen. Het bord start niet vanzelf op de accu: sluit de accu aan, druk op de **PWR-knop**, daarna houdt de SYS_EN-latch in de firmware de voeding vast. Zet `BOARD_NEW` in de sketch goed (nieuw bord = bordmodel op de print gedrukt).
+
+De eerdere **XIAO ESP32-S3 + BMP280**-opzet is *niet* gekozen. De bestanden daarvan blijven in de repo staan als lichter alternatief en ter verantwoording van de keuze, maar worden niet onderhouden.
 
 ## Inhoud
 
@@ -10,36 +26,47 @@ docs/
   PWS_Waterraket_Lanceerinstallatie.docx               Lanceerinstallatie: bouwtekening + onderdelenlijst + bronnen
   PWS_Waterraket_Bouwtekening_Launcher_Clark.svg       Detailtekening launcher (Clark cable-tie / Gardena, manometer + aftapventiel)
   PWS_Waterraket_Bouwtekening_Lanceerinstallatie.svg   Overzichtstekening lanceerinstallatie
-  PWS_Waterraket_Bedradingsschema_S3-Touch.svg         Bedrading: ESP32-S3-Touch-LCD-1.69 + BMP388
-  PWS_Waterraket_Bedradingsschema_XIAO.svg             Bedrading: XIAO ESP32-S3 + BMP280 (+ optioneel MPU6050)
+  PWS_Waterraket_Bedradingsschema_S3-Touch.svg         Bedrading van de gekozen opstelling (BMP388 op I2C)
+  PWS_Waterraket_Bedradingsschema_XIAO.svg             (alternatief, niet gebruikt) XIAO ESP32-S3 + BMP280
 logsheets/
   PWS_Waterraket_Logsheets.xlsx                        Vluchtlog + automatische hoogte-/spreidingsberekening
 firmware/
-  PWS_Waterraket_ESP32-S3-Touch_sketch.ino            Waveshare ESP32-S3-Touch-LCD-1.69 + BMP388 + QMI8658 + touch-UI
-  PWS_Waterraket_ESP32_sketch.ino                     Lichte variant: XIAO ESP32-S3 + BMP280 (+ optioneel MPU6050)
+  PWS_Waterraket_ESP32-S3-Touch_sketch.ino            <- DEZE gebruiken: Waveshare + BMP388 + QMI8658 + touch-UI
+  PWS_Waterraket_ESP32_sketch.ino                     (alternatief, niet gebruikt) XIAO ESP32-S3 + BMP280
+hardware/
+  PWS_Waterraket_Houder.stl                            3D-printbare payloadhouder (bord + BMP388 + accu)
+  PWS_Waterraket_Houder.scad                           parametrisch bronbestand (maten bovenin aanpassen)
 ```
 
-## Hardware (twee routes)
+## Bedrading
 
-**Route A — lichtste vliegende logger:** Seeed XIAO ESP32-S3 + BMP280 (barometer) + 1S LiPo.
-**Route B — geïntegreerd met scherm:** Waveshare ESP32-S3-Touch-LCD-1.69 (onboard QMI8658 IMU + LCD) + losse **BMP388** (barometer, want het bord heeft er geen) + 1S LiPo met **MX1.25**-stekker.
+Alleen de BMP388 wordt bijgeprikt; IMU, touch en accu-laden zitten al op het bord.
 
-> **Accu (belangrijk):** gebruik bij route B een 3,7 V LiPo met **MX1.25 (1,25 mm)** stekker. **Controleer de polariteit** tegen de markering op het bord vóór het insteken — omgekeerde polariteit kan het bord beschadigen. Klopt de +/- niet, wissel dan de crimpcontacten in de connector om. Laden gaat via USB-C.
+| BMP388 | Bord (randpad) |
+|---|---|
+| VCC | 3V3 (**niet** 5V) |
+| GND | G |
+| SDA | SDA (GPIO11) |
+| SCL | SCL (GPIO10) |
 
-## Firmware – kort
+Op de BMP388-module zelf: **CSB naar VCC** (dwingt I2C af) en **SDO naar GND of VCC** (adres 0x76 resp. 0x77, laat hem niet zweven).
 
-Toestandsmachine: kalibreren → lancering detecteren → 50 Hz loggen naar intern flash (LittleFS) → apogeum bepalen → landing → wifi-accesspoint openen om de data als CSV te downloaden. Bij route B verschijnt de live hoogte en het apogeum ook op het LCD.
+## Firmware
 
-Benodigde Arduino-libraries staan boven in elke `.ino`. Board: ESP32-S3 (PSRAM aan). Controleer de bord-specifieke pinnen met de Waveshare-wiki.
+Toestandsmachine: kalibreren -> lancering detecteren -> 50 Hz loggen naar intern flash (LittleFS) -> apogeum bepalen -> landing -> wifi-accesspoint openen om de data als CSV te downloaden. Live hoogte en apogeum verschijnen op het LCD; de BOOT-knop werkt altijd als START-fallback.
+
+Benodigde libraries: **GFX Library for Arduino**, **SensorLib**, **Adafruit BMP3XX** (+ Unified Sensor + BusIO).
+Board-instellingen: `ESP32S3 Dev Module`, PSRAM `OPI PSRAM`, `USB CDC On Boot: Enabled`, flash 16MB.
+Upload lukt niet? Houd **BOOT** ingedrukt, tik **RST** aan, laat BOOT los (downloadmodus).
 
 ## Meetmethode
 
-Primair: barometrische apogeumhoogte (BMP280/BMP388), gevalideerd met de trigonometrische grondmeting (hoek + afstand). De QMI8658/MPU6050 geeft de versnelling/stuwfase (let op: klipt bij ±16 g).
+Primair: barometrische apogeumhoogte (BMP388), gevalideerd met de trigonometrische grondmeting (hoek + afstand). De QMI8658 geeft het versnellings- en stuwprofiel.
 
 ## Veiligheid
 
-Alleen frisdrank-PET-flessen; begin laag (3–4 bar), niet boven ~7 bar; ≥ 5–10 m afstand, lanceren via een touw, veiligheidsbril; 3D-geprinte drukdelen eerst vol water achter een afscherming testen. LiPo's alleen onder toezicht laden.
+Alleen frisdrank-PET-flessen; begin laag (3-4 bar), niet boven ~7 bar; >= 10 m afstand, lanceren via een touw, veiligheidsbril; 3D-geprinte drukdelen eerst vol water achter een afscherming testen. LiPo's alleen onder toezicht laden.
 
 ## Bronnen
 
-Volledige, gecategoriseerde bronnenlijst met URL's staat in hoofdstuk "Bronnen" van het onderzoeksplan (`docs/…Onderzoeksplan.docx`).
+Volledige, gecategoriseerde bronnenlijst met URL's staat in het hoofdstuk "Bronnen" van het onderzoeksplan (`docs/...Onderzoeksplan.docx`).
