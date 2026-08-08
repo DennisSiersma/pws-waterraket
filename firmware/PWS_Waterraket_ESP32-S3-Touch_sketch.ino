@@ -93,18 +93,29 @@ const uint32_t SAMPLE_US = 1000000UL / SAMPLE_HZ;
 #include <math.h>
 #include <Adafruit_BMP3XX.h>
 #include <SensorQMI8658.hpp>
-#include <TouchDrvCSTXXX.hpp>
+#include <TouchDrv.hpp>        // (TouchDrvCSTXXX.hpp is deprecated)
 #include <LittleFS.h>
 #include <WiFi.h>
 #include <WebServer.h>
 #include <Arduino_GFX_Library.h>
+
+// --- kleuren (RGB565), eigen definities zodat ze niet van de library-versie afhangen ---
+#define COL_BLACK     0x0000
+#define COL_WHITE     0xFFFF
+#define COL_CYAN      0x07FF
+#define COL_GREEN     0x07E0
+#define COL_BLUE      0x001F
+#define COL_YELLOW    0xFFE0
+#define COL_MAGENTA   0xF81F
+#define COL_ORANGE    0xFD20
+#define COL_DARKGREY  0x7BEF
 
 // ====================== OBJECTEN ======================
 Adafruit_BMP3XX bmp;
 SensorQMI8658   qmi;
 TouchDrvCSTXXX  touch;
 WebServer       server(80);
-File            logf;
+File            logFile;
 bool touchOK = false;
 
 Arduino_DataBus *bus = new Arduino_ESP32SPI(LCD_DC, LCD_CS, LCD_SCLK, LCD_MOSI, LCD_MISO);
@@ -127,15 +138,15 @@ bool touchWasDown = false, bootWasDown = false;
 
 // ====================== KNOPPEN ======================
 struct Btn { int x, y, w, h; const char* label; uint16_t col; };
-Btn BTN_START  = { 30, 206, 180, 58, "START",   GREEN };
-Btn BTN_CANCEL = { 30, 206, 180, 58, "ANNULEER", DARKGREY };
-Btn BTN_SEND   = { 16, 206, 100, 58, "VERZEND", BLUE };
-Btn BTN_NEW    = { 124, 206, 100, 58, "NIEUW",  DARKGREY };
-Btn BTN_BACK   = { 30, 206, 180, 58, "TERUG",   DARKGREY };
+Btn BTN_START  = { 30, 206, 180, 58, "START",   COL_GREEN };
+Btn BTN_CANCEL = { 30, 206, 180, 58, "ANNULEER", COL_DARKGREY };
+Btn BTN_SEND   = { 16, 206, 100, 58, "VERZEND", COL_BLUE };
+Btn BTN_NEW    = { 124, 206, 100, 58, "NIEUW",  COL_DARKGREY };
+Btn BTN_BACK   = { 30, 206, 180, 58, "TERUG",   COL_DARKGREY };
 
 void drawBtn(Btn b) {
   gfx->fillRoundRect(b.x, b.y, b.w, b.h, 10, b.col);
-  gfx->setTextColor(b.col == DARKGREY ? WHITE : BLACK);
+  gfx->setTextColor(b.col == COL_DARKGREY ? COL_WHITE : COL_BLACK);
   int sz = 3;
   int tw = (int)strlen(b.label) * 6 * sz;
   gfx->setTextSize(sz);
@@ -199,68 +210,68 @@ void title(const char* t, uint16_t col) {
   gfx->setTextColor(col); gfx->setTextSize(3); gfx->setCursor(14, 14); gfx->print(t);
 }
 void stat(const char* label, String val, int y, uint16_t col) {
-  gfx->setTextColor(WHITE); gfx->setTextSize(2); gfx->setCursor(14, y); gfx->print(label);
+  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2); gfx->setCursor(14, y); gfx->print(label);
   gfx->setTextColor(col); gfx->setTextSize(3); gfx->setCursor(14, y + 22); gfx->print(val);
 }
 String mORdash(float v) { return haveFlight ? String(v, 1) : String("--"); }
 
 void screenHome() {
-  gfx->fillScreen(BLACK);
-  title("WATERRAKET", CYAN);
-  gfx->setTextColor(WHITE); gfx->setTextSize(2); gfx->setCursor(14, 52); gfx->print("Laatste vlucht:");
-  stat("Apogeum (m)", mORdash(maxAlt), 80, YELLOW);
-  stat("Max versn. (g)", mORdash(maxG), 130, ORANGE);
+  gfx->fillScreen(COL_BLACK);
+  title("WATERRAKET", COL_CYAN);
+  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2); gfx->setCursor(14, 52); gfx->print("Laatste vlucht:");
+  stat("Apogeum (m)", mORdash(maxAlt), 80, COL_YELLOW);
+  stat("Max versn. (g)", mORdash(maxG), 130, COL_ORANGE);
   drawBtn(BTN_START);
 }
 void screenArmed() {
-  gfx->fillScreen(BLACK);
-  title("GEREED", GREEN);
-  gfx->setTextColor(WHITE); gfx->setTextSize(2); gfx->setCursor(14, 60); gfx->print("Wacht op lancering");
+  gfx->fillScreen(COL_BLACK);
+  title("GEREED", COL_GREEN);
+  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2); gfx->setCursor(14, 60); gfx->print("Wacht op lancering");
   drawBtn(BTN_CANCEL);
 }
 void screenLogging() {
-  gfx->fillScreen(BLACK);
-  title("VLUCHT", ORANGE);
-  gfx->setTextColor(WHITE); gfx->setTextSize(2); gfx->setCursor(14, 70); gfx->print("Hoogte (m)");
-  gfx->setTextColor(WHITE); gfx->setTextSize(2); gfx->setCursor(14, 150); gfx->print("Versn. (g)");
+  gfx->fillScreen(COL_BLACK);
+  title("VLUCHT", COL_ORANGE);
+  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2); gfx->setCursor(14, 70); gfx->print("Hoogte (m)");
+  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2); gfx->setCursor(14, 150); gfx->print("Versn. (g)");
 }
 void screenResult() {
-  gfx->fillScreen(BLACK);
-  title("RESULTAAT", MAGENTA);
-  stat("Apogeum (m)", String(maxAlt, 1), 52, YELLOW);
-  stat("Max versn. (g)", String(maxG, 1), 102, ORANGE);
-  stat("Vluchttijd (s)", String(flightMs / 1000.0, 1), 152, CYAN);
+  gfx->fillScreen(COL_BLACK);
+  title("RESULTAAT", COL_MAGENTA);
+  stat("Apogeum (m)", String(maxAlt, 1), 52, COL_YELLOW);
+  stat("Max versn. (g)", String(maxG, 1), 102, COL_ORANGE);
+  stat("Vluchttijd (s)", String(flightMs / 1000.0, 1), 152, COL_CYAN);
   drawBtn(BTN_SEND); drawBtn(BTN_NEW);
 }
 void screenSending() {
-  gfx->fillScreen(BLACK);
-  title("VERZENDEN", BLUE);
-  gfx->setTextColor(WHITE); gfx->setTextSize(2);
+  gfx->fillScreen(COL_BLACK);
+  title("VERZENDEN", COL_BLUE);
+  gfx->setTextColor(COL_WHITE); gfx->setTextSize(2);
   gfx->setCursor(14, 56);  gfx->print("WiFi-netwerk:");
-  gfx->setTextColor(GREEN); gfx->setCursor(14, 78); gfx->print(AP_SSID);
-  gfx->setTextColor(WHITE); gfx->setCursor(14, 104); gfx->print("Wachtwoord:");
-  gfx->setTextColor(GREEN); gfx->setCursor(14, 126); gfx->print(AP_PASS);
-  gfx->setTextColor(WHITE); gfx->setCursor(14, 152); gfx->print("Open in browser:");
-  gfx->setTextColor(CYAN);  gfx->setCursor(14, 174); gfx->print(WiFi.softAPIP().toString());
+  gfx->setTextColor(COL_GREEN); gfx->setCursor(14, 78); gfx->print(AP_SSID);
+  gfx->setTextColor(COL_WHITE); gfx->setCursor(14, 104); gfx->print("Wachtwoord:");
+  gfx->setTextColor(COL_GREEN); gfx->setCursor(14, 126); gfx->print(AP_PASS);
+  gfx->setTextColor(COL_WHITE); gfx->setCursor(14, 152); gfx->print("Open in browser:");
+  gfx->setTextColor(COL_CYAN);  gfx->setCursor(14, 174); gfx->print(WiFi.softAPIP().toString());
   drawBtn(BTN_BACK);
 }
 // dynamische waarden bijwerken (alleen het getalvlak overtekenen)
 void liveLogging() {
-  gfx->fillRect(14, 96, 224, 40, BLACK);
-  gfx->setTextColor(CYAN); gfx->setTextSize(4); gfx->setCursor(14, 100); gfx->print(curAlt, 1);
-  gfx->fillRect(14, 176, 224, 40, BLACK);
-  gfx->setTextColor(ORANGE); gfx->setTextSize(4); gfx->setCursor(14, 176); gfx->print(curG, 1);
+  gfx->fillRect(14, 96, 224, 40, COL_BLACK);
+  gfx->setTextColor(COL_CYAN); gfx->setTextSize(4); gfx->setCursor(14, 100); gfx->print(curAlt, 1);
+  gfx->fillRect(14, 176, 224, 40, COL_BLACK);
+  gfx->setTextColor(COL_ORANGE); gfx->setTextSize(4); gfx->setCursor(14, 176); gfx->print(curG, 1);
 }
 
 // ====================== LOGGING / AP ======================
 void calibrate() {
   float sum = 0; int n = 0; float a, pr, t;
   for (int i = 0; i < 50; i++) { if (readBaro(a, pr, t)) { sum += pr; n++; } delay(20); }
-  p0 = sum / max(n, 1);
+  p0 = sum / (n > 0 ? n : 1);
   maxAlt = 0; maxG = 0; samples = 0; curAlt = 0; landCount = 0;
-  logf = LittleFS.open(LOGPATH, "w");
-  logf.println("t_ms,hoogte_m,druk_hPa,temp_C,ax_g,ay_g,az_g");
-  logf.close();
+  logFile = LittleFS.open(LOGPATH, "w");
+  logFile.println("t_ms,hoogte_m,druk_hPa,temp_C,ax_g,ay_g,az_g");
+  logFile.close();
 }
 void startAP() {
   WiFi.mode(WIFI_AP); WiFi.softAP(AP_SSID, AP_PASS);
@@ -289,7 +300,7 @@ void setup() {
   pinMode(BUZZER_PIN, OUTPUT); digitalWrite(BUZZER_PIN, LOW);
 #endif
   pinMode(LCD_BL, OUTPUT); digitalWrite(LCD_BL, HIGH);
-  gfx->begin(); gfx->fillScreen(BLACK);
+  gfx->begin(); gfx->fillScreen(COL_BLACK);
 
   Wire.begin(I2C_SDA, I2C_SCL);
   LittleFS.begin(true);
@@ -322,7 +333,7 @@ void loop() {
     case HOME:
       if (!entered) { screenHome(); entered = true; }
       if ((getTap(gx, gy) && hit(BTN_START, gx, gy)) || bootTap()) {
-        title("KALIBREREN...", WHITE);          // even feedback
+        title("KALIBREREN...", COL_WHITE);          // even feedback
         calibrate(); beep(80);
         state = ARMED; entered = false;
       }
@@ -333,7 +344,7 @@ void loop() {
       if (!entered) { screenArmed(); entered = true; }
       if (readBaro(alt, pres, temp)) { curAlt = alt; if (alt > maxAlt) maxAlt = alt; }
       if (curAlt > LAUNCH_RISE_M) {              // lancering
-        logf = LittleFS.open(LOGPATH, "a");
+        logFile = LittleFS.open(LOGPATH, "a");
         tStart = millis(); lastSample = micros(); maxAlt = curAlt; samples = 0;
         beep(60); state = LOGGING; entered = false; break;
       }
@@ -348,14 +359,14 @@ void loop() {
         if (readBaro(alt, pres, temp)) curAlt = alt;
         readImu();
         uint32_t t = millis() - tStart;
-        logf.printf("%lu,%.2f,%.2f,%.1f,%.2f,%.2f,%.2f\n", t, curAlt, pres, temp, ax, ay, az);
+        logFile.printf("%lu,%.2f,%.2f,%.1f,%.2f,%.2f,%.2f\n", t, curAlt, pres, temp, ax, ay, az);
         samples++;
         if (curAlt > maxAlt) maxAlt = curAlt;
         if (curAlt < LAND_ALT_M && maxAlt > LAUNCH_RISE_M) landCount++; else landCount = 0;
         bool landed  = landCount > (LAND_WINDOW_S * SAMPLE_HZ);
         bool timeout = (millis() - tStart) > (MAX_LOG_S * 1000UL);
         if (landed || timeout) {
-          logf.close(); flightMs = millis() - tStart; haveFlight = true;
+          logFile.close(); flightMs = millis() - tStart; haveFlight = true;
           beep(200); state = RESULT; entered = false; break;
         }
         if (++uiCount >= 10) { uiCount = 0; liveLogging(); }   // scherm ~5 Hz, log 50 Hz
