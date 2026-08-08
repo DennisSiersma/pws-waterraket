@@ -123,7 +123,7 @@ Arduino_GFX *gfx = new Arduino_ST7789(bus, LCD_RST, 0, true, LCD_W, LCD_H,
                                       LCD_OFFX, LCD_OFFY, LCD_OFFX, LCD_OFFY);
 
 // ====================== TOESTAND ======================
-enum State { HOME, INFO, TOUCHTEST, ARMED, LOGGING, RESULT, SENDING };
+enum State { HOME, INFO, TOUCHTEST, CALIB, ARMED, LOGGING, RESULT, SENDING };
 State state = HOME;
 bool entered = false;            // is het huidige scherm al getekend?
 
@@ -135,8 +135,12 @@ uint32_t samples = 0;
 int landCount = 0, uiCount = 0;
 bool haveFlight = false;
 bool touchWasDown = false, bootWasDown = false;
-int  lastTx = -1, lastTy = -1;   // laatste aanraakcoordinaten (diagnose)
+int  lastTx = -1, lastTy = -1;   // laatste aanraakcoordinaten (na correctie)
+int  rawTx = -1, rawTy = -1;     // laatste RUWE aanraakcoordinaten
 uint32_t tapCount = 0;           // hoeveel aanrakingen ooit gezien
+// touch-kalibratie: scherm = a * ruw + b  (1,0 / 0 = ongecorrigeerd)
+float calAx = 1.0, calBx = 0.0, calAy = 1.0, calBy = 0.0;
+const char* CALPATH = "/touchcal.txt";
 
 // ====================== KNOPPEN ======================
 struct Btn { int x, y, w, h; const char* label; uint16_t col; };
@@ -174,8 +178,11 @@ bool getTap(int &gx, int &gy) {
       gy = LCD_H - 1 - gy;
 #endif
       tap = true;
+      rawTx = gx; rawTy = gy;                       // ruw bewaren voor kalibratie
+      gx = (int)(calAx * gx + calBx);               // kalibratie toepassen
+      gy = (int)(calAy * gy + calBy);
       lastTx = gx; lastTy = gy; tapCount++;
-      Serial.printf("touch: x=%d y=%d\n", gx, gy);
+      Serial.printf("touch: ruw x=%d y=%d -> scherm x=%d y=%d\n", rawTx, rawTy, gx, gy);
     }
     touchWasDown = down;
   }
@@ -290,6 +297,42 @@ void drawCross(int x, int y) {
   gfx->print("  y="); gfx->print(y);
 }
 
+// ====================== TOUCH-KALIBRATIE ======================
+void loadCal() {
+  File f = LittleFS.open(CALPATH, "r");
+  if (!f) { Serial.println("kalibratie: geen bestand, ongecorrigeerd"); return; }
+  String s = f.readStringUntil('\n'); f.close();
+  float a, b, c, d;
+  if (sscanf(s.c_str(), "%f %f %f %f", &a, &b, &c, &d) == 4) {
+    calAx = a; calBx = b; calAy = c; calBy = d;
+    Serial.printf("kalibratie geladen: x=%.3f*r%+.1f  y=%.3f*r%+.1f\n", a, b, c, d);
+  }
+}
+void saveCal() {
+  File f = LittleFS.open(CALPATH, "w");
+  if (!f) return;
+  f.printf("%.5f %.3f %.5f %.3f\n", calAx, calBx, calAy, calBy);
+  f.close();
+  Serial.printf("kalibratie opgeslagen: x=%.3f*r%+.1f  y=%.3f*r%+.1f\n",
+                calAx, calBx, calAy, calBy);
+}
+// twee ijkpunten, ruim van de randen af
+const int CAL_X1 = 40,  CAL_Y1 = 50;
+const int CAL_X2 = 200, CAL_Y2 = 230;
+
+void drawTarget(int x, int y, const char* txt) {
+  gfx->fillScreen(COL_BLACK);
+  title("IJKEN", COL_MAGENTA);
+  gfx->setTextSize(1); gfx->setTextColor(COL_WHITE);
+  gfx->setCursor(10, 110); gfx->print(txt);
+  gfx->setCursor(10, 124); gfx->print("Tik precies op het midden");
+  gfx->setCursor(10, 138); gfx->print("van de cirkel.");
+  gfx->drawCircle(x, y, 12, COL_GREEN);
+  gfx->drawCircle(x, y, 4, COL_GREEN);
+  gfx->drawFastHLine(x - 18, y, 37, COL_GREEN);
+  gfx->drawFastVLine(x, y - 18, 37, COL_GREEN);
+}
+
 void screenArmed() {
   gfx->fillScreen(COL_BLACK);
   title("GEREED", COL_GREEN);
@@ -384,6 +427,7 @@ void setup() {
 
   Wire.begin(I2C_SDA, I2C_SCL);
   LittleFS.begin(true);
+  loadCal();
 
   // I2C-scan: welke chips reageren er echt?
   Serial.print("I2C gevonden:");
@@ -459,12 +503,63 @@ void loop() {
       delay(120);
     } break;
 
-    case TOUCHTEST:
+    case TOUCHTEST: {
       if (!entered) { screenTouchTest(); entered = true; }
       if (getTap(gx, gy)) drawCross(gx, gy);
+      // BOOT: kort = terug, lang (>1,2 s) = ijken
+      static uint32_t bootDownT = 0;
+      bool bdt = (digitalRead(BOOT_BTN) == LOW);
+      if (bdt && bootDownT == 0) bootDownT = millis();
+      if (!bdt && bootDownT) {
+        uint32_t held = millis() - bootDownT; bootDownT = 0;
+        state = (held > 1200) ? CALIB : HOME;
+        entered = false;
+      }
+      delay(30);
+    } break;
+
+    case CALIB: {
+      static int step = 0;
+      static int r1x = 0, r1y = 0;
+      if (!entered) {
+        step = 0;
+        // tijdens het ijken ongecorrigeerd meten
+        calAx = 1.0; calBx = 0.0; calAy = 1.0; calBy = 0.0;
+        drawTarget(CAL_X1, CAL_Y1, "Punt 1 van 2");
+        entered = true;
+      }
+      if (getTap(gx, gy)) {
+        if (step == 0) {
+          r1x = rawTx; r1y = rawTy; step = 1;
+          delay(400);                      // dubbele tik voorkomen
+          drawTarget(CAL_X2, CAL_Y2, "Punt 2 van 2");
+        } else {
+          int dxr = rawTx - r1x, dyr = rawTy - r1y;
+          if (abs(dxr) > 20 && abs(dyr) > 20) {      // plausibel?
+            calAx = (float)(CAL_X2 - CAL_X1) / dxr;
+            calBx = CAL_X1 - calAx * r1x;
+            calAy = (float)(CAL_Y2 - CAL_Y1) / dyr;
+            calBy = CAL_Y1 - calAy * r1y;
+            saveCal();
+            gfx->fillScreen(COL_BLACK);
+            title("GEIJKT", COL_GREEN);
+            gfx->setTextSize(1); gfx->setTextColor(COL_WHITE);
+            gfx->setCursor(10, 120); gfx->print("Opgeslagen. Controleer met");
+            gfx->setCursor(10, 134); gfx->print("de raaktest.");
+          } else {
+            gfx->fillScreen(COL_BLACK);
+            title("MISLUKT", COL_ORANGE);
+            gfx->setTextSize(1); gfx->setTextColor(COL_WHITE);
+            gfx->setCursor(10, 120); gfx->print("Punten lagen te dicht bij");
+            gfx->setCursor(10, 134); gfx->print("elkaar. Probeer opnieuw.");
+          }
+          delay(2000);
+          state = TOUCHTEST; entered = false;
+        }
+      }
       if (bootTap()) { state = HOME; entered = false; }
       delay(30);
-      break;
+    } break;
 
     case ARMED:
       if (!entered) { screenArmed(); entered = true; }
