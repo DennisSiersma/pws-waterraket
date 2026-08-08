@@ -443,17 +443,21 @@ void loop() {
       delay(30);
     } break;
 
-    case INFO:
+    case INFO: {
       if (!entered) { screenInfo(); entered = true; }
       liveInfo();
-      if (getTap(gx, gy)) {
-        // tik in de bovenste strook (de titel) opent de raaktest
-        if (gy < 44) { state = TOUCHTEST; entered = false; }
-        else if (hit(BTN_BACK, gx, gy)) { state = HOME; entered = false; }
+      if (getTap(gx, gy) && hit(BTN_BACK, gx, gy)) { state = HOME; entered = false; }
+      // BOOT: kort = terug naar HOME, lang (>1,2 s) = raaktest
+      static uint32_t bootDownI = 0;
+      bool bdi = (digitalRead(BOOT_BTN) == LOW);
+      if (bdi && bootDownI == 0) bootDownI = millis();
+      if (!bdi && bootDownI) {
+        uint32_t held = millis() - bootDownI; bootDownI = 0;
+        state = (held > 1200) ? TOUCHTEST : HOME;
+        entered = false;
       }
-      if (bootTap()) { state = HOME; entered = false; }
-      delay(150);
-      break;
+      delay(120);
+    } break;
 
     case TOUCHTEST:
       if (!entered) { screenTouchTest(); entered = true; }
