@@ -52,7 +52,9 @@
 #define LCD_W        240
 #define LCD_H        280
 #define LCD_OFFX     0
-#define LCD_OFFY     20
+// Verticale offset van het paneel. Gemeten op dit bord: met 20 stond het beeld
+// ~22 px te laag op het glas (kruis getekend op y=140 werd aangeraakt op 162).
+#define LCD_OFFY     0
 
 // --- buzzer (optioneel; pin verifiëren) ---
 #define USE_BUZZER   0
