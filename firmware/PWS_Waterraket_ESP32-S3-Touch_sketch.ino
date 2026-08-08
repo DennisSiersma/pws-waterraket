@@ -123,7 +123,7 @@ Arduino_GFX *gfx = new Arduino_ST7789(bus, LCD_RST, 0, true, LCD_W, LCD_H,
                                       LCD_OFFX, LCD_OFFY, LCD_OFFX, LCD_OFFY);
 
 // ====================== TOESTAND ======================
-enum State { HOME, INFO, ARMED, LOGGING, RESULT, SENDING };
+enum State { HOME, INFO, TOUCHTEST, ARMED, LOGGING, RESULT, SENDING };
 State state = HOME;
 bool entered = false;            // is het huidige scherm al getekend?
 
@@ -265,6 +265,31 @@ void liveInfo() {
   gfx->print("  taps:"); gfx->print(tapCount);
   gfx->print(" x:"); gfx->print(lastTx); gfx->print(" y:"); gfx->print(lastTy);
 }
+// Raakpunttest: tekent een kruisje op de gerapporteerde coordinaten.
+// Valt het kruisje onder je vinger, dan klopt de afbeelding en staan de
+// knoppen goed. Ligt het ernaast, dan is dat precies de verschuiving.
+void screenTouchTest() {
+  gfx->fillScreen(COL_BLACK);
+  title("RAAKTEST", COL_MAGENTA);
+  gfx->setTextColor(COL_WHITE); gfx->setTextSize(1);
+  gfx->setCursor(10, 44); gfx->print("Tik ergens: kruisje moet");
+  gfx->setCursor(10, 56); gfx->print("onder je vinger vallen.");
+  gfx->setCursor(10, 68); gfx->print("BOOT = terug");
+  // hoekmarkeringen als referentie
+  gfx->drawRect(0, 0, LCD_W, LCD_H, COL_DARKGREY);
+  gfx->drawFastHLine(0, LCD_H / 2, LCD_W, COL_DARKGREY);
+  gfx->drawFastVLine(LCD_W / 2, 0, LCD_H, COL_DARKGREY);
+}
+void drawCross(int x, int y) {
+  gfx->drawFastHLine(x - 10, y, 21, COL_GREEN);
+  gfx->drawFastVLine(x, y - 10, 21, COL_GREEN);
+  gfx->fillCircle(x, y, 3, COL_YELLOW);
+  gfx->fillRect(60, 82, 130, 12, COL_BLACK);
+  gfx->setTextSize(1); gfx->setTextColor(COL_CYAN);
+  gfx->setCursor(60, 84); gfx->print("x="); gfx->print(x);
+  gfx->print("  y="); gfx->print(y);
+}
+
 void screenArmed() {
   gfx->fillScreen(COL_BLACK);
   title("GEREED", COL_GREEN);
@@ -421,8 +446,20 @@ void loop() {
     case INFO:
       if (!entered) { screenInfo(); entered = true; }
       liveInfo();
-      if ((getTap(gx, gy) && hit(BTN_BACK, gx, gy)) || bootTap()) { state = HOME; entered = false; }
+      if (getTap(gx, gy)) {
+        // tik in de bovenste strook (de titel) opent de raaktest
+        if (gy < 44) { state = TOUCHTEST; entered = false; }
+        else if (hit(BTN_BACK, gx, gy)) { state = HOME; entered = false; }
+      }
+      if (bootTap()) { state = HOME; entered = false; }
       delay(150);
+      break;
+
+    case TOUCHTEST:
+      if (!entered) { screenTouchTest(); entered = true; }
+      if (getTap(gx, gy)) drawCross(gx, gy);
+      if (bootTap()) { state = HOME; entered = false; }
+      delay(30);
       break;
 
     case ARMED:
