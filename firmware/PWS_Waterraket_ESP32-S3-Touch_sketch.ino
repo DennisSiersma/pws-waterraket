@@ -95,6 +95,7 @@ const uint32_t SAMPLE_US = 1000000UL / SAMPLE_HZ;
 #include <Wire.h>
 #include <math.h>
 #include <Adafruit_BMP3XX.h>
+#include <Adafruit_BME680.h>   // voor de CJMCU-680 (BME680)
 #include <SensorQMI8658.hpp>
 #include <TouchDrv.hpp>        // (TouchDrvCSTXXX.hpp is deprecated)
 #include <LittleFS.h>
@@ -115,6 +116,11 @@ const uint32_t SAMPLE_US = 1000000UL / SAMPLE_HZ;
 
 // ====================== OBJECTEN ======================
 Adafruit_BMP3XX bmp;
+Adafruit_BME680  bme;
+// welke druksensor is er gevonden?
+enum BaroType { BARO_GEEN, BARO_BMP388, BARO_BME680 };
+BaroType baro = BARO_GEEN;
+uint8_t  baroAdr = 0;
 SensorQMI8658   qmi;
 TouchDrvCSTXXX  touch;
 WebServer       server(80);
@@ -204,9 +210,20 @@ bool bootTap() {
 float relAltitude(float pres_hPa) { return 44330.0 * (1.0 - pow(pres_hPa / p0, 0.1903)); }
 
 bool readBaro(float &alt, float &pres, float &temp) {
-  if (!bmp.performReading()) return false;
-  pres = bmp.pressure / 100.0; temp = bmp.temperature; alt = relAltitude(pres);
+  if (baro == BARO_BMP388) {
+    if (!bmp.performReading()) return false;
+    pres = bmp.pressure / 100.0; temp = bmp.temperature;
+  } else if (baro == BARO_BME680) {
+    if (!bme.performReading()) return false;
+    pres = bme.pressure / 100.0; temp = bme.temperature;
+  } else {
+    return false;
+  }
+  alt = relAltitude(pres);
   return true;
+}
+const char* baroNaam() {
+  return baro == BARO_BMP388 ? "BMP388" : (baro == BARO_BME680 ? "BME680" : "geen");
 }
 void readImu() {
   if (qmi.getDataReady()) {
@@ -283,6 +300,7 @@ void liveInfo() {
   gfx->setTextSize(1); gfx->setTextColor(touchOK ? COL_GREEN : COL_ORANGE);
   gfx->setCursor(SAFE_M, 248);
   gfx->print(touchOK ? "touch OK" : "touch FOUT");
+  gfx->print(" "); gfx->print(baroNaam());
   gfx->print(" taps:"); gfx->print(tapCount);
   gfx->print(" x:"); gfx->print(lastTx); gfx->print(" y:"); gfx->print(lastTy);
 }
@@ -451,29 +469,42 @@ void setup() {
   }
   Serial.println("  (verwacht: 0x15 touch, 0x6B IMU, 0x76 of 0x77 BMP388)");
 
-  // Welke chip zit er op 0x77/0x76? Register 0x00 is het chip-ID.
-  //  0x50 = BMP388   0x60 = BMP390 of BME280   0x58 = BMP280   0x61 = BME680
-  for (uint8_t adr = 0x76; adr <= 0x77; adr++) {
+  // Welke druksensor zit erop? Register 0x00 is het chip-ID.
+  //  0x50 = BMP388   0x60 = BMP390   0x61 = BME680   0x58 = BMP280
+  for (uint8_t adr = 0x76; adr <= 0x77 && baro == BARO_GEEN; adr++) {
     Wire.beginTransmission(adr);
     Wire.write(0x00);
-    if (Wire.endTransmission(false) == 0 && Wire.requestFrom(adr, (uint8_t)1) == 1) {
-      uint8_t id = Wire.read();
-      Serial.printf("chip-ID op 0x%02X = 0x%02X\n", adr, id);
-    }
+    if (Wire.endTransmission(false) != 0) continue;
+    if (Wire.requestFrom(adr, (uint8_t)1) != 1) continue;
+    uint8_t id = Wire.read();
+    Serial.printf("chip-ID op 0x%02X = 0x%02X\n", adr, id);
+    if (id == 0x50 || id == 0x60) { baro = BARO_BMP388; baroAdr = adr; }
+    else if (id == 0x61)          { baro = BARO_BME680; baroAdr = adr; }
   }
 
-  bool bmpOK = bmp.begin_I2C(BMP_ADDR, &Wire);
-  if (!bmpOK) bmpOK = bmp.begin_I2C(0x76, &Wire);
-  Serial.print("BMP388 init: "); Serial.println(bmpOK ? "OK" : "MISLUKT");
-  // LET OP: oversampling en meetfrequentie moeten bij elkaar passen.
-  // 8x druk kost ~27 ms per meting en haalt 50 Hz (20 ms) NIET; de sensor
-  // geeft dan een configuratiefout en levert geen metingen. 4x past wel.
-  bmp.setPressureOversampling(BMP3_OVERSAMPLING_4X);
-  bmp.setTemperatureOversampling(BMP3_NO_OVERSAMPLING);
-  bmp.setIIRFilterCoeff(BMP3_IIR_FILTER_COEFF_3);
-  bmp.setOutputDataRate(BMP3_ODR_50_HZ);
+  if (baro == BARO_BMP388) {
+    if (bmp.begin_I2C(baroAdr, &Wire)) {
+      // oversampling en meetfrequentie moeten bij elkaar passen: 8x druk kost
+      // ~27 ms en haalt 50 Hz (20 ms) niet. 4x past wel.
+      bmp.setPressureOversampling(BMP3_OVERSAMPLING_4X);
+      bmp.setTemperatureOversampling(BMP3_NO_OVERSAMPLING);
+      bmp.setIIRFilterCoeff(BMP3_IIR_FILTER_COEFF_3);
+      bmp.setOutputDataRate(BMP3_ODR_50_HZ);
+    } else { baro = BARO_GEEN; }
+  } else if (baro == BARO_BME680) {
+    if (bme.begin(baroAdr, true)) {
+      bme.setTemperatureOversampling(BME680_OS_1X);
+      bme.setPressureOversampling(BME680_OS_4X);
+      bme.setHumidityOversampling(BME680_OS_NONE);   // niet nodig, kost tijd
+      bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
+      bme.setGasHeater(0, 0);                        // gasmeting UIT: veel sneller
+    } else { baro = BARO_GEEN; }
+  }
+  Serial.print("druksensor: "); Serial.print(baroNaam());
+  if (baro != BARO_GEEN) Serial.printf(" op 0x%02X", baroAdr);
+  Serial.println();
   float ta, tp, tt;
-  Serial.print("BMP388 eerste meting: ");
+  Serial.print("eerste meting: ");
   Serial.println(readBaro(ta, tp, tt) ? String(tp, 1) + " hPa" : String("MISLUKT"));
 
   qmi.begin(Wire, QMI8658_L_SLAVE_ADDRESS, I2C_SDA, I2C_SCL);
