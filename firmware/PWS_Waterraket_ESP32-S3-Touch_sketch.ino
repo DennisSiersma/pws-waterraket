@@ -451,6 +451,17 @@ void setup() {
   }
   Serial.println("  (verwacht: 0x15 touch, 0x6B IMU, 0x76 of 0x77 BMP388)");
 
+  // Welke chip zit er op 0x77/0x76? Register 0x00 is het chip-ID.
+  //  0x50 = BMP388   0x60 = BMP390 of BME280   0x58 = BMP280   0x61 = BME680
+  for (uint8_t adr = 0x76; adr <= 0x77; adr++) {
+    Wire.beginTransmission(adr);
+    Wire.write(0x00);
+    if (Wire.endTransmission(false) == 0 && Wire.requestFrom(adr, (uint8_t)1) == 1) {
+      uint8_t id = Wire.read();
+      Serial.printf("chip-ID op 0x%02X = 0x%02X\n", adr, id);
+    }
+  }
+
   bool bmpOK = bmp.begin_I2C(BMP_ADDR, &Wire);
   if (!bmpOK) bmpOK = bmp.begin_I2C(0x76, &Wire);
   Serial.print("BMP388 init: "); Serial.println(bmpOK ? "OK" : "MISLUKT");
