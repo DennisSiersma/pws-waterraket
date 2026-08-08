@@ -144,8 +144,8 @@ const char* CALPATH = "/touchcal.txt";
 
 // ====================== KNOPPEN ======================
 struct Btn { int x, y, w, h; const char* label; uint16_t col; };
-Btn BTN_START  = { 20, 150, 200, 56, "START",   COL_GREEN };
-Btn BTN_INFO   = { 20, 214, 200, 52, "INFO",    COL_BLUE };
+Btn BTN_START  = { 20, 120, 200, 56, "START",   COL_GREEN };
+Btn BTN_INFO   = { 20, 184, 200, 52, "INFO",    COL_BLUE };
 Btn BTN_CANCEL = { 30, 206, 180, 58, "ANNULEER", COL_DARKGREY };
 Btn BTN_SEND   = { 16, 206, 100, 58, "VERZEND", COL_BLUE };
 Btn BTN_NEW    = { 124, 206, 100, 58, "NIEUW",  COL_DARKGREY };
@@ -512,8 +512,16 @@ void loop() {
       if (bdt && bootDownT == 0) bootDownT = millis();
       if (!bdt && bootDownT) {
         uint32_t held = millis() - bootDownT; bootDownT = 0;
-        state = (held > 1200) ? CALIB : HOME;
-        entered = false;
+        if (held > 4000) {                    // heel lang = kalibratie wissen
+          calAx = 1.0; calBx = 0.0; calAy = 1.0; calBy = 0.0;
+          LittleFS.remove(CALPATH);
+          Serial.println("kalibratie gewist (ongecorrigeerd)");
+          gfx->fillScreen(COL_BLACK); title("GEWIST", COL_ORANGE);
+          delay(1200); entered = false;
+        } else {
+          state = (held > 1200) ? CALIB : HOME;
+          entered = false;
+        }
       }
       delay(30);
     } break;
