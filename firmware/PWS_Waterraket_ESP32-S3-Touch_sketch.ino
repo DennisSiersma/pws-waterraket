@@ -59,7 +59,7 @@
 
 // --- buzzer (optioneel; pin verifiëren) ---
 #define USE_BUZZER   0
-#define BUZZER_PIN   33
+#define BUZZER_PIN   42   // onboard buzzer (officiele documentatie)
 
 // --- fysieke knop als START-fallback ---
 #define BOOT_BTN     0
@@ -68,15 +68,16 @@
 // Het bord start NIET vanzelf op de accu: de PWR-knop geeft de accuvoeding
 // kortstondig vrij, daarna moet de firmware SYS_EN hoog houden. Zonder deze
 // latch valt de voeding weg zodra je PWR loslaat (op USB merk je hier niets van).
-// Volgens het officiele schema van dit bord: SYS_EN = GPIO35, SYS_OUT = GPIO36.
-// Werkt de accuvoeding niet, probeer dan BOARD_ALT 1 (SYS_EN 41 / SYS_OUT 40).
+// Officiele Waveshare-documentatie voor dit bord (SKU 27350):
+//   SYS_EN = GPIO41 (houdt de accuvoeding vast), SYS_OUT = GPIO40 (PWR-knop).
+// Werkt de accuvoeding niet, probeer dan BOARD_ALT 1 (35/36).
 #define BOARD_ALT    0
 #if BOARD_ALT
-  #define SYS_EN     41
-  #define SYS_OUT    40
-#else
   #define SYS_EN     35
   #define SYS_OUT    36
+#else
+  #define SYS_EN     41
+  #define SYS_OUT    40
 #endif
 
 // --- gedrag ---
