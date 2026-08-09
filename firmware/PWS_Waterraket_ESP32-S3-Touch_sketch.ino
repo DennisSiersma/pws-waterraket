@@ -157,8 +157,8 @@ const char* CALPATH = "/touchcal2.txt";   // nieuwe naam: oude ijking vervalt
 // ====================== KNOPPEN ======================
 struct Btn { int x, y, w, h; const char* label; uint16_t col; };
 // Knoppen blijven boven y=230: dat is het gebied dat de touch betrouwbaar haalt.
-Btn BTN_START  = { 30, 148, 180, 50, "START",   COL_GREEN };
-Btn BTN_INFO   = { 40, 198, 160, 44, "INFO",    COL_BLUE };
+Btn BTN_START  = { 22, 146, 92, 52, "START",   COL_GREEN };
+Btn BTN_INFO   = { 126, 146, 92, 52, "INFO",    COL_BLUE };
 Btn BTN_CANCEL = { 30, 190, 180, 46, "ANNULEER", COL_DARKGREY };
 Btn BTN_SEND   = { 24, 190, 92, 46, "VERZEND", COL_BLUE };
 Btn BTN_NEW    = { 124, 190, 92, 46, "NIEUW",  COL_DARKGREY };
@@ -167,7 +167,8 @@ Btn BTN_BACK   = { 30, 190, 180, 46, "TERUG",   COL_DARKGREY };
 void drawBtn(Btn b) {
   gfx->fillRoundRect(b.x, b.y, b.w, b.h, 10, b.col);
   gfx->setTextColor(b.col == COL_DARKGREY ? COL_WHITE : COL_BLACK);
-  int sz = 3;
+  int sz = 3;                                   // kleiner als het niet past
+  while (sz > 1 && (int)strlen(b.label) * 6 * sz > b.w - 10) sz--;
   int tw = (int)strlen(b.label) * 6 * sz;
   gfx->setTextSize(sz);
   gfx->setCursor(b.x + (b.w - tw) / 2, b.y + (b.h - 8 * sz) / 2);
@@ -276,6 +277,12 @@ void screenHome() {
   gfx->setCursor(SAFE_M, 116); gfx->print(mORdash(maxG));
   drawBtn(BTN_START);
   drawBtn(BTN_INFO);
+  // onderschrift, gecentreerd
+  gfx->setTextSize(1); gfx->setTextColor(COL_DARKGREY);
+  const char* r1 = "PWS CMP";
+  const char* r2 = "Elde College 2026";
+  gfx->setCursor((LCD_W - (int)strlen(r1) * 6) / 2, 214); gfx->print(r1);
+  gfx->setCursor((LCD_W - (int)strlen(r2) * 6) / 2, 230); gfx->print(r2);
 }
 
 // Live sensordata zonder te lanceren
