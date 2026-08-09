@@ -11,11 +11,17 @@ Print met de bodem op het bed; supports zijn niet nodig.
 import numpy as np, trimesh
 
 # ---------------- maten in mm ----------------
-BOARD_W, BOARD_L, BOARD_PLAY = 38.0, 38.0, 0.8   # bord (meten!)
-BACK_CLEAR = 6.5      # vrije ruimte onder de print (USB-C, componenten)
-BOARD_T    = 1.6      # dikte print
-CLIP_GRIP  = 1.4      # hoeveel de clip over de rand pakt
-CLIP_H     = 1.6      # hoogte cliphaak boven de print
+# Officiele maatschets Waveshare (Outline Dimensions, mm):
+#   buitenmaat module incl. zwarte rand : 41,13 x 33,13
+#   kale print                          : 38,48 x 31,07
+#   totale dikte                        : 6,60   (scherm 3,82 +/- 0,2)
+# De zwarte rand steekt ~1,3 mm per zijde buiten de print: die buitenmaat
+# bepaalt de pasvorm, dus daar houden we de clips op.
+BOARD_W, BOARD_L, BOARD_PLAY = 41.13, 33.13, 0.6
+BACK_CLEAR = 1.5      # standoff onder de module (achterzijde vrij houden)
+BOARD_T    = 6.6      # dikte van de HELE module, niet alleen de print
+CLIP_GRIP  = 2.0      # grip op de zwarte rand (rand is ~4,2 mm breed)
+CLIP_H     = 1.6      # hoogte cliphaak boven de module
 
 BATT_W, BATT_L, BATT_T, BATT_PLAY = 21.0, 26.0, 10.0, 1.2
 

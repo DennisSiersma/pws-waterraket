@@ -126,6 +126,15 @@ python3 -m venv .venv
 ./.venv/bin/python hardware/genereer_houder.py
 ```
 
-De bordmaat (38 x 38 mm) is een schatting: Waveshare publiceert de maatschets
-alleen als afbeelding. Er zit 0,8 mm speling omheen, maar meet het na als het
-bord te los of te strak zit.
+Maten volgens de officiele maatschets van Waveshare:
+
+| Maat | Waarde |
+|---|---|
+| Buitenmaat module (incl. zwarte rand) | 41,13 x 33,13 mm |
+| Kale print | 38,48 x 31,07 mm |
+| Totale dikte | 6,60 mm (scherm 3,82 +/- 0,2) |
+| Schermglas | 32,63 x 27,97 mm |
+
+De zwarte rand steekt ongeveer 1,3 mm per zijde buiten de print uit; die
+buitenmaat bepaalt de pasvorm. De clips pakken 2 mm over die rand, ruim binnen
+de ~4,2 mm brede rand, dus ze komen niet op het glas.
