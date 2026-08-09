@@ -89,7 +89,9 @@
 
 const char* AP_SSID = "Waterraket";
 const char* AP_PASS = "raket1234";
-const char* LOGPATH = "/flight.csv";
+const char* INDEXPAD = "/vluchten.csv";   // overzicht van alle vluchten
+int  flightNo = 0;                        // nummer van de huidige vlucht
+char logPad[24] = "/flight_1.csv";        // logbestand van de huidige vlucht
 const uint32_t SAMPLE_US = 1000000UL / SAMPLE_HZ;
 
 // ====================== INCLUDES ======================
@@ -218,6 +220,73 @@ uint8_t leesReg(uint8_t adr, uint8_t reg) {
   if (Wire.endTransmission(false) != 0) return 0xFF;
   if (Wire.requestFrom(adr, (uint8_t)1) != 1) return 0xFF;
   return Wire.read();
+}
+
+// ====================== RTC (PCF85063 op 0x51) ======================
+// Rechtstreeks via I2C: de registers liggen vast in het datasheet en kunnen
+// niet met een library-versie meeveranderen.
+#define RTC_ADDR 0x51
+void schrijfReg(uint8_t adr, uint8_t reg, uint8_t val) {
+  Wire.beginTransmission(adr); Wire.write(reg); Wire.write(val); Wire.endTransmission();
+}
+uint8_t bcd2dec(uint8_t b) { return (b >> 4) * 10 + (b & 0x0F); }
+uint8_t dec2bcd(uint8_t d) { return ((d / 10) << 4) | (d % 10); }
+
+struct Klok { int jaar, maand, dag, uur, minuut, sec; bool geldig; };
+
+Klok leesKlok() {
+  Klok k;
+  uint8_t s = leesReg(RTC_ADDR, 0x04);
+  k.geldig = !(s & 0x80);          // bit 7 = oscillator gestopt: tijd onbetrouwbaar
+  k.sec    = bcd2dec(s & 0x7F);
+  k.minuut = bcd2dec(leesReg(RTC_ADDR, 0x05) & 0x7F);
+  k.uur    = bcd2dec(leesReg(RTC_ADDR, 0x06) & 0x3F);
+  k.dag    = bcd2dec(leesReg(RTC_ADDR, 0x07) & 0x3F);
+  k.maand  = bcd2dec(leesReg(RTC_ADDR, 0x09) & 0x1F);
+  k.jaar   = 2000 + bcd2dec(leesReg(RTC_ADDR, 0x0A));
+  return k;
+}
+void zetKlok(int j, int mnd, int d, int u, int mi, int se) {
+  schrijfReg(RTC_ADDR, 0x04, dec2bcd(se));   // schrijven wist meteen de OS-vlag
+  schrijfReg(RTC_ADDR, 0x05, dec2bcd(mi));
+  schrijfReg(RTC_ADDR, 0x06, dec2bcd(u));
+  schrijfReg(RTC_ADDR, 0x07, dec2bcd(d));
+  schrijfReg(RTC_ADDR, 0x09, dec2bcd(mnd));
+  schrijfReg(RTC_ADDR, 0x0A, dec2bcd(j - 2000));
+}
+void klokUitCompileertijd() {                // eenmalige startwaarde
+  char m[4]; int d, j, u, mi, se;
+  sscanf(__DATE__, "%3s %d %d", m, &d, &j);
+  sscanf(__TIME__, "%d:%d:%d", &u, &mi, &se);
+  const char* en = "JanFebMarAprMayJunJulAugSepOctNovDec";
+  const char* pos = strstr(en, m);
+  int mnd = pos ? (int)(pos - en) / 3 + 1 : 1;
+  zetKlok(j, mnd, d, u, mi, se);
+}
+String tijdTekst() {
+  Klok k = leesKlok();
+  char b[24];
+  snprintf(b, sizeof(b), "%04d-%02d-%02d %02d:%02d", k.jaar, k.maand, k.dag, k.uur, k.minuut);
+  return String(b);
+}
+
+// ====================== VLUCHTBESTANDEN ======================
+// Elke vlucht krijgt een eigen bestand: /flight_1.csv, /flight_2.csv, ...
+int hoogsteVluchtnummer() {
+  int hoogste = 0;
+  File dir = LittleFS.open("/");
+  if (!dir) return 0;
+  File f = dir.openNextFile();
+  while (f) {
+    String n = f.name();
+    if (!n.startsWith("/")) n = "/" + n;     // core 2.x geeft pad, 3.x alleen naam
+    if (n.startsWith("/flight_") && n.endsWith(".csv")) {
+      int nr = n.substring(8, n.length() - 4).toInt();
+      if (nr > hoogste) hoogste = nr;
+    }
+    f = dir.openNextFile();
+  }
+  return hoogste;
 }
 
 float relAltitude(float pres_hPa) { return 44330.0 * (1.0 - pow(pres_hPa / p0, 0.1903)); }
@@ -399,9 +468,12 @@ void screenLogging() {
 void screenResult() {
   gfx->fillScreen(COL_BLACK);
   title("RESULTAAT", COL_MAGENTA);
-  stat("Apogeum (m)", String(maxAlt, 1), 52, COL_YELLOW);
-  stat("Max versn. (g)", String(maxG, 1), 102, COL_ORANGE);
-  stat("Vluchttijd (s)", String(flightMs / 1000.0, 1), 152, COL_CYAN);
+  gfx->setTextSize(1); gfx->setTextColor(COL_DARKGREY);
+  gfx->setCursor(SAFE_M, 50); gfx->print("vlucht "); gfx->print(flightNo);
+  gfx->print("  "); gfx->print(tijdTekst());
+  stat("Apogeum (m)", String(maxAlt, 1), 66, COL_YELLOW);
+  stat("Max versn. (g)", String(maxG, 1), 112, COL_ORANGE);
+  stat("Vluchttijd (s)", String(flightMs / 1000.0, 1), 158, COL_CYAN);
   drawBtn(BTN_SEND); drawBtn(BTN_NEW);
 }
 void screenSending() {
@@ -430,21 +502,66 @@ void calibrate() {
   for (int i = 0; i < 50; i++) { if (readBaro(a, pr, t)) { sum += pr; n++; } delay(20); }
   p0 = sum / (n > 0 ? n : 1);
   maxAlt = 0; maxG = 0; samples = 0; curAlt = 0; landCount = 0;
-  logFile = LittleFS.open(LOGPATH, "w");
+  flightNo = hoogsteVluchtnummer() + 1;          // volgende vrije nummer
+  snprintf(logPad, sizeof(logPad), "/flight_%d.csv", flightNo);
+  Serial.printf("nieuwe vlucht %d -> %s (%s)\n", flightNo, logPad, tijdTekst().c_str());
+  logFile = LittleFS.open(logPad, "w");
+  logFile.printf("# vlucht %d, gestart %s\n", flightNo, tijdTekst().c_str());
   logFile.println("t_ms,hoogte_m,druk_hPa,temp_C,ax_g,ay_g,az_g");
   logFile.close();
 }
 void startAP() {
   WiFi.mode(WIFI_AP); WiFi.softAP(AP_SSID, AP_PASS);
   server.on("/", []() {
-    String h = "<h2>Waterraket - vluchtdata</h2>";
-    h += "<p>Apogeum: " + String(maxAlt, 1) + " m &middot; Max g: " + String(maxG, 1)
-       + " &middot; Tijd: " + String(flightMs / 1000.0, 1) + " s</p>";
-    h += "<p><a href='/flight.csv'>Download CSV</a></p>";
+    String h = "<html><head><meta charset='utf-8'>"
+               "<meta name='viewport' content='width=device-width,initial-scale=1'>"
+               "<style>body{font-family:sans-serif;margin:16px}"
+               "table{border-collapse:collapse;width:100%}"
+               "td,th{border:1px solid #ccc;padding:6px;text-align:left}"
+               "a{color:#1f6fb2}</style></head><body>";
+    h += "<h2>Waterraket &ndash; vluchten</h2><table>"
+         "<tr><th>#</th><th>tijd</th><th>apogeum</th><th>max g</th><th>duur</th><th></th></tr>";
+    File idx = LittleFS.open(INDEXPAD, "r");
+    if (idx) {
+      while (idx.available()) {
+        String r = idx.readStringUntil('\n'); r.trim();
+        if (r.length() < 3) continue;
+        int p[4], k = 0;
+        for (int i = 0; i < (int)r.length() && k < 4; i++) if (r[i] == ';') p[k++] = i;
+        if (k < 4) continue;
+        String nr = r.substring(0, p[0]);
+        h += "<tr><td>" + nr + "</td><td>" + r.substring(p[0] + 1, p[1]) + "</td><td>"
+           + r.substring(p[1] + 1, p[2]) + " m</td><td>" + r.substring(p[2] + 1, p[3])
+           + "</td><td>" + r.substring(p[3] + 1) + " s</td>"
+           + "<td><a href='/flight_" + nr + ".csv'>CSV</a></td></tr>";
+      }
+      idx.close();
+    }
+    h += "</table><p>Vrije ruimte: "
+       + String((LittleFS.totalBytes() - LittleFS.usedBytes()) / 1024) + " kB</p>";
+    h += "<p><a href='/wis?zeker=ja' onclick=\"return confirm('Alle vluchten wissen?')\">"
+         "Alles wissen</a></p></body></html>";
     server.send(200, "text/html", h);
   });
-  server.on("/flight.csv", []() {
-    File f = LittleFS.open(LOGPATH, "r"); server.streamFile(f, "text/csv"); f.close();
+  server.on("/wis", []() {
+    if (server.arg("zeker") != "ja") { server.send(400, "text/plain", "bevestiging ontbreekt"); return; }
+    File dir = LittleFS.open("/");
+    File f = dir.openNextFile();
+    while (f) {
+      String n = f.name(); if (!n.startsWith("/")) n = "/" + n;
+      f = dir.openNextFile();
+      if (n.startsWith("/flight_") && n.endsWith(".csv")) LittleFS.remove(n);
+    }
+    LittleFS.remove(INDEXPAD);
+    server.sendHeader("Location", "/"); server.send(303);
+  });
+  server.onNotFound([]() {
+    String u = server.uri();
+    if (u.startsWith("/flight_") && u.endsWith(".csv")) {
+      File f = LittleFS.open(u, "r");
+      if (f) { server.streamFile(f, "text/csv"); f.close(); return; }
+    }
+    server.send(404, "text/plain", "niet gevonden");
   });
   server.begin();
 }
@@ -479,6 +596,13 @@ void setup() {
   Wire.begin(I2C_SDA, I2C_SCL);
   LittleFS.begin(true);
   loadCal();
+
+  Klok nu = leesKlok();                       // RTC: zet zich de eerste keer zelf
+  bool liep = nu.geldig;
+  if (!liep) klokUitCompileertijd();
+  Serial.printf("klok: %s (%s)\n", tijdTekst().c_str(),
+                liep ? "liep door" : "opnieuw gezet op compileertijd");
+  Serial.printf("vluchten op flash: %d\n", hoogsteVluchtnummer());
 
   // I2C-scan: welke chips reageren er echt?
   Serial.print("I2C gevonden:");
@@ -656,7 +780,7 @@ void loop() {
       if (!entered) { screenArmed(); entered = true; }
       if (readBaro(alt, pres, temp)) { curAlt = alt; if (alt > maxAlt) maxAlt = alt; }
       if (curAlt > LAUNCH_RISE_M) {              // lancering
-        logFile = LittleFS.open(LOGPATH, "a");
+        logFile = LittleFS.open(logPad, "a");
         tStart = millis(); lastSample = micros(); maxAlt = curAlt; samples = 0;
         beep(60); state = LOGGING; entered = false; break;
       }
@@ -679,6 +803,12 @@ void loop() {
         bool timeout = (millis() - tStart) > (MAX_LOG_S * 1000UL);
         if (landed || timeout) {
           logFile.close(); flightMs = millis() - tStart; haveFlight = true;
+          File idx = LittleFS.open(INDEXPAD, "a");     // regel in het overzicht
+          if (idx) {
+            idx.printf("%d;%s;%.1f;%.1f;%.1f\n", flightNo, tijdTekst().c_str(),
+                       maxAlt, maxG, flightMs / 1000.0);
+            idx.close();
+          }
           beep(200); state = RESULT; entered = false; break;
         }
         if (++uiCount >= 10) { uiCount = 0; liveLogging(); }   // scherm ~5 Hz, log 50 Hz
