@@ -106,3 +106,26 @@ temperatuur op 1x.
   de omgevingsdruk meet en niet de dynamische druk van de luchtstroom.
 - De versnellingsmeter klipt bij 16 g. Voor het apogeum maakt dat niet uit (daar is
   v ongeveer 0); voor het stuwprofiel is het een bekende beperking.
+
+## 9. Payloadhouder (3D-print)
+
+`hardware/PWS_Waterraket_Houder.stl` is direct te slicen. Print met de bodem op
+het bed; supports zijn niet nodig. PETG is voor buitengebruik beter dan PLA.
+
+Het sensorvak is bewust ruim (17 x 23 x 7,5 mm) zodat zowel de BMP388 als de
+BME680 erin past; zet de module vast met schuim of dubbelzijdige tape. Een
+barometer hoeft niet strak te klemmen, hij moet juist lucht kunnen zien - daarom
+zitten er twee ventilatieopeningen in dat vak.
+
+Maten aanpassen (bijvoorbeeld na het meten van je eigen bord of accu): pas de
+waarden bovenin `hardware/genereer_houder.py` aan en draai:
+
+```
+python3 -m venv .venv
+./.venv/bin/pip install trimesh manifold3d numpy
+./.venv/bin/python hardware/genereer_houder.py
+```
+
+De bordmaat (38 x 38 mm) is een schatting: Waveshare publiceert de maatschets
+alleen als afbeelding. Er zit 0,8 mm speling omheen, maar meet het na als het
+bord te los of te strak zit.
