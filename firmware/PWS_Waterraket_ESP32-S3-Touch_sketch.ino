@@ -148,14 +148,17 @@ int  lastTx = -1, lastTy = -1;   // laatste aanraakcoordinaten (na correctie)
 int  rawTx = -1, rawTy = -1;     // laatste RUWE aanraakcoordinaten
 uint32_t tapCount = 0;           // hoeveel aanrakingen ooit gezien
 // touch-kalibratie: scherm = a * ruw + b  (1,0 / 0 = ongecorrigeerd)
-float calAx = 1.0, calBx = 0.0, calAy = 1.0, calBy = 0.0;
-const char* CALPATH = "/touchcal.txt";
+// Gemeten op dit bord: de touch rapporteert y ~22 px HOGER dan waar je tikt
+// (kruis getekend op y=140 werd twee keer gemeld als 162). Dat is een vaste
+// verschuiving, geen schaalfout, dus corrigeren we met -22 en schaal 1,0.
+float calAx = 1.0, calBx = 0.0, calAy = 1.0, calBy = -22.0;
+const char* CALPATH = "/touchcal2.txt";   // nieuwe naam: oude ijking vervalt
 
 // ====================== KNOPPEN ======================
 struct Btn { int x, y, w, h; const char* label; uint16_t col; };
 // Knoppen blijven boven y=230: dat is het gebied dat de touch betrouwbaar haalt.
 Btn BTN_START  = { 30, 148, 180, 50, "START",   COL_GREEN };
-Btn BTN_INFO   = { 40, 208, 160, 44, "INFO",    COL_BLUE };
+Btn BTN_INFO   = { 40, 198, 160, 44, "INFO",    COL_BLUE };
 Btn BTN_CANCEL = { 30, 190, 180, 46, "ANNULEER", COL_DARKGREY };
 Btn BTN_SEND   = { 24, 190, 92, 46, "VERZEND", COL_BLUE };
 Btn BTN_NEW    = { 124, 190, 92, 46, "NIEUW",  COL_DARKGREY };
