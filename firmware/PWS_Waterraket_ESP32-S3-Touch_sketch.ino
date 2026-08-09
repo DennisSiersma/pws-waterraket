@@ -337,14 +337,20 @@ String mORdash(float v) { return haveFlight ? String(v, 1) : String("--"); }
 void screenHome() {
   gfx->fillScreen(COL_BLACK);
   title("WATERRAKET", COL_CYAN);
+  // vluchtteller: wat er op de flash staat en welk nummer de volgende krijgt
+  int gedaan = hoogsteVluchtnummer();
+  gfx->setTextSize(1); gfx->setTextColor(COL_DARKGREY);
+  gfx->setCursor(SAFE_M, 52);
+  if (gedaan == 0) gfx->print("nog geen vluchten");
+  else { gfx->print(gedaan); gfx->print(" vluchten  |  volgende: "); gfx->print(gedaan + 1); }
   // compacte stats, zodat ze niet onder de knoppen lopen
   gfx->setTextSize(1); gfx->setTextColor(COL_WHITE);
-  gfx->setCursor(SAFE_M, 62); gfx->print("Apogeum (m)");
-  gfx->setCursor(SAFE_M, 104); gfx->print("Max versn. (g)");
+  gfx->setCursor(SAFE_M, 68); gfx->print("Apogeum (m)");
+  gfx->setCursor(SAFE_M, 108); gfx->print("Max versn. (g)");
   gfx->setTextSize(3); gfx->setTextColor(COL_YELLOW);
-  gfx->setCursor(SAFE_M, 74); gfx->print(mORdash(maxAlt));
+  gfx->setCursor(SAFE_M, 80); gfx->print(mORdash(maxAlt));
   gfx->setTextColor(COL_ORANGE);
-  gfx->setCursor(SAFE_M, 116); gfx->print(mORdash(maxG));
+  gfx->setCursor(SAFE_M, 120); gfx->print(mORdash(maxG));
   drawBtn(BTN_START);
   drawBtn(BTN_INFO);
   // onderschrift, gecentreerd
