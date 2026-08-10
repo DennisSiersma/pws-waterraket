@@ -106,6 +106,12 @@ const uint32_t SAMPLE_US = 1000000UL / SAMPLE_HZ;
 #include <WebServer.h>
 #include <Arduino_GFX_Library.h>
 
+// --- types boven alle functies ---
+// De Arduino IDE genereert zelf functieprototypes en zet die bovenaan het
+// bestand. Staat een struct lager, dan kent dat prototype het type nog niet
+// ("'Klok' does not name a type"). Daarom hier.
+struct Klok { int jaar, maand, dag, uur, minuut, sec; bool geldig; };
+
 // --- kleuren (RGB565), eigen definities zodat ze niet van de library-versie afhangen ---
 #define COL_BLACK     0x0000
 #define COL_WHITE     0xFFFF
@@ -232,8 +238,6 @@ void schrijfReg(uint8_t adr, uint8_t reg, uint8_t val) {
 uint8_t bcd2dec(uint8_t b) { return (b >> 4) * 10 + (b & 0x0F); }
 uint8_t dec2bcd(uint8_t d) { return ((d / 10) << 4) | (d % 10); }
 
-struct Klok { int jaar, maand, dag, uur, minuut, sec; bool geldig; };
-
 Klok leesKlok() {
   Klok k;
   uint8_t s = leesReg(RTC_ADDR, 0x04);
@@ -355,7 +359,7 @@ void screenHome() {
   drawBtn(BTN_INFO);
   // onderschrift, gecentreerd
   gfx->setTextSize(1); gfx->setTextColor(COL_DARKGREY);
-  const char* r1 = "PWS CMP";
+  const char* r1 = "PWS Chris Siersma";
   const char* r2 = "Elde College 2026";
   gfx->setCursor((LCD_W - (int)strlen(r1) * 6) / 2, 214); gfx->print(r1);
   gfx->setCursor((LCD_W - (int)strlen(r2) * 6) / 2, 230); gfx->print(r2);
