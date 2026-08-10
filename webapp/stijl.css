@@ -1,0 +1,279 @@
+/*
+  stijl.css  -  vormgeving van de vluchtanalyse
+
+  Bewust rustig en op papier gericht: de rapportweergave moet zonder
+  bijstellen op A4 uit de printer komen.
+*/
+
+:root {
+  --inkt:        #17202a;
+  --inkt-zacht:  #55606d;
+  --lijn:        #d8dee6;
+  --lijn-zacht:  #eaeef3;
+  --vlak:        #ffffff;
+  --achtergrond: #f4f6f9;
+  --accent:      #1f5fa9;
+  --accent-zacht:#e8f0fa;
+  --waarschuw:   #a55a00;
+  --waarschuw-vlak: #fdf3e3;
+  --fout:        #a3271f;
+  --fout-vlak:   #fbeceb;
+  --goed:        #1d6b3f;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--achtergrond);
+  color: var(--inkt);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+h1 { font-size: 20px; margin: 0; }
+h2 { font-size: 17px; margin: 0 0 4px; }
+h3 { font-size: 15px; margin: 18px 0 6px; }
+h4 { font-size: 14px; margin: 14px 0 4px; color: var(--inkt-zacht); }
+
+p { margin: 0 0 10px; }
+.onder { color: var(--inkt-zacht); font-size: 13px; margin: 2px 0 0; }
+.uitleg { color: var(--inkt-zacht); font-size: 13px; max-width: 78ch; }
+.leeg { color: var(--inkt-zacht); font-size: 13px; }
+
+/* ---------- kop ---------- */
+.kop {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 12px 20px;
+  background: var(--vlak);
+  border-bottom: 1px solid var(--lijn);
+  position: sticky; top: 0; z-index: 20;
+}
+.kop-knoppen { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.knop {
+  display: inline-block;
+  border: 1px solid var(--lijn);
+  background: var(--vlak);
+  color: var(--inkt);
+  border-radius: var(--radius);
+  padding: 7px 13px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.knop:hover { background: var(--lijn-zacht); }
+.knop.primair { background: var(--accent); border-color: var(--accent); color: #fff; }
+.knop.primair:hover { background: #17497f; }
+.knop:disabled { opacity: .5; cursor: default; }
+.knoppenrij { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* ---------- indeling ---------- */
+.werkblad { display: flex; align-items: flex-start; gap: 16px; padding: 16px 20px 60px; }
+.zijbalk {
+  flex: 0 0 274px; position: sticky; top: 74px;
+  background: var(--vlak); border: 1px solid var(--lijn); border-radius: var(--radius);
+  padding: 14px;
+  max-height: calc(100vh - 96px); overflow: auto;
+}
+.hoofd { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.kaart {
+  background: var(--vlak); border: 1px solid var(--lijn); border-radius: var(--radius);
+  padding: 16px 18px;
+}
+
+/* ---------- vluchtenlijst ---------- */
+.vluchtenlijst { list-style: none; margin: 10px 0 0; padding: 0; }
+.vluchtenlijst li {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 8px 6px; border-top: 1px solid var(--lijn-zacht);
+}
+.vluchtenlijst li:first-child { border-top: none; }
+.vluchtenlijst .naam { font-weight: 600; font-size: 14px; }
+.vluchtenlijst .detail { color: var(--inkt-zacht); font-size: 12px; }
+.vluchtenlijst .kleurbal {
+  width: 12px; height: 12px; border-radius: 3px; flex: 0 0 auto; margin-top: 4px;
+}
+.vluchtenlijst .rest { flex: 1 1 auto; min-width: 0; }
+.vluchtenlijst .weg {
+  border: none; background: none; color: var(--inkt-zacht); cursor: pointer;
+  font-size: 16px; line-height: 1; padding: 2px 4px;
+}
+.vluchtenlijst .weg:hover { color: var(--fout); }
+
+/* ---------- meldingen ---------- */
+.melding {
+  border-radius: 6px; padding: 8px 11px; font-size: 13px; margin: 6px 0;
+  border: 1px solid transparent;
+}
+.melding.waarschuwing { background: var(--waarschuw-vlak); border-color: #f0d9ae; color: var(--waarschuw); }
+.melding.fout        { background: var(--fout-vlak);      border-color: #f0c3bf; color: var(--fout); }
+.melding.goed        { background: #eaf5ee;               border-color: #bfe0cb; color: var(--goed); }
+.melding strong { font-weight: 600; }
+
+/* ---------- tabellen ---------- */
+table.data { border-collapse: collapse; width: 100%; font-size: 13px; margin: 8px 0 4px; }
+table.data th, table.data td {
+  border-bottom: 1px solid var(--lijn-zacht); padding: 6px 8px; text-align: left; vertical-align: top;
+}
+table.data th { color: var(--inkt-zacht); font-weight: 600; white-space: nowrap; }
+table.data td.getal, table.data th.getal { text-align: right; white-space: nowrap; }
+table.data tbody tr:hover { background: var(--lijn-zacht); }
+
+/* ---------- grootheden ---------- */
+.filterregel {
+  font-size: 12px; color: var(--inkt-zacht); background: var(--lijn-zacht);
+  border-radius: 6px; padding: 7px 10px; margin: 8px 0 4px;
+}
+.vraagteken {
+  border: 1px solid var(--lijn); background: var(--vlak); color: var(--accent);
+  border-radius: 50%; width: 18px; height: 18px; line-height: 1; padding: 0;
+  font-size: 11px; font-weight: 700; cursor: pointer; vertical-align: 1px;
+}
+.vraagteken:hover { background: var(--accent-zacht); }
+tr.toelichting td { background: var(--accent-zacht); }
+tr.toelichting:hover td { background: var(--accent-zacht); }
+.formule {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px; background: var(--vlak); border: 1px solid var(--lijn);
+  border-radius: 5px; padding: 6px 9px; margin-bottom: 6px; overflow-x: auto;
+}
+table.grootheden tr:not(.toelichting) td:first-child { white-space: nowrap; }
+tr.toelichting td { white-space: normal; }
+tr.toelichting .uitleg { max-width: none; margin: 0; }
+
+/* ---------- theorie ---------- */
+.aannamelijst ol { margin: 6px 0 0; padding-left: 22px; font-size: 13px; }
+.aannamelijst li { margin: 5px 0; }
+.aannamewaarde {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px; background: var(--lijn-zacht); border-radius: 4px; padding: 1px 5px;
+  white-space: nowrap;
+}
+.fitblok { margin-top: 8px; }
+
+/* ---------- proefopzet ---------- */
+table.proefopzet input {
+  width: 88px; padding: 5px 7px; border: 1px solid var(--lijn); border-radius: 5px;
+  font: inherit; font-size: 13px; text-align: right;
+}
+table.proefopzet input.tekstveld { width: 100%; min-width: 160px; text-align: left; }
+table.proefopzet td { vertical-align: middle; }
+table.proefopzet .naam { font-weight: 600; }
+table.proefopzet .detail { font-size: 11px; color: var(--inkt-zacht); }
+
+/* ---------- grafieken ---------- */
+.regelknoppen { display: flex; gap: 16px; flex-wrap: wrap; margin: 8px 0 4px; font-size: 13px; }
+.regelknoppen label { display: inline-flex; align-items: center; gap: 5px; }
+figure.grafiek {
+  margin: 12px 0; border: 1px solid var(--lijn); border-radius: var(--radius);
+  padding: 6px; background: var(--vlak); overflow-x: auto;
+}
+figure.grafiek canvas { display: block; max-width: 100%; }
+figure.grafiek figcaption {
+  font-size: 12px; color: var(--inkt-zacht); padding: 4px 6px 2px;
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+}
+
+/* ---------- inleesrapport ---------- */
+.bestandblok { border: 1px solid var(--lijn); border-radius: var(--radius); padding: 12px 14px; margin: 12px 0; }
+.bestandblok > h3 { margin-top: 0; }
+.kerncijfers { display: flex; flex-wrap: wrap; gap: 18px; margin: 6px 0 10px; }
+.kerncijfer .waarde { font-size: 17px; font-weight: 600; }
+.kerncijfer .naam { font-size: 12px; color: var(--inkt-zacht); }
+
+/* ---------- aannames ---------- */
+.aannamegroep { margin: 14px 0 0; }
+.aannamerij {
+  display: grid; grid-template-columns: 1fr 128px; gap: 8px 14px;
+  align-items: start; padding: 9px 0; border-top: 1px solid var(--lijn-zacht);
+}
+.aannamerij label { font-size: 13px; font-weight: 600; }
+.aannamerij .uitleg { font-size: 12px; margin: 2px 0 0; }
+.aannamerij .invoervak { display: flex; align-items: center; gap: 6px; }
+.aannamerij input {
+  width: 84px; padding: 5px 7px; border: 1px solid var(--lijn); border-radius: 5px;
+  font: inherit; font-size: 13px; text-align: right;
+}
+.aannamerij .eenheid { font-size: 12px; color: var(--inkt-zacht); min-width: 34px; }
+
+/* ---------- sleepvlak ---------- */
+.sleepvlak {
+  position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+  background: rgba(31, 95, 169, .12); border: 3px dashed var(--accent); z-index: 50;
+  font-size: 18px; color: var(--accent); font-weight: 600;
+}
+.sleepvlak.aan { display: flex; }
+
+/* ---------- afdrukken ---------- */
+.printkop { display: none; }
+
+@page { size: A4 portrait; margin: 14mm 12mm; }
+
+@media print {
+  html, body { background: #fff; font-size: 10pt; }
+  .kop, .zijbalk, .sleepvlak, .knop, .knoppenrij, .regelknoppen,
+  .vraagteken, .niet-printen { display: none !important; }
+  .werkblad { display: block; padding: 0; }
+  .hoofd { display: block; }
+
+  .printkop { display: block; margin: 0 0 8mm; border-bottom: 1.5pt solid #17202a; padding-bottom: 3mm; }
+  .printkop h1 { font-size: 16pt; }
+  .printkop p { font-size: 9pt; color: #55606d; margin: 2mm 0 0; }
+
+  .kaart {
+    border: none; padding: 0; margin: 0 0 9mm;
+    break-inside: auto; page-break-inside: auto;
+  }
+  h2 {
+    font-size: 12.5pt; border-bottom: 0.5pt solid #d8dee6; padding-bottom: 1mm;
+    break-after: avoid; page-break-after: avoid;
+  }
+  h3, h4 { break-after: avoid; page-break-after: avoid; }
+  p, li { orphans: 3; widows: 3; }
+
+  /* op papier moet elke tabel binnen de bladbreedte blijven: koppen en cellen
+     mogen dus afbreken, ook al staan ze op het scherm op een regel */
+  table.data {
+    font-size: 8pt; break-inside: auto;
+    width: 100%; table-layout: fixed;
+  }
+  table.data thead { display: table-header-group; }
+  table.data tr { break-inside: avoid; page-break-inside: avoid; }
+  table.data tbody tr:hover { background: none; }
+  table.data th, table.data td {
+    white-space: normal !important;
+    overflow-wrap: anywhere; word-break: break-word;
+    padding: 3px 4px;
+  }
+  table.grootheden tr td:first-child { white-space: normal !important; }
+  tr.toelichting { display: none; }
+  .formule {
+    white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: visible; font-size: 8pt;
+  }
+  .aannamewaarde { white-space: normal; }
+
+  /* een grafiek nooit over twee bladzijden verdelen en nooit breder dan het blad */
+  figure.grafiek {
+    border: 0.5pt solid #d8dee6; padding: 2mm; margin: 4mm 0;
+    break-inside: avoid; page-break-inside: avoid;
+    overflow: visible;
+  }
+  figure.grafiek canvas { width: 100% !important; height: auto !important; }
+  figure.grafiek figcaption { font-size: 8.5pt; }
+
+  .melding { border: 0.5pt solid #999; break-inside: avoid; }
+  .filterregel { background: none; border: 0.5pt solid #d8dee6; }
+  .formule, .aannamewaarde { background: none; border: 0.5pt solid #d8dee6; }
+  /* invoervelden worden op papier gewone tekst, zonder rand en zonder minimumbreedte */
+  table.proefopzet input,
+  table.proefopzet input.tekstveld {
+    border: none; padding: 0; background: none;
+    width: 100%; min-width: 0; max-width: 100%;
+    -webkit-appearance: none; appearance: none;
+  }
+  table.proefopzet input { text-align: right; }
+  table.proefopzet input.tekstveld { text-align: left; }
+}

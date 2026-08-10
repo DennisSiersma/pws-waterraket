@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waterraket - vluchtanalyse</title>
+<link rel="stylesheet" href="stijl.css">
+</head>
+<body>
+
+<header class="kop">
+  <div class="kop-titel">
+    <h1>Waterraket, vluchtanalyse</h1>
+    <p class="onder">Profielwerkstuk natuurkunde. Werkt zonder internet: alles rekent in deze pagina.</p>
+  </div>
+  <div class="kop-knoppen">
+    <label class="knop primair" for="bestanden">Vluchten inladen</label>
+    <input type="file" id="bestanden" accept=".csv,text/csv" multiple hidden>
+    <button type="button" class="knop" id="knop-wis-vluchten">Alles wissen</button>
+  </div>
+</header>
+
+<div class="werkblad">
+
+  <aside class="zijbalk" id="zijbalk">
+    <h2>Vluchten</h2>
+    <p class="leeg" id="geen-vluchten">
+      Nog geen vluchten ingeladen. Kies de CSV-bestanden die je van de vluchtcomputer hebt
+      gedownload, of sleep ze op dit venster.
+    </p>
+    <ul class="vluchtenlijst" id="vluchtenlijst"></ul>
+  </aside>
+
+  <main class="hoofd">
+
+    <div class="printkop">
+      <h1>Waterraket, vluchtanalyse</h1>
+      <p id="printkop-onder"></p>
+    </div>
+
+    <section class="kaart" id="sectie-inlezen">
+      <h2>Inlezen en controleren</h2>
+      <p class="uitleg">
+        Per bestand: hoeveel metingen erin staan, welke bemonsteringsfrequentie er werkelijk is
+        gehaald, of er tijdstempels ontbreken of dubbel zijn, en of er gaten in het log zitten.
+      </p>
+      <div id="inleesrapport"></div>
+    </section>
+
+    <section class="kaart" id="sectie-grootheden">
+      <h2>Kerngrootheden per vlucht</h2>
+      <p class="uitleg">
+        Klik op het vraagteken achter een grootheid voor de formule en de methode. Elke waarde
+        hieronder is met die formule uit de meetreeks te herleiden.
+      </p>
+      <div id="filterregel" class="filterregel"></div>
+      <div id="groothedentabel"></div>
+    </section>
+
+    <section class="kaart" id="sectie-grafieken">
+      <h2>Grafieken</h2>
+      <div class="regelknoppen niet-printen">
+        <label><input type="checkbox" id="toon-ruw" checked> ruwe metingen tonen</label>
+        <label><input type="checkbox" id="toon-band" checked> onzekerheidsband tonen</label>
+      </div>
+      <div id="grafieken"></div>
+    </section>
+
+    <section class="kaart" id="sectie-proefopzet">
+      <h2>Proefopzet per vlucht</h2>
+      <p class="uitleg">
+        Vul hier in wat je per vlucht hebt ingesteld. De gegevens horen bij het vluchtnummer uit
+        de commentaarregel van het logbestand en blijven in deze browser bewaard, ook nadat je de
+        pagina hebt gesloten. Ze gaan mee in de export en in het rapport.
+      </p>
+      <div id="proefopzet"></div>
+    </section>
+
+    <section class="kaart" id="sectie-vergelijken">
+      <h2>Vergelijken en verbanden</h2>
+      <p class="uitleg">
+        Groepeer de vluchten op een instelvariabele uit de proefopzet. Per groep verschijnen het
+        gemiddelde apogeum en de standaardafwijking, en in het spreidingsdiagram staan de
+        foutbalken van de spreiding binnen elke groep.
+      </p>
+      <div class="regelknoppen niet-printen">
+        <label>Groeperen op
+          <select id="groepeer-op"></select>
+        </label>
+        <label>Trendlijn
+          <select id="trendsoort">
+            <option value="geen">geen</option>
+            <option value="lineair" selected>lineair</option>
+            <option value="kwadratisch">kwadratisch</option>
+          </select>
+        </label>
+        <label>Foutbalken
+          <select id="foutbalksoort">
+            <option value="sd" selected>standaardafwijking</option>
+            <option value="sem">standaardfout van het gemiddelde</option>
+          </select>
+        </label>
+      </div>
+      <div id="vergelijken"></div>
+    </section>
+
+    <section class="kaart" id="sectie-theorie">
+      <h2>Theorie naast de meting</h2>
+      <p class="uitleg">
+        Voor elke vlucht met een volledig ingevulde proefopzet rekent de applicatie de
+        theoretische apogeumhoogte uit: eerst de stuwfase uit de uitzetting van de lucht in de
+        fles, daarna ballistisch met luchtweerstand. De aannames staan er zichtbaar bij en zijn
+        allemaal aan te passen in het paneel met aannames.
+      </p>
+      <div id="theorie"></div>
+    </section>
+
+    <section class="kaart" id="paneel-aannames">
+      <h2>Aannames en instellingen</h2>
+      <p class="uitleg">
+        Elke drempel, vensterbreedte en constante die de berekening gebruikt staat hier en is aan
+        te passen. Wijzig je iets, dan rekent de applicatie meteen opnieuw.
+      </p>
+      <div id="aannames-inhoud"></div>
+      <div class="knoppenrij">
+        <button type="button" class="knop" id="knop-herstel-aannames">Terug naar de standaardwaarden</button>
+      </div>
+    </section>
+
+    <section class="kaart" id="sectie-rapport">
+      <h2>Export en rapport</h2>
+      <p class="uitleg">
+        De grafieken zijn per stuk als PNG te bewaren op dubbele schermresolutie, met de knop
+        onder elke grafiek. Hieronder staan de export van alle afgeleide grootheden en de
+        afdrukversie van dit hele overzicht, klaar om als bijlage in het profielwerkstuk te gaan.
+      </p>
+      <div class="knoppenrij">
+        <button type="button" class="knop primair" id="knop-csv">Alle grootheden als CSV</button>
+        <button type="button" class="knop" id="knop-print">Rapport afdrukken of opslaan als PDF</button>
+      </div>
+      <div id="rapport-inhoud"></div>
+    </section>
+
+  </main>
+</div>
+
+<div class="sleepvlak" id="sleepvlak"><span>Laat los om de vluchten in te laden</span></div>
+
+<script src="js/kern/getal.js"></script>
+<script src="js/kern/parameters.js"></script>
+<script src="js/kern/csv.js"></script>
+<script src="js/kern/signaal.js"></script>
+<script src="js/kern/analyse.js"></script>
+<script src="js/kern/statistiek.js"></script>
+<script src="js/kern/theorie.js"></script>
+<script src="js/ui/grafiek.js"></script>
+<script src="js/ui/opslag.js"></script>
+<script src="js/ui/export.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

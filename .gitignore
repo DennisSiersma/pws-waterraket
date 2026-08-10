@@ -2,3 +2,6 @@
 .DS_Store
 build/
 *.tmp
+
+# gegenereerde testdata voor de browsercontrole
+test/browsertest/testdata.js

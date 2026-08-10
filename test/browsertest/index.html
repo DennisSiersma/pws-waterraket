@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<title>Browsercontrole waterraketanalyse</title>
+<link rel="stylesheet" href="../../webapp/stijl.css">
+<style>
+  body { padding: 20px; }
+  .uitslag { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; }
+  .uitslag div { padding: 3px 0; }
+  .groen { color: #1d6b3f; }
+  .rood  { color: #a3271f; font-weight: 700; }
+</style>
+</head>
+<body>
+<h1>Browsercontrole</h1>
+<p class="uitleg">
+  Draait de controles die alleen in een browser te doen zijn: tekenen op canvas, de leesbaarheid
+  bij acht vluchten, de tijd om tien vluchten in te lezen en te tekenen, en de PNG-export.
+  Deze pagina hoort bij de test en maakt geen deel uit van de applicatie.
+</p>
+<div class="uitslag" id="uitslag"></div>
+<h2>Acht vluchten over elkaar</h2>
+<div id="acht"></div>
+<h2>Losse grafieken van een vlucht</h2>
+<div id="los"></div>
+
+<script src="../../webapp/js/kern/getal.js"></script>
+<script src="../../webapp/js/kern/parameters.js"></script>
+<script src="../../webapp/js/kern/csv.js"></script>
+<script src="../../webapp/js/kern/signaal.js"></script>
+<script src="../../webapp/js/kern/analyse.js"></script>
+<script src="../../webapp/js/kern/statistiek.js"></script>
+<script src="../../webapp/js/kern/theorie.js"></script>
+<script src="../../webapp/js/ui/grafiek.js"></script>
+<script src="../../webapp/js/ui/opslag.js"></script>
+<script src="../../webapp/js/ui/export.js"></script>
+<script src="testdata.js"></script>
+<script>
+(function () {
+  'use strict';
+  var uit = document.getElementById('uitslag');
+  var resultaten = [];
+  function meld(naam, ok, tekst) {
+    resultaten.push({ naam: naam, ok: ok, tekst: tekst });
+    var d = document.createElement('div');
+    d.className = ok ? 'groen' : 'rood';
+    d.textContent = (ok ? 'v ' : 'X ') + naam + (tekst ? '  ' + tekst : '');
+    uit.appendChild(d);
+  }
+  function nl(x, d) { return WR.getal.nl(x, d); }
+
+  var p = WR.parameters.standaard();
+
+  // ---- tekenen met acht vluchten over elkaar ------------------------------
+  var namen = Object.keys(window.TESTVLUCHTEN);
+  var acht = [];
+  for (var i = 0; i < 8; i++) {
+    var bron = window.TESTPRESTATIE[i];
+    var gelezen = WR.csv.parse(bron.tekst, bron.naam, p);
+    var a = WR.analyse.analyseer(gelezen, p);
+    acht.push({ gelezen: gelezen, analyse: a, kleur: WR.grafiek.PALET[i % WR.grafiek.PALET.length] });
+  }
+  var series = [], markers = [];
+  acht.forEach(function (v) {
+    var r = v.analyse.reeksen;
+    series.push({ label: 'Vlucht ' + v.gelezen.vluchtnummer, kleur: v.kleur,
+                  x: Array.prototype.slice.call(r.t),
+                  y: Array.prototype.slice.call(r.hoogte_f), breedte: 1.6 });
+    markers.push({ x: v.analyse.tApogeum.waarde, y: v.analyse.apogeum.waarde, kleur: v.kleur });
+  });
+  var specAcht = {
+    titel: 'Acht vluchten over elkaar',
+    xLabel: 'tijd t (s)', yLabel: 'hoogte h (m)',
+    series: series, markers: markers
+  };
+  var cAcht = document.createElement('canvas');
+  document.getElementById('acht').appendChild(cAcht);
+  WR.grafiek.teken(cAcht, specAcht, { breedte: 900, hoogte: 380 });
+  var uniekeKleuren = {};
+  series.forEach(function (s) { uniekeKleuren[s.kleur] = 1; });
+  meld('acht vluchten, elk een eigen kleur en naam in de legenda',
+       Object.keys(uniekeKleuren).length === 8 && series.every(function (s) { return !!s.label; }),
+       Object.keys(uniekeKleuren).length + ' kleuren, ' + series.length + ' benoemde reeksen');
+
+  // ---- assen met eenheid --------------------------------------------------
+  meld('assen dragen hun eenheid',
+       /\(s\)/.test(specAcht.xLabel) && /\(m\)/.test(specAcht.yLabel),
+       specAcht.xLabel + '  |  ' + specAcht.yLabel);
+
+  // ---- losse grafieken van een vlucht -------------------------------------
+  var een = acht[0];
+  var r0 = een.analyse.reeksen;
+  var specVers = {
+    titel: 'Versnelling tegen tijd', xLabel: 'tijd t (s)', yLabel: 'specifieke kracht |a| (g)',
+    series: [{ label: 'Vlucht ' + een.gelezen.vluchtnummer, kleur: een.kleur,
+               x: Array.prototype.slice.call(r0.t), y: Array.prototype.slice.call(r0.aNorm) }],
+    lijnen: [{ as: 'y', waarde: p.klip_g, kleur: '#a3241c', stippel: [7, 4],
+               label: 'klipgrens 16 g' }]
+  };
+  var cV = document.createElement('canvas');
+  document.getElementById('los').appendChild(cV);
+  WR.grafiek.teken(cV, specVers, { breedte: 900, hoogte: 300 });
+  meld('klipgrens van 16 g zichtbaar in de versnellingsgrafiek',
+       specVers.lijnen[0].waarde === 16, 'lijn op ' + specVers.lijnen[0].waarde + ' g');
+
+  // ---- prestaties: tien vluchten inlezen, rekenen en tekenen --------------
+  var t0 = performance.now();
+  var getekend = 0;
+  var verborgen = document.createElement('div');
+  verborgen.style.position = 'absolute';
+  verborgen.style.left = '-10000px';
+  document.body.appendChild(verborgen);
+  var alleSeries = [];
+  for (var k = 0; k < window.TESTPRESTATIE.length; k++) {
+    var bron2 = window.TESTPRESTATIE[k];
+    var g2 = WR.csv.parse(bron2.tekst, bron2.naam, p);
+    var a2 = WR.analyse.analyseer(g2, p);
+    alleSeries.push({ label: 'Vlucht ' + g2.vluchtnummer,
+                      kleur: WR.grafiek.PALET[k % WR.grafiek.PALET.length],
+                      x: Array.prototype.slice.call(a2.reeksen.t),
+                      y: Array.prototype.slice.call(a2.reeksen.hoogte_f) });
+    getekend += g2.aantal;
+  }
+  var cP = document.createElement('canvas');
+  verborgen.appendChild(cP);
+  WR.grafiek.teken(cP, { titel: 'prestatieproef', xLabel: 'tijd t (s)', yLabel: 'hoogte h (m)',
+                         series: alleSeries }, { breedte: 900, hoogte: 380 });
+  var ms = performance.now() - t0;
+  meld('tien vluchten inlezen, rekenen en tekenen binnen 2 s',
+       ms < 2000, nl(ms / 1000, 2) + ' s voor ' + getekend + ' metingen');
+
+  // ---- PNG-export op dubbele resolutie ------------------------------------
+  var cExp = WR.grafiek.naarCanvas(specAcht, 900, 380, 2);
+  meld('PNG-export op minstens tweemaal de schermresolutie',
+       cExp.width >= 1800 && cExp.height >= 760,
+       cExp.width + ' x ' + cExp.height + ' beeldpunten');
+
+  // ---- opslag overleeft het herladen --------------------------------------
+  if (window.WR.opslag) {
+    var proef = { vulfractie: 33, begindruk: 5.5, nozzle: 9, massa: 0.125, opmerking: 'proef' };
+    WR.opslag.bewaarProefopzet('browsertest-1', proef);
+    var terug = WR.opslag.leesProefopzet('browsertest-1');
+    meld('proefopzet wordt bewaard en teruggelezen',
+         !!terug && terug.begindruk === 5.5 && terug.opmerking === 'proef',
+         terug ? JSON.stringify(terug) : 'niets teruggekregen');
+    WR.opslag.wisProefopzet('browsertest-1');
+  }
+
+  // ---- theorie ------------------------------------------------------------
+  if (window.WR.theorie) {
+    var inv = WR.theorie.standaardInvoer();
+    inv.begindruk_bar = 5.0; inv.vulfractie = 0.33; inv.leegmassa_kg = 0.120;
+    var th = WR.theorie.bereken(inv);
+    meld('theoretisch apogeum berekend met zichtbare aannames',
+         th.apogeum_m > 0 && th.aannames.length >= 8,
+         nl(th.apogeum_m, 1) + ' m, ' + th.aannames.length + ' aannames');
+  }
+
+  // ---- geen enkel netwerkverzoek -----------------------------------------
+  var bronnen = performance.getEntriesByType ? performance.getEntriesByType('resource') : [];
+  var extern = bronnen.filter(function (e) { return /^https?:/.test(e.name); });
+  meld('geen enkel verzoek naar het netwerk',
+       extern.length === 0,
+       bronnen.length + ' bronnen geladen, allemaal via file:, ' + extern.length + ' via http(s)');
+
+  window.BROWSERUITSLAG = resultaten;
+  var rood = resultaten.filter(function (r) { return !r.ok; }).length;
+  var slot = document.createElement('div');
+  slot.className = rood ? 'rood' : 'groen';
+  slot.textContent = rood ? 'ROOD: ' + rood + ' controle(s) gezakt' : 'GROEN: alles slaagt';
+  uit.appendChild(slot);
+})();
+</script>
+</body>
+</html>

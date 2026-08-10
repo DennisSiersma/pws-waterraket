@@ -26,10 +26,39 @@ is trager.
 > sensor, de juiste USB-poort bij het flashen, de PWR-knop voor accuvoeding, en de
 > koppeling tussen oversampling en meetfrequentie.
 
+## Meetdata analyseren
+
+Open [`webapp/index.html`](webapp/index.html) in een browser en sleep de CSV-bestanden
+erop die je van de vluchtcomputer hebt gedownload. De applicatie draait volledig in
+de pagina: geen server, geen bouwstap, geen internet. Ze berekent apogeum, snelheid,
+versnelling, stuwtijd, vluchttijd en daalsnelheid met de bijbehorende meetonzekerheid,
+vergelijkt vluchten op een instelvariabele, zet het theoretische model ernaast en
+levert PNG's, een CSV en een afdrukbaar rapport voor in het verslag.
+
+Bij elke berekende waarde staat de formule in de interface zelf. Ze staan ook
+bij elkaar in [`docs/PWS_Waterraket_Analyse_Formules.md`](docs/PWS_Waterraket_Analyse_Formules.md),
+geschikt als bijlage bij het profielwerkstuk.
+
+Testdata met een exact bekende uitkomst en de volledige controlereeks:
+
+```bash
+node test/genereer_vlucht.js --alles && node test/gauntlet.js
+```
+
 ## Inhoud
 
 ```
+webapp/
+  index.html                                           <- hier begint de analyse
+  stijl.css
+  js/kern/                                             rekenwerk: csv, filter, grootheden, theorie
+  js/ui/                                               grafieken, opslag, export
+test/
+  genereer_vlucht.js                                   synthetische vluchten met bekende uitkomst
+  gauntlet.js                                          de vaste controlereeks
+  browsertest/index.html                               controles die een browser nodig hebben
 docs/
+  PWS_Waterraket_Analyse_Formules.md                   Formules en aannames van de analyse
   HANDLEIDING.md                                       Bouw, gebruik en probleemoplossing
   PWS_Waterraket_Onderzoeksplan.docx                   Onderzoeksplan (theorie, testplan, BOM)
   PWS_Waterraket_Lanceerinstallatie.docx               Launcher: tekening, onderdelen, bronnen
