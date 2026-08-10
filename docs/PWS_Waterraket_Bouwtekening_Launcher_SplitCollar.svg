@@ -1,0 +1,115 @@
+<svg viewBox="0 0 980 660" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <style>
+    .ttl{font-size:20px;font-weight:bold;fill:#1F6FB2}
+    .cap{font-size:12px;fill:#555}
+    .num{font-size:12px;font-weight:bold;fill:#fff}
+    .numc{fill:#1F6FB2}
+    .li{font-size:12.5px;fill:#222}
+    .lih{font-size:13px;font-weight:bold;fill:#1F6FB2}
+    .src{font-size:10.5px;fill:#666}
+    .pvc{fill:#dfe7ee;stroke:#5a6b7a;stroke-width:2}
+    .struct{fill:#cfd8e0;stroke:#5a6b7a;stroke-width:2}
+    .bottle{fill:none;stroke:#9aa7b3;stroke-width:1.6;stroke-dasharray:6 4}
+    .air{stroke:#1f6fb2;stroke-width:3;fill:none}
+    .cord{stroke:#e67e22;stroke-width:2;stroke-dasharray:5 4;fill:none}
+    .seal{fill:#c0392b}
+    .tie{stroke:#444;stroke-width:1.6;fill:none}
+    .ground{stroke:#8a6d3b;stroke-width:2}
+    .clamp{fill:#f6e2c9;stroke:#a9722a;stroke-width:2}
+    .half{fill:#bcd3e6;stroke:#1f6fb2;stroke-width:2}
+  </style>
+
+  <rect x="6" y="6" width="968" height="648" fill="#ffffff" stroke="#1F6FB2" stroke-width="2"/>
+  <text x="26" y="36" class="ttl">Bouwtekening - lanceerinstallatie waterraket (split-collar cable-tie)</text>
+  <text x="26" y="55" class="cap">Kabelbinders met GEDEELDE kraag: de twee helften klappen open. De ontgrendelkracht is onafhankelijk van de flesdruk. Schematisch, niet op schaal.</text>
+
+  <line class="ground" x1="40" y1="545" x2="545" y2="545"/>
+  <rect class="struct" x="175" y="527" width="250" height="16"/>
+  <line class="ground" x1="200" y1="543" x2="190" y2="572"/>
+  <line class="ground" x1="400" y1="543" x2="410" y2="572"/>
+
+  <rect class="pvc" x="283" y="300" width="16" height="227"/>
+
+  <path class="bottle" d="M250,150 Q291,118 332,150 L332,250 Q332,288 305,300 L305,332 M277,300 Q250,288 250,250 Z"/>
+  <path class="bottle" d="M277,300 L277,332 M305,300 L305,332"/>
+  <text x="345" y="150" class="li">PET-fles (neck-down)</text>
+
+  <rect class="struct" x="272" y="303" width="38" height="8"/>
+  <ellipse class="seal" cx="291" cy="316" rx="9" ry="3"/>
+  <path class="tie" d="M276,332 L276,312 M286,332 L286,310 M296,332 L296,310 M306,332 L306,312"/>
+
+  <rect class="half" x="258" y="318" width="22" height="20" rx="3"/>
+  <rect class="half" x="302" y="318" width="22" height="20" rx="3"/>
+  <path d="M280,322 l6,3 -6,3" fill="#1f6fb2"/>
+  <path d="M302,322 l-6,3 6,3" fill="#1f6fb2"/>
+
+  <rect class="clamp" x="196" y="322" width="58" height="14" rx="3"/>
+  <rect class="clamp" x="328" y="322" width="58" height="14" rx="3"/>
+  <path class="tie" d="M254,329 L258,329 M324,329 L328,329"/>
+
+  <path class="cord" d="M196,336 C150,352 170,380 240,384 L470,384"/>
+  <text x="330" y="400" class="cap">-&gt; trekkoord naar het lipje van de zelfklemtang (&#8805; 10 m)</text>
+
+  <path class="air" d="M291,520 L291,512 L120,512"/>
+  <path class="air" d="M250,512 L250,486"/>
+  <circle cx="250" cy="466" r="22" fill="#f7fafd" stroke="#1f6fb2" stroke-width="2.5"/>
+  <line x1="250" y1="466" x2="262" y2="455" stroke="#c0392b" stroke-width="2"/>
+  <text x="250" y="470" class="cap" text-anchor="middle" font-size="9">bar</text>
+  <circle cx="212" cy="512" r="7" fill="#fff" stroke="#1f6fb2" stroke-width="2"/>
+  <path class="air" d="M212,519 L212,532"/>
+  <text x="198" y="546" class="cap">ontluchten</text>
+  <path d="M165,505 L165,519 L153,512 Z" fill="#1f6fb2"/>
+  <line x1="153" y1="505" x2="153" y2="519" stroke="#1f6fb2" stroke-width="2.5"/>
+  <rect x="104" y="505" width="16" height="14" class="pvc"/>
+  <text x="78" y="498" class="cap">fietspomp</text>
+
+  <g>
+    <circle class="numc" cx="430" cy="150" r="10"/><text class="num" x="430" y="154" text-anchor="middle">1</text>
+    <circle class="numc" cx="322" cy="299" r="10"/><text class="num" x="322" y="303" text-anchor="middle">2</text>
+    <circle class="numc" cx="330" cy="345" r="10"/><text class="num" x="330" y="349" text-anchor="middle">3</text>
+    <circle class="numc" cx="291" cy="352" r="10"/><text class="num" x="291" y="356" text-anchor="middle">4</text>
+    <circle class="numc" cx="254" cy="312" r="10"/><text class="num" x="254" y="316" text-anchor="middle">5</text>
+    <circle class="numc" cx="312" cy="430" r="10"/><text class="num" x="312" y="434" text-anchor="middle">6</text>
+    <circle class="numc" cx="291" cy="505" r="10"/><text class="num" x="291" y="509" text-anchor="middle">7</text>
+    <circle class="numc" cx="410" cy="535" r="10"/><text class="num" x="410" y="539" text-anchor="middle">8</text>
+    <circle class="numc" cx="455" cy="384" r="10"/><text class="num" x="455" y="388" text-anchor="middle">9</text>
+    <circle class="numc" cx="120" cy="490" r="10"/><text class="num" x="120" y="494" text-anchor="middle">10</text>
+    <circle class="numc" cx="159" cy="490" r="10"/><text class="num" x="159" y="494" text-anchor="middle">11</text>
+    <circle class="numc" cx="250" cy="498" r="10"/><text class="num" x="250" y="502" text-anchor="middle">12</text>
+    <circle class="numc" cx="222" cy="455" r="10"/><text class="num" x="222" y="459" text-anchor="middle">13</text>
+    <circle class="numc" cx="212" cy="490" r="10"/><text class="num" x="212" y="494" text-anchor="middle">14</text>
+    <circle class="numc" cx="180" cy="316" r="10"/><text class="num" x="180" y="320" text-anchor="middle">15</text>
+  </g>
+
+  <line x1="556" y1="80" x2="556" y2="600" stroke="#cdddea" stroke-width="1.5"/>
+  <text x="576" y="98" class="lih">Onderdelenlijst</text>
+  <text x="576" y="122" class="li">1.  PET-fles 1,5 L, neck-down geplaatst</text>
+  <text x="576" y="144" class="li">2.  Flessenflens (PCO1881-hals) - wordt vastgegrepen</text>
+  <text x="576" y="166" class="li">3.  Cable ties rondom (Clark-mechanisme)</text>
+  <text x="576" y="188" class="li">4.  GEDEELDE kraag, twee helften: klappen open bij lancering</text>
+  <text x="576" y="210" class="li">5.  Zelfklemtang houdt de helften dicht</text>
+  <text x="576" y="232" class="li">6.  Launch tube, PVC-buis (lengte constant houden!)</text>
+  <text x="576" y="254" class="li">7.  Basiskoppeling/T-stuk (richel voor de ties)</text>
+  <text x="576" y="276" class="li">8.  Grondplaat met haringen (verankering)</text>
+  <text x="576" y="298" class="li">9.  Trekkoord aan het ontgrendellipje van de tang</text>
+  <text x="576" y="320" class="li">10. Schraderventiel / pompaansluiting</text>
+  <text x="576" y="342" class="li">11. Terugslagklep (non-return)</text>
+  <text x="576" y="364" class="li">12. T-splitsing in de luchtlijn</text>
+  <text x="576" y="386" class="li">13. Manometer 0-16 bar</text>
+  <text x="576" y="408" class="li">14. Aftap-/ontluchtingsventiel (kogelkraan)</text>
+  <text x="576" y="430" class="li">15. O-ring: afdichting launch tube tegen flessenhals</text>
+
+  <rect x="566" y="450" width="390" height="76" rx="6" fill="#f7fafd" stroke="#cdddea"/>
+  <text x="580" y="472" class="lih">Waarom gedeeld en niet schuivend?</text>
+  <text x="580" y="492" class="cap">Bij een schuivende kraag neemt de benodigde trekkracht toe met de</text>
+  <text x="580" y="507" class="cap">flesdruk: het koord kan breken of de installatie kantelt, wat je</text>
+  <text x="580" y="522" class="cap">lanceerhoek per meting verandert. Openklappen kost altijd even weinig.</text>
+
+  <text x="576" y="552" class="src">Bronnen:</text>
+  <text x="576" y="568" class="src">US Water Rockets - Split Collar Launcher (R&amp;D en tutorial)</text>
+  <text x="576" y="582" class="src">Air Command Rockets - aircommandrockets.com/construction_index.htm</text>
+  <text x="576" y="596" class="src">B. Wheeler (BYU) - et.byu.edu/~wheeler/benchtop/clark.php</text>
+
+  <text x="26" y="620" class="cap">Veiligheid: pomp en lanceer vanaf ten minste 10 m; gebruik de aftapkraan om bij een misser de druk veilig af te laten. Begin laag (3-4 bar), nooit boven ~7 bar.</text>
+  <text x="26" y="638" class="cap">De terugslagklep houdt de druk in de fles als je de pomp losneemt; het trekkoord opent de zelfklemtang, waarna de kraaghelften wegvallen.</text>
+</svg>

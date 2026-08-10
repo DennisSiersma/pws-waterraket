@@ -62,7 +62,8 @@ docs/
   HANDLEIDING.md                                       Bouw, gebruik en probleemoplossing
   PWS_Waterraket_Onderzoeksplan.docx                   Onderzoeksplan (theorie, testplan, BOM)
   PWS_Waterraket_Lanceerinstallatie.docx               Launcher: tekening, onderdelen, bronnen
-  PWS_Waterraket_Bouwtekening_Launcher_Clark.svg       Detailtekening launcher
+  PWS_Waterraket_Bouwtekening_Launcher_SplitCollar.svg Detailtekening launcher (split-collar, aanbevolen)
+  PWS_Waterraket_Bouwtekening_Launcher_Clark.svg       Detailtekening launcher (schuifkraag, oudere variant)
   PWS_Waterraket_Bouwtekening_Lanceerinstallatie.svg   Overzichtstekening launcher
   PWS_Waterraket_Bedradingsschema_S3-Touch.svg         Bedrading van de gekozen opstelling
   PWS_Waterraket_Bedradingsschema_XIAO.svg             (alternatief, niet gebruikt)

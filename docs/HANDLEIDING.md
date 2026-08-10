@@ -138,3 +138,28 @@ Maten volgens de officiele maatschets van Waveshare:
 De zwarte rand steekt ongeveer 1,3 mm per zijde buiten de print uit; die
 buitenmaat bepaalt de pasvorm. De clips pakken 2 mm over die rand, ruim binnen
 de ~4,2 mm brede rand, dus ze komen niet op het glas.
+
+## 10. Keuze van de lanceerinstallatie
+
+Gebouwd wordt de **split-collar cable-tie launcher**: kabelbinders rondom de
+flessenhals, gehouden door een kraag die in twee helften is gezaagd en met een
+zelfklemtang wordt dichtgehouden. Het trekkoord zit aan het ontgrendellipje van
+die tang.
+
+Waarom niet de twee bekendere varianten:
+
+- **Gardena-koppeling**: beperkt de nozzlediameter (ook met een 3D-geprinte
+  nozzle niet boven ~9 mm), is lastig te combineren met een launch tube en de
+  plastic koppelingen zijn niet gemaakt voor hoge druk. Omdat nozzlediameter een
+  van de onderzoeksvariabelen is, valt deze af.
+- **Klassieke Clark met schuifkraag**: goed principe, maar de kracht om te
+  ontgrendelen loopt op met de flesdruk. Bij hogere druk kan het trekkoord breken
+  of de installatie kantelen, en dat verandert de lanceerhoek per meting. Precies
+  de spreiding die je in een meetreeks niet wilt.
+
+Bij de gedeelde kraag klap je hem open in plaats van hem tegen de wrijving in weg
+te schuiven, dus de benodigde kracht is nagenoeg onafhankelijk van de druk.
+
+Let op voor het verslag: de **launch tube** is zelf een variabele. Hij geeft extra
+hoogte en meer consistentie, maar alleen als je lengte en diameter over alle
+metingen gelijk houdt. Noteer ze.
