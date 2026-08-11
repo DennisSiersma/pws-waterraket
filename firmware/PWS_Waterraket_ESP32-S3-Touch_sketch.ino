@@ -127,7 +127,7 @@ struct Klok { int jaar, maand, dag, uur, minuut, sec; bool geldig; };
 Adafruit_BMP3XX bmp;
 Adafruit_BME680  bme;
 // welke druksensor is er gevonden?
-enum BaroType { BARO_GEEN, BARO_BMP388, BARO_BME680 };
+enum BaroType { BARO_GEEN, BARO_BMP388, BARO_BMP390, BARO_BME680 };
 BaroType baro = BARO_GEEN;
 uint8_t  baroAdr = 0;
 SensorQMI8658   qmi;
@@ -296,7 +296,7 @@ int hoogsteVluchtnummer() {
 float relAltitude(float pres_hPa) { return 44330.0 * (1.0 - pow(pres_hPa / p0, 0.1903)); }
 
 bool readBaro(float &alt, float &pres, float &temp) {
-  if (baro == BARO_BMP388) {
+  if (baro == BARO_BMP388 || baro == BARO_BMP390) {   // zelfde library en API
     if (!bmp.performReading()) return false;
     pres = bmp.pressure / 100.0; temp = bmp.temperature;
   } else if (baro == BARO_BME680) {
@@ -309,7 +309,12 @@ bool readBaro(float &alt, float &pres, float &temp) {
   return true;
 }
 const char* baroNaam() {
-  return baro == BARO_BMP388 ? "BMP388" : (baro == BARO_BME680 ? "BME680" : "geen");
+  switch (baro) {
+    case BARO_BMP388: return "BMP388";
+    case BARO_BMP390: return "BMP390";      // o.a. DFRobot BMP390L
+    case BARO_BME680: return "BME680";
+    default:          return "geen";
+  }
 }
 void readImu() {
   if (qmi.getDataReady()) {
@@ -629,13 +634,14 @@ void setup() {
     uint8_t id00 = leesReg(adr, 0x00);
     uint8_t idD0 = leesReg(adr, 0xD0);
     Serial.printf("0x%02X: reg0x00=0x%02X  reg0xD0=0x%02X\n", adr, id00, idD0);
-    if (id00 == 0x50 || id00 == 0x60)      { baro = BARO_BMP388; baroAdr = adr; }
+    if (id00 == 0x50)                      { baro = BARO_BMP388; baroAdr = adr; }
+    else if (id00 == 0x60)                 { baro = BARO_BMP390; baroAdr = adr; }
     else if (idD0 == 0x61)                 { baro = BARO_BME680; baroAdr = adr; }
     else if (idD0 == 0x58 || idD0 == 0x60)
       Serial.println("  -> lijkt een BMP280/BME280, niet ondersteund");
   }
 
-  if (baro == BARO_BMP388) {
+  if (baro == BARO_BMP388 || baro == BARO_BMP390) {
     if (bmp.begin_I2C(baroAdr, &Wire)) {
       // oversampling en meetfrequentie moeten bij elkaar passen: 8x druk kost
       // ~27 ms en haalt 50 Hz (20 ms) niet. 4x past wel.

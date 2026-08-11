@@ -9,7 +9,7 @@ Alle hier genoemde instellingen staan bovenin `firmware/PWS_Waterraket_ESP32-S3-
 |---|---|---|
 | Microcontroller | Waveshare ESP32-S3-Touch-LCD-1.69 | ESP32-S3R8, 240x280 LCD, CST816 touch |
 | Versnelling | QMI8658 (onboard, 0x6B) | klipt bij +/-16 g tijdens de stuwfase |
-| Hoogte | BMP388 (0x76/0x77) **of** BME680 | firmware herkent beide automatisch |
+| Hoogte | BMP388, BMP390(L) of BME680 (0x76/0x77) | firmware herkent ze automatisch |
 | Voeding | 3,7 V LiPo, MX1.25-stekker | laden via USB-C |
 
 De BMP388 is de betere keuze voor de vluchten (sneller, lagere ruis, gemaakt voor
@@ -163,3 +163,26 @@ te schuiven, dus de benodigde kracht is nagenoeg onafhankelijk van de druk.
 Let op voor het verslag: de **launch tube** is zelf een variabele. Hij geeft extra
 hoogte en meer consistentie, maar alleen als je lengte en diameter over alle
 metingen gelijk houdt. Noteer ze.
+
+## 11. Druksensor: welke past?
+
+De firmware leest bij het opstarten het chip-ID uit en stelt zichzelf in:
+
+| Chip-ID | Sensor | Register |
+|---|---|---|
+| 0x50 | BMP388 | 0x00 |
+| 0x60 | BMP390 / BMP390L (o.a. DFRobot) | 0x00 |
+| 0x61 | BME680 | 0xD0 |
+
+BMP388 en BMP390 delen dezelfde library (Adafruit BMP3XX) en dezelfde aansturing;
+de DFRobot-library is niet nodig. De BMP390L is de industriele opvolger van de
+BMP388: betere temperatuurstabiliteit, lagere drift en minder ruis, dus voor
+apogeummeting de beste van de drie.
+
+Aansluiten is voor alle drie gelijk: VCC naar 3V3, GND naar G, SDA naar GPIO11,
+SCL naar GPIO10.
+
+Bij **kale breakout-printjes** (Fermion-type) moet je zelf CSB/CS naar VCC leggen
+om I2C af te dwingen, en SDO vastzetten: naar GND is adres 0x76, naar VCC 0x77.
+Bij **Gravity-modules** van DFRobot is dat al op de print geregeld (standaard
+0x77) en volstaan de vier draden.
