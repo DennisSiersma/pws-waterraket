@@ -232,3 +232,35 @@ resultaten.
 Printables (`printables.com/model/86434`). Die is ontworpen met vrije ruimte voor
 de klemmen van een cable-tie launcher en heeft drie vinmaten, wat handig is als je
 vinoppervlak later als variabele wilt gebruiken.
+
+## 13. Vinnen (fin can)
+
+`hardware/genereer_vinnen.py` maakt een manchet met drie vinnen die om de fles
+klemt. Geen lijm nodig: een tiewrap in de groef onderaan houdt hem vast. Onderaan
+blijft 12 mm vrij voor de klemmen van de split-collar launcher.
+
+Kant-en-klare modellen van internet passen vaak niet: veel populaire sets zijn
+gemaakt voor Amerikaanse flesmaten (1L Polar Seltzer, 2L US-flessen). Deze
+manchet gebruikt dezelfde `FLES_D` als de neuskegel, dus alles past op jouw fles.
+
+Drie maten met **bekend vinoppervlak**, zodat je vinoppervlak als gecontroleerde
+variabele kunt gebruiken:
+
+| Maat | Spanwijdte | Per vin | Totaal (3 vinnen) | Massa |
+|---|---|---|---|---|
+| klein | 45 mm | 19,4 cm2 | 58,1 cm2 | ~42 g |
+| midden | 58 mm | 29,0 cm2 | 87,0 cm2 | ~51 g |
+| groot | 72 mm | 41,8 cm2 | 125,3 cm2 | ~63 g |
+
+De vinwortel loopt door de hele manchetwand, en de manchet is altijd hoger dan de
+wortel, zodat er geen losse flap boven uitsteekt. Alle drie zijn gecontroleerd op
+waterdichtheid en op samenhang (een geheel, geen losse delen).
+
+**Printen**: manchet rechtop, geen supports. PETG of TPU is taaier dan PLA, dat
+bij een harde landing breekt.
+
+**Let op bij het meten**: de vinnen zitten lager op de fles dan de neuskegel, en
+de flesdiameter kan daar afwijken. Meet op de plek waar de manchet komt.
+
+Wil je vier vinnen in plaats van drie, zet `VIN_N` op 4: stabieler, maar meer
+weerstand en meer massa.

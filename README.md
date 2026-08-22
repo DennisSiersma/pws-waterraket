@@ -74,7 +74,8 @@ hardware/
   PWS_Waterraket_Houder.stl                            Payloadhouder (bord + sensor + accu)
   PWS_Waterraket_Neuskegel_Bay.stl                     Neuskegel: romp met payloadruimte + statische poorten
   PWS_Waterraket_Neuskegel_Tip.stl                     Neuskegel: ogief-punt
-  genereer_houder.py / genereer_neuskegel.py           Generatorscripts (maten bovenin aanpasbaar)
+  PWS_Waterraket_Vinnen_klein/midden/groot.stl         Fin can, drie maten met bekend vinoppervlak
+  genereer_*.py                                        Generatorscripts (maten bovenin aanpasbaar)
 logsheets/
   PWS_Waterraket_Logsheets.xlsx                        Vluchtlog + hoogte-/spreidingsberekening
 ```
