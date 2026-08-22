@@ -186,3 +186,49 @@ Bij **kale breakout-printjes** (Fermion-type) moet je zelf CSB/CS naar VCC legge
 om I2C af te dwingen, en SDO vastzetten: naar GND is adres 0x76, naar VCC 0x77.
 Bij **Gravity-modules** van DFRobot is dat al op de print geregeld (standaard
 0x77) en volstaan de vier draden.
+
+## 12. Neuskegel met payloadruimte
+
+Twee geprinte delen, te maken met `hardware/genereer_neuskegel.py`:
+
+| Deel | Bestand | Massa (PLA) |
+|---|---|---|
+| Romp met payloadruimte | `PWS_Waterraket_Neuskegel_Bay.stl` | ~38 g |
+| Ogief-punt | `PWS_Waterraket_Neuskegel_Tip.stl` | ~20 g |
+
+De fles staat neck-down, dus de kegel zit op de **bodem** van de fles. De romp
+schuift 32 mm over de fles en heeft daarboven 92 mm vrije ruimte.
+
+**De houder staat rechtop**, met het platte vlak evenwijdig aan de raketas, tussen
+vier ribben. Dat is bewust: liggend zou de houder (71,4 x 81,7 mm) een diameter van
+108 mm vragen en dat past niet in een fles van circa 88 mm. Rechtop hoeft alleen de
+breedte van 71,4 mm in de doorsnede te passen.
+
+**Statische poorten**: vier gaten van 3 mm, 55 mm boven het tussenschot, precies
+waarvoor ze bedoeld zijn: de barometer meet zo de omgevingsdruk en niet de
+dynamische druk van de langsstromende lucht. Zorg dat de sensor op ongeveer die
+hoogte in de houder zit.
+
+Door het tussenschot zitten twee gaten van 4 mm voor een schokkoord of
+parachutelijn.
+
+**Meet je fles.** `FLES_D` staat op 88,0 mm; dat verschilt per merk. Pas de waarde
+bovenin het script aan en draai opnieuw:
+
+```
+cd hardware && ../../.venv/bin/python genereer_neuskegel.py
+```
+
+**Printen**: beide delen staand, zonder supports. De wand is 1,6 mm, dus twee
+perimeters volstaan. PETG is taaier dan PLA en breekt minder snel bij de landing.
+De punt is hol; print hem met weinig infill.
+
+**Massa telt mee.** Samen circa 58 g in de neus. Dat helpt de stabiliteit (het
+zwaartepunt schuift naar voren, weg van het drukpunt), maar kost hoogte. Houd de
+massa over alle metingen gelijk en noteer hem, anders zit dat verschil in je
+resultaten.
+
+**Vinnen** komen niet uit dit project: gebruik de set van Marimo Labs op
+Printables (`printables.com/model/86434`). Die is ontworpen met vrije ruimte voor
+de klemmen van een cable-tie launcher en heeft drie vinmaten, wat handig is als je
+vinoppervlak later als variabele wilt gebruiken.
