@@ -71,7 +71,10 @@ firmware/
   PWS_Waterraket_ESP32-S3-Touch_sketch.ino             <- deze gebruiken
   PWS_Waterraket_ESP32_sketch.ino                      (alternatief, niet gebruikt)
 hardware/
-  PWS_Waterraket_Houder.stl / .scad                    Payloadhouder (bord + sensor + accu)
+  PWS_Waterraket_Houder.stl                            Payloadhouder (bord + sensor + accu)
+  PWS_Waterraket_Neuskegel_Bay.stl                     Neuskegel: romp met payloadruimte + statische poorten
+  PWS_Waterraket_Neuskegel_Tip.stl                     Neuskegel: ogief-punt
+  genereer_houder.py / genereer_neuskegel.py           Generatorscripts (maten bovenin aanpasbaar)
 logsheets/
   PWS_Waterraket_Logsheets.xlsx                        Vluchtlog + hoogte-/spreidingsberekening
 ```
