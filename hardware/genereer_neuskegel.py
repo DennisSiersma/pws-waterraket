@@ -18,7 +18,7 @@ Print beide delen staand, zonder supports.
 import numpy as np, trimesh
 
 # ---------------- maten in mm ----------------
-FLES_D     = 88.0     # buitendiameter fles bij de bodem -- METEN
+FLES_D     = 88.5     # Lipton Ice Tea 1,5 L: grootste diameter (boven- en onderband)
 FLES_SPEL  = 1.0      # speling zodat de romp erover schuift
 WAND       = 1.6      # wanddikte romp (dun = licht; 2 perimeters volstaat)
 SKIRT_H    = 32.0     # hoe ver de romp over de fles valt

@@ -11,6 +11,7 @@ Alle hier genoemde instellingen staan bovenin `firmware/PWS_Waterraket_ESP32-S3-
 | Versnelling | QMI8658 (onboard, 0x6B) | klipt bij +/-16 g tijdens de stuwfase |
 | Hoogte | BMP388, BMP390(L) of BME680 (0x76/0x77) | firmware herkent ze automatisch |
 | Voeding | 3,7 V LiPo, MX1.25-stekker | laden via USB-C |
+| Fles | Lipton Ice Tea 1,5 L | brede band 88,5 mm; taille ~81 mm |
 
 De BMP388 is de betere keuze voor de vluchten (sneller, lagere ruis, gemaakt voor
 hoogtemeting). De BME680 werkt ook, maar is trager omdat hij meer grootheden meet.
@@ -212,7 +213,9 @@ hoogte in de houder zit.
 Door het tussenschot zitten twee gaten van 4 mm voor een schokkoord of
 parachutelijn.
 
-**Meet je fles.** `FLES_D` staat op 88,0 mm; dat verschilt per merk. Pas de waarde
+**Standaardfles: Lipton Ice Tea 1,5 L.** De grootste diameter is 88,5 mm (de
+brede band boven- en onderaan); in het midden is de fles getailleerd tot ~81 mm.
+`FLES_D` staat daarom op 88,5. Kies je ooit een andere fles, pas de waarde
 bovenin het script aan en draai opnieuw:
 
 ```
@@ -259,8 +262,10 @@ waterdichtheid en op samenhang (een geheel, geen losse delen).
 **Printen**: manchet rechtop, geen supports. PETG of TPU is taaier dan PLA, dat
 bij een harde landing breekt.
 
-**Let op bij het meten**: de vinnen zitten lager op de fles dan de neuskegel, en
-de flesdiameter kan daar afwijken. Meet op de plek waar de manchet komt.
+**Let op de taille.** De Lipton-fles is in het midden ~81 mm; de manchet klemt
+alleen op de brede band van 88,5 mm bij de hals. Schuif hem dus tot op die band
+en zet de tiewrap daar vast. Reikt de manchet tot in de taille, dan zweeft dat
+deel vrij; dat is geen probleem zolang de tiewrap op de brede band zit.
 
 Wil je vier vinnen in plaats van drie, zet `VIN_N` op 4: stabieler, maar meer
 weerstand en meer massa.

@@ -17,7 +17,7 @@ Print staand (manchet rechtop), zonder supports. PETG of TPU is taaier dan PLA.
 import numpy as np, trimesh
 
 # ---------------- maten in mm ----------------
-FLES_D    = 88.0     # buitendiameter fles op de plek van de vinnen -- METEN
+FLES_D    = 88.5     # Lipton Ice Tea 1,5 L: brede band; taille is ~81 mm, daar NIET klemmen
 FLES_SPEL = 0.6      # speling zodat de manchet er soepel overheen gaat
 WAND      = 2.0      # wanddikte manchet
 MANCHET_MARGE = 6.0  # manchet loopt zover door boven de vinwortel
