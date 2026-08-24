@@ -16,7 +16,7 @@ en ter verantwoording van de keuze, maar worden niet onderhouden.
 | Versnelling (stuwprofiel) | QMI8658, onboard | 0x6B |
 | Hoogte (apogeum) | BMP388 **of** BME680, los bijgeprikt | 0x76 / 0x77 |
 | Voeding | 3,7 V LiPo met MX1.25-stekker | - |
-| Fles (standaard) | Lipton Ice Tea 1,5 L | brede band 88,5 mm, taille ~81 mm |
+| Fles (standaard) | Fernandes Cherry Bouquet 1,5 L | volledig cilindrisch, diameter 88,5 mm |
 
 De firmware herkent bij het opstarten zelf welke druksensor er zit en stelt zich
 daarop in. De BMP388 is de betere keuze voor de vluchten; de BME680 werkt ook maar

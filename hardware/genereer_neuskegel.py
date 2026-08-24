@@ -18,7 +18,7 @@ Print beide delen staand, zonder supports.
 import numpy as np, trimesh
 
 # ---------------- maten in mm ----------------
-FLES_D     = 88.5     # Lipton Ice Tea 1,5 L: grootste diameter (boven- en onderband)
+FLES_D     = 88.5     # Fernandes Cherry Bouquet 1,5 L: omtrek 278 mm / pi, volledig cilindrisch
 FLES_SPEL  = 1.0      # speling zodat de romp erover schuift
 WAND       = 1.6      # wanddikte romp (dun = licht; 2 perimeters volstaat)
 SKIRT_H    = 32.0     # hoe ver de romp over de fles valt
