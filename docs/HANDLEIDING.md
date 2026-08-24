@@ -269,3 +269,39 @@ voor de launcher-klemmen) en zet de tiewrap in de groef vast.
 
 Wil je vier vinnen in plaats van drie, zet `VIN_N` op 4: stabieler, maar meer
 weerstand en meer massa.
+
+## 14. Recovery: Phoenix 3D d78m met adapter
+
+Voor de parachute gebruiken we het **Raketfued Phoenix 3D d78m** recovery-systeem
+(raketfuedrockets.com, gratis STL- en FreeCAD-bestanden). De d78m heeft een
+schroefneus, zodat de elektronica bereikbaar blijft.
+
+Het systeem is ontworpen voor 1L-flessen en wordt normaal op de fleskoepel
+gelijmd. Onze fles is 88,5 mm, en de elektronicaruimte in hun neus is te klein
+voor onze houder. In plaats van hun geteste mechanisme te wijzigen, maken we een
+**adapter** (`hardware/genereer_phoenix_adapter.py`):
+
+```
+   Phoenix schroefneus        (ongewijzigd printen)
+   Phoenix behuizing + deur   (ongewijzigd printen)
+   adapter                    (ons ontwerp)
+   Fernandes-fles 88,5 mm
+```
+
+De adapter heeft onderaan de vertrouwde schuifrand over de fles, binnenin de
+elektronicaruimte met rails, dwarssteun en vier statische poorten (zelfde opzet
+als de eigen neuskegel), en bovenop een **spigot die de bovenkant van een
+1L-fles nabootst**. Het profiel daarvan is per hoogte opgemeten uit de originele
+casing-STL en met 0,6 mm speling verkleind; de passing is numeriek gecontroleerd
+over het volledige profiel. De Phoenix-behuizing wordt op die spigot gelijmd
+zoals de makers het bedoeld hebben, alleen zit er bij ons een adapter onder in
+plaats van een fles.
+
+De buitenkant loopt taps van 92,7 naar 81 mm, zodat de overgang naar de
+Phoenix-diameter vloeiend is.
+
+Printen: staand, zonder supports, lage infill (15-20%): de spigot is massief
+getekend en de infill bepaalt het gewicht. PETG aanbevolen. Reken op ~60 g.
+
+Let op: dit vervangt de eigen neuskegel (hoofdstuk 12). Die blijft in de repo
+als parachutevrije variant, bijvoorbeeld voor de eerste testvluchten.
