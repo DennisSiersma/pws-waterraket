@@ -337,5 +337,19 @@ Nog te doen bij assemblage (niet blind te printen): de servohoorn op lengte
 maken zodat hij het lipgat haalt, en de elastiekspanning afstellen. Reken op een
 bankproef voor de eerste vlucht.
 
-Printen: romp staand zonder supports (~92 g bij 50%; 15-20% infill volstaat,
-reken ~60 g), deur plat op de rug (~7 g). PETG.
+De fles schuift **50 mm** diep in de schuifrand; die verbinding vangt de
+parachuteklap op. Vastzetten met PU-lijm of epoxy rondom, of met drie zelftappers
+door rand en fleswand als je de romp verwisselbaar wilt houden.
+
+**Materiaal: PETG.** PLA wordt boven ~55 graden zacht (een raket in de zomerzon
+of in de auto haalt dat) en breekt bros bij de landing; PETG is taaier, blijft
+vormvast tot ~75 graden en hecht laag-op-laag beter, wat telt voor de
+scharnierogen en de kozijnrand. ABS/ASA voegt hier niets toe en kromtrekt bij
+lange smalle prints; TPU is te slap voor een dragende romp (wel goed voor de
+vinnen). Gebruik PLA hooguit voor een snelle pasproef.
+
+Printen: romp staand zonder supports, 15-20% infill (~65 g in PETG), deur plat op
+de rug (~7 g). Zet de **koeling hoog en brugsnelheid laag** voor de overspanning
+boven de deuropening: dat is een gebogen brug van 58 mm, en PETG zakt daar
+sneller door dan PLA. Een pontje eronder uit de slicer mag ook; dat breekt er na
+het printen zo uit.

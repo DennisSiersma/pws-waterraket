@@ -20,7 +20,7 @@ import numpy as np, trimesh
 
 # ---------------- basis ----------------
 FLES_D, FLES_SPEL, WAND = 88.5, 1.0, 1.6
-SKIRT_H, VLOER = 32.0, 2.4
+SKIRT_H, VLOER = 50.0, 2.4   # 50 mm: de fles schuift diep genoeg voor een stijve, lijmbare verbinding
 BAY_H = 92.0
 HOUDER_B, HOUDER_T, RAIL_SPEL = 71.4, 12.0, 0.8
 POORT_D, POORT_N, POORT_H = 3.0, 4, 55.0
