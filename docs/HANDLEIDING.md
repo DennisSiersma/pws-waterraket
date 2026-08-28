@@ -353,3 +353,38 @@ de rug (~7 g). Zet de **koeling hoog en brugsnelheid laag** voor de overspanning
 boven de deuropening: dat is een gebogen brug van 58 mm, en PETG zakt daar
 sneller door dan PLA. Een pontje eronder uit de slicer mag ook; dat breekt er na
 het printen zo uit.
+
+## 16. Parachute-uitworp in de firmware
+
+De servo hangt aan **GPIO18** (randpad "18"), aangestuurd via LEDC-hardware-PWM
+(50 Hz), zonder servo-library.
+
+**Wanneer gaat de deur open?** Tijdens het loggen wordt elke meting getoetst:
+
+```
+open als   maxAlt > 8 m  EN  curAlt < maxAlt - 1,5 m      (voorbij het apogeum)
+of als     vluchttijd > 12 s                              (noodklok)
+```
+
+De eerste voorwaarde is de echte: pas als de hoogte 1,5 m onder het maximum is
+gezakt, is de raket aantoonbaar over de top. Dat is bewust niet "hoogte daalt",
+want een enkele ruispiek zou de deur dan al openen. De eis van 8 m voorkomt
+uitworp bij een mislukte lancering. De noodklok is het vangnet: gaat de detectie
+om welke reden dan ook mis, dan opent de deur sowieso na 12 s.
+
+Instelbaar bovenin de sketch: `SERVO_DICHT` / `SERVO_OPEN` (hoeken),
+`DEPLOY_DROP_M`, `DEPLOY_MIN_M`, `DEPLOY_MAX_S`.
+
+**Bankproef zonder te vliegen**: INFO-scherm, BOOT ingedrukt houden tussen 1,2 en
+3 s. De deur gaat open, 3 s later grendelt hij weer. (Langer dan 3 s indrukken
+opent nog steeds de raaktest.) Bij het scherpstellen (START) grendelt de deur
+automatisch voor de nieuwe vlucht.
+
+De servo wordt 4 s na elk commando **stroomloos** gezet: dat scheelt stroom en
+voorkomt het typische servogebrom. De grendel houdt mechanisch, niet door
+motorkracht.
+
+**Servo: MG90S** (metalen tandwielen; de plastic SG90 strippen op den duur).
+Oranje draad naar pad 18, bruin naar G. Meet eerst of het 5V-pad ook op accu
+spanning geeft; zo niet, voed de servo dan rechtstreeks van de accu (BAT).
+Sluit hem **niet** op 3V3 aan: de piekstroom laat het bord resetten.

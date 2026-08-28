@@ -87,6 +87,15 @@
 #define LAND_WINDOW_S   3
 #define MAX_LOG_S       30
 
+// --- parachute (servogrendel op de zijdeur) ---
+#define SERVO_PIN       18
+#define SERVO_DICHT     35     // graden: hoorn in de grendellip
+#define SERVO_OPEN      125    // graden: hoorn weg, deur klapt open
+#define DEPLOY_DROP_M   1.5    // zoveel onder het maximum = voorbij het apogeum
+#define DEPLOY_MIN_M    8.0    // niet openen onder deze hoogte (misdetectie)
+#define DEPLOY_MAX_S    12.0   // noodvangnet: altijd openen na deze vluchttijd
+#define SERVO_NA_MS     4000   // servo daarna stroomloos: scheelt stroom en gepiep
+
 const char* AP_SSID = "Waterraket";
 const char* AP_PASS = "raket1234";
 const char* INDEXPAD = "/vluchten.csv";   // overzicht van alle vluchten
@@ -273,6 +282,29 @@ String tijdTekst() {
   snprintf(b, sizeof(b), "%04d-%02d-%02d %02d:%02d", k.jaar, k.maand, k.dag, k.uur, k.minuut);
   return String(b);
 }
+
+// ====================== PARACHUTE-SERVO ======================
+// Rechtstreeks via LEDC (hardware-PWM), zonder servo-library: 50 Hz, 16 bit.
+// Een standaardservo wil 1,0 ms (0 graden) tot 2,0 ms (180 graden) puls.
+#define SERVO_KANAAL 4
+bool servoActief = false;
+uint32_t servoTot = 0;          // millis waarop de servo weer stil gezet wordt
+bool chuteUit = false;          // is de deur deze vlucht al geopend?
+
+void servoHoek(int graden) {
+  graden = constrain(graden, 0, 180);
+  uint32_t us = 1000 + (uint32_t)(graden * 1000L / 180);      // 1000..2000 us
+  uint32_t duty = (uint32_t)((uint64_t)us * 65535 / 20000);   // periode 20 ms
+  ledcWrite(SERVO_PIN, duty);
+  servoActief = true;
+  servoTot = millis() + SERVO_NA_MS;
+}
+void servoUit() {                       // stroomloos: geen brom, geen verbruik
+  if (servoActief && millis() > servoTot) { ledcWrite(SERVO_PIN, 0); servoActief = false; }
+}
+void chuteGrendel() { servoHoek(SERVO_DICHT); chuteUit = false; }
+void chuteOpen()    { servoHoek(SERVO_OPEN);  chuteUit = true; beep(120); }
+
 
 // ====================== VLUCHTBESTANDEN ======================
 // Elke vlucht krijgt een eigen bestand: /flight_1.csv, /flight_2.csv, ...
@@ -517,6 +549,7 @@ void calibrate() {
   for (int i = 0; i < 50; i++) { if (readBaro(a, pr, t)) { sum += pr; n++; } delay(20); }
   p0 = sum / (n > 0 ? n : 1);
   maxAlt = 0; maxG = 0; samples = 0; curAlt = 0; landCount = 0;
+  chuteGrendel();                               // deur dicht voor deze vlucht
   flightNo = hoogsteVluchtnummer() + 1;          // volgende vrije nummer
   snprintf(logPad, sizeof(logPad), "/flight_%d.csv", flightNo);
   Serial.printf("nieuwe vlucht %d -> %s (%s)\n", flightNo, logPad, tijdTekst().c_str());
@@ -589,6 +622,8 @@ void setup() {
   digitalWrite(SYS_EN, HIGH);
 
   pinMode(BOOT_BTN, INPUT_PULLUP);
+  ledcAttach(SERVO_PIN, 50, 16);        // parachute-servo: 50 Hz, 16 bit
+  chuteGrendel();                       // deur dicht bij het opstarten
 #if USE_BUZZER
   pinMode(BUZZER_PIN, OUTPUT); digitalWrite(BUZZER_PIN, LOW);
 #endif
@@ -681,6 +716,8 @@ void setup() {
 
 // ====================== LOOP ======================
 void loop() {
+  servoUit();          // servo stil zetten als hij lang genoeg gestuurd is
+
   int gx = 0, gy = 0;
   float alt, pres, temp;
 
@@ -714,14 +751,20 @@ void loop() {
       if (!entered) { screenInfo(); entered = true; }
       liveInfo();
       if (getTap(gx, gy) && hit(BTN_BACK, gx, gy)) { state = HOME; entered = false; }
-      // BOOT: kort = terug naar HOME, lang (>1,2 s) = raaktest
+      // BOOT: kort = terug, 1,2-3 s = deurtest (bankproef), >3 s = raaktest
       static uint32_t bootDownI = 0;
       bool bdi = (digitalRead(BOOT_BTN) == LOW);
       if (bdi && bootDownI == 0) bootDownI = millis();
       if (!bdi && bootDownI) {
         uint32_t held = millis() - bootDownI; bootDownI = 0;
-        state = (held > 1200) ? TOUCHTEST : HOME;
-        entered = false;
+        if (held > 3000) { state = TOUCHTEST; entered = false; }
+        else if (held > 1200) {                    // deur open, 3 s later weer dicht
+          gfx->fillRect(SAFE_M, 246, 190, 12, COL_BLACK);
+          gfx->setTextSize(1); gfx->setTextColor(COL_MAGENTA);
+          gfx->setCursor(SAFE_M, 248); gfx->print("deur OPEN");
+          chuteOpen(); delay(3000); chuteGrendel();
+          gfx->fillRect(SAFE_M, 246, 190, 12, COL_BLACK);
+        } else { state = HOME; entered = false; }
       }
       delay(120);
     } break;
@@ -814,6 +857,20 @@ void loop() {
         logFile.printf("%lu,%.2f,%.2f,%.1f,%.2f,%.2f,%.2f\n", t, curAlt, pres, temp, ax, ay, az);
         samples++;
         if (curAlt > maxAlt) maxAlt = curAlt;
+
+        // --- parachute: open zodra we voorbij het apogeum zijn ---
+        // Voorwaarden samen, zodat een enkele ruispiek de deur niet opent:
+        // hoog genoeg, en de hoogte is al DEPLOY_DROP_M onder het maximum.
+        if (!chuteUit) {
+          float dt = (millis() - tStart) / 1000.0;
+          bool voorbijTop = (maxAlt > DEPLOY_MIN_M) && (curAlt < maxAlt - DEPLOY_DROP_M);
+          bool noodklok   = dt > DEPLOY_MAX_S;          // vangnet als detectie faalt
+          if (voorbijTop || noodklok) {
+            chuteOpen();
+            Serial.printf("parachute op t=%.1f s, h=%.1f m (max %.1f) %s\n",
+                          dt, curAlt, maxAlt, noodklok ? "[noodklok]" : "[apogeum]");
+          }
+        }
         if (curAlt < LAND_ALT_M && maxAlt > LAUNCH_RISE_M) landCount++; else landCount = 0;
         bool landed  = landCount > (LAND_WINDOW_S * SAMPLE_HZ);
         bool timeout = (millis() - tStart) > (MAX_LOG_S * 1000UL);
