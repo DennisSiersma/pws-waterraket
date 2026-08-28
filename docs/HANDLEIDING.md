@@ -305,3 +305,37 @@ getekend en de infill bepaalt het gewicht. PETG aanbevolen. Reken op ~60 g.
 
 Let op: dit vervangt de eigen neuskegel (hoofdstuk 12). Die blijft in de repo
 als parachutevrije variant, bijvoorbeeld voor de eerste testvluchten.
+
+## 15. Recovery: eigen zijdeur-systeem (vervangt hoofdstuk 14)
+
+De adapter-route naar het Phoenix 3D-systeem (hoofdstuk 14) is vervallen; in de
+praktijk werkte die combinatie niet lekker. In plaats daarvan bouwt
+`hardware/genereer_recovery.py` het zijdeur-principe van Phoenix na in onze eigen
+parametrische pijplijn, met een belangrijk verschil: **de vluchtcomputer opent de
+deur op het gemeten apogeum** in plaats van een mechanische opwindtimer.
+
+Opbouw (een romp, van onder naar boven): schuifrand over de fles, elektronica-
+ruimte met rails en statische poorten (identiek aan de neuskegel), parachutekamer
+110 mm met vlakke zijdeur, en bovenaan de insteekrand waar de bestaande
+ogief-punt (`PWS_Waterraket_Neuskegel_Tip.stl`) op past.
+
+De deur ligt vlak in de wand (geen randen die de uitworp hinderen), is getrapt
+(dunne flens rust op een kozijnrand van 2,5 mm, dikke kern valt in de opening),
+scharniert onderaan op een stukje 1,75 mm filament en heeft bovenaan een lip die
+door een sleuf naar binnen steekt. Een **SG90-servo** op het plankje boven de
+deur is de grendel: de hoorn valt in het gat van de lip. Bij het apogeum draait
+de servo weg en trekt een elastiekje (van een haakje op de deur naar de romp,
+over het scharnier) de deur open.
+
+Aansluiting servo: signaal op **GPIO18** (randpad "18"), voeding op de 5V- en
+G-pads. De firmware-aansturing volgt nog.
+
+Numeriek gecontroleerd: romp en deur waterdicht; overlap deur-romp, houder-romp
+en tip-romp alle exact 0; scharniergaten coaxiaal na plaatsing.
+
+Nog te doen bij assemblage (niet blind te printen): de servohoorn op lengte
+maken zodat hij het lipgat haalt, en de elastiekspanning afstellen. Reken op een
+bankproef voor de eerste vlucht.
+
+Printen: romp staand zonder supports (~92 g bij 50%; 15-20% infill volstaat,
+reken ~60 g), deur plat op de rug (~7 g). PETG.
