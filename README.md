@@ -77,7 +77,6 @@ hardware/
   PWS_Waterraket_Neuskegel_Tip.stl                     Neuskegel: ogief-punt
   PWS_Waterraket_Vinnen_klein/midden/groot.stl         Fin can, drie maten met bekend vinoppervlak
   PWS_Waterraket_Recovery_Romp.stl / _Deur.stl         Recovery: parachutekamer met servo-zijdeur
-  PWS_Waterraket_Phoenix_Adapter.stl                   (vervallen route: adapter naar Phoenix 3D)
   genereer_*.py                                        Generatorscripts (maten bovenin aanpasbaar)
 logsheets/
   PWS_Waterraket_Logsheets.xlsx                        Vluchtlog + hoogte-/spreidingsberekening
