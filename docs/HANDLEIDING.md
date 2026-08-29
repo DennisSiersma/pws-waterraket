@@ -374,3 +374,36 @@ motorkracht.
 Oranje draad naar pad 18, bruin naar G. Meet eerst of het 5V-pad ook op accu
 spanning geeft; zo niet, voed de servo dan rechtstreeks van de accu (BAT).
 Sluit hem **niet** op 3V3 aan: de piekstroom laat het bord resetten.
+
+## 17. Testneus (TPU, zonder parachute)
+
+`hardware/genereer_testneus.py` maakt een eenvoudige neus uit een deel, bedoeld
+voor de eerste testvluchten: werkt de lancering, vliegt de raket recht, kloppen
+de vinnen. Geen parachutekamer, geen elektronica.
+
+**Ontworpen voor hard TPU (95A/98A).** Zonder parachute is de landing een klap;
+TPU vervormt en veert terug waar PLA en PETG breken. Dat maakt vrij lanceren
+mogelijk zonder na elke vlucht te lijmen.
+
+De maten zijn daarop aangepast, anders dan bij de harde onderdelen:
+
+| Maat | Waarde | Waarom |
+|---|---|---|
+| Speling op de fles | 1,4 mm | TPU grijpt sterk; met 1,0 krijg je hem er niet meer af |
+| Wanddikte | 2,0 mm | 4 banen van 0,5 mm; dunner wordt slap |
+| Schuifrand | 45 mm | de wrijving van TPU doet hier het klemwerk, geen lijm nodig |
+| Tipradius | 3 mm afgerond | een scherpe punt scheurt in TPU en is bovendien gevaarlijk |
+
+Verder: drie ontluchtingsgaten in de schuifrand en een in het tussenschot, zodat
+de lucht bij het opschuiven weg kan. De punt is massief (de holte stopt waar de
+wand te dun zou worden); daardoor zit 65% van het materiaal in de onderste helft
+en ligt het zwaartepunt op 66 mm, wat gunstig is voor de stabiliteit.
+
+Afmetingen 93,9 x 93,9 x 158 mm, ongeveer 65 g in TPU bij 20% infill.
+
+**Printinstellingen TPU**: 20-25 mm/s, retractie zo goed als uit, direct drive bij
+voorkeur, geen supports (de vorm heeft nergens een overhang die dat vraagt).
+Print langzaam op de eerste lagen van de schuifrand.
+
+Let op: deze neus weegt anders dan de recovery-romp. Houd testvluchten en
+meetvluchten dus gescheiden, of noteer per vlucht welke neus erop zat.
