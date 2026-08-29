@@ -21,10 +21,13 @@ import numpy as np, trimesh
 # van omtrek 264 naar 278 mm, oftewel diameter 84,0 -> 88,5 mm.
 # De manchet krijgt dezelfde conus: hij wigt zichzelf vast, staat altijd recht
 # en kan niet naar de hals zakken. Meet je fles opnieuw, pas deze drie aan.
-FLES_D    = 88.5     # diameter van het cilindrische deel
-FLES_D2   = 84.0     # diameter onderaan de conus (halszijde)
+# De fles is nergens exact cilindrisch: hij loopt over de hele lengte licht taps.
+# 27,6 cm omtrek (87,9 mm) is de ruimste maat waar de manchet omheen moet vallen;
+# 88,5 mm geldt alleen bij de bodem en wordt gebruikt voor neuskegel en recovery.
+FLES_D    = 87.9     # omtrek 276 mm / pi: breedste maat ter hoogte van de vinnen
+FLES_D2   = 84.0     # omtrek 264 mm / pi: onderaan de conus (halszijde)
 FLES_TAPS = 30.0     # lengte van het taps toelopende stuk
-FLES_SPEL = 0.6      # speling zodat de manchet er soepel overheen gaat
+FLES_SPEL = 0.4      # krappe speling: de conus wigt, dus strak mag hier
 WAND      = 2.0      # wanddikte manchet
 MANCHET_MARGE = 6.0  # manchet loopt zover door boven de vinwortel
 VIN_N     = 3        # aantal vinnen (3 = minder weerstand, 4 = stabieler)
