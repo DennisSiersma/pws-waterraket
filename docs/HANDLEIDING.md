@@ -263,9 +263,21 @@ waterdichtheid en op samenhang (een geheel, geen losse delen).
 **Printen**: manchet rechtop, geen supports. PETG of TPU is taaier dan PLA, dat
 bij een harde landing breekt.
 
-**Positie**: de fles is volledig cilindrisch, dus de manchet ligt over de volle
-hoogte aan. Schuif hem tot de onderrand 12 mm boven de flens zit (vrije ruimte
-voor de launcher-klemmen) en zet de tiewrap in de groef vast.
+**Conische zitting.** De fles is niet over de volle lengte cilindrisch: aan de
+halszijde loopt hij over ~30 mm taps van diameter 84,0 naar 88,5 mm (omtrek 264
+naar 278 mm). De binnenboring van de manchet heeft diezelfde conus, met 0,6 mm
+speling. Voordelen boven een cilindrische manchet met een gelijmde opvulring:
+
+- geen lijm op PET (dat hecht slecht, en juist daar grijpen de krachten aan)
+- de manchet wigt zichzelf vast en staat daardoor altijd recht
+- hij kan niet naar de hals zakken: de conus loopt dicht
+- de axiale positie is reproduceerbaar, wat scheelt in de meetspreiding
+
+**Monteren**: schuif de manchet van bovenaf over de fles en duw hem omlaag tot
+hij klemt op de conus. Zet daarna de tiewrap in de groef vast. Zit hij te vroeg
+klem, verhoog `FLES_SPEL` naar 1,0; zakt hij te ver door, verlaag naar 0,4.
+
+Meet je een andere fles op, pas dan `FLES_D`, `FLES_D2` en `FLES_TAPS` aan.
 
 Wil je vier vinnen in plaats van drie, zet `VIN_N` op 4: stabieler, maar meer
 weerstand en meer massa.

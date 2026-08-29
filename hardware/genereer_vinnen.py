@@ -17,7 +17,13 @@ Print staand (manchet rechtop), zonder supports. PETG of TPU is taaier dan PLA.
 import numpy as np, trimesh
 
 # ---------------- maten in mm ----------------
-FLES_D    = 88.5     # Fernandes Cherry Bouquet 1,5 L: omtrek 278 mm / pi, volledig cilindrisch
+# Gemeten aan de Fernandes-fles: onderaan (halszijde) loopt hij over ~30 mm taps
+# van omtrek 264 naar 278 mm, oftewel diameter 84,0 -> 88,5 mm.
+# De manchet krijgt dezelfde conus: hij wigt zichzelf vast, staat altijd recht
+# en kan niet naar de hals zakken. Meet je fles opnieuw, pas deze drie aan.
+FLES_D    = 88.5     # diameter van het cilindrische deel
+FLES_D2   = 84.0     # diameter onderaan de conus (halszijde)
+FLES_TAPS = 30.0     # lengte van het taps toelopende stuk
 FLES_SPEL = 0.6      # speling zodat de manchet er soepel overheen gaat
 WAND      = 2.0      # wanddikte manchet
 MANCHET_MARGE = 6.0  # manchet loopt zover door boven de vinwortel
@@ -47,6 +53,13 @@ def pijp(d_out, d_in, h, z0):
     return trimesh.boolean.difference([a, b], engine='manifold')
 
 
+def boring(h):
+    """Binnenvorm: onderaan conus (halszijde), daarboven cilindrisch."""
+    r1, r2 = (FLES_D2 + FLES_SPEL) / 2, ID / 2
+    pts = [[0, -1], [r1, -1], [r1, 0], [r2, FLES_TAPS], [r2, h + 1], [0, h + 1]]
+    return trimesh.creation.revolve(np.array(pts), sections=SEG)
+
+
 def vin(span, wortel, tip, hoek):
     """Trapeziumvin met pijlstelling; wortel op de manchet, tip naar buiten."""
     r0 = ID / 2                             # wortel door de hele wand: sterke hechting
@@ -72,7 +85,9 @@ def vin(span, wortel, tip, hoek):
 def bouw(naam, span, wortel, tip):
     # manchet altijd hoger dan de vinwortel, anders steekt de vin los uit
     manchet_h = VRIJ_ONDER + 2.0 + wortel + MANCHET_MARGE
-    delen = [pijp(OD, ID, manchet_h, 0)]
+    buis = trimesh.creation.cylinder(radius=OD / 2, height=manchet_h, sections=SEG)
+    buis.apply_translation((0, 0, manchet_h / 2))
+    delen = [trimesh.boolean.difference([buis, boring(manchet_h)], engine='manifold')]
     for i in range(VIN_N):
         delen.append(vin(span, wortel, tip, 2 * np.pi * i / VIN_N))
     m = trimesh.boolean.union(delen, engine='manifold')
