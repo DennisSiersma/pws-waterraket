@@ -483,3 +483,38 @@ olifantenpoot-compensatie aan, PETG.
 **Controleer bij de eerste print of de dop nu WEL op de flesrand landt.** Blijft
 er een spleet, dan grijpt de draad te vroeg: verhoog `DRAAD_START` met 0,5 mm en
 print opnieuw. Dat is de kern van de hele oplossing.
+
+### D. Gardena-nozzle in een geboorde originele dop (`genereer_nozzles_gardenadop.py`)
+
+**Dit is de werkende oplossing.** Variant C hierboven faalde alsnog: de
+binnendraad en de geleidingsbossing vragen support op een plek waar je niet bij
+kunt, en achtergebleven supportresten trekken de nozzle opnieuw scheef.
+
+De rode draad door alle mislukkingen was hetzelfde: **de schroefdraad werd
+meegeprint**. Hier doen we dat niet meer. Een originele flesdop is spuitgegoten,
+zit altijd haaks op de flesmond en dicht al af met zijn eigen liner. Wij printen
+alleen de Gardena-steel met de gekalibreerde doorlaat.
+
+Waarom dit wel lukt:
+
+- **Geen geprinte draad**, dus ook geen draad die de stand bepaalt.
+- **Geen inwendig support.** Nagerekend: alle overhangen liggen op straal 5,8 tot
+  7,8 mm, dus aan de buitenkant, en het zijn ringvormige richels van hooguit
+  2 mm. De doorlaat zelf is een rechte boring zonder overhang. Zet er toch iets
+  support, dan kun je er met je vingers bij.
+- **Zelfdichtend.** De flens zit binnen in de dop, aan de waterkant. Hoe hoger de
+  druk, hoe steviger de flens tegen de dop wordt gedrukt. Trekken aan het
+  Gardena-koord kan hem er niet uittrekken.
+
+Montage: boor 16,0 mm midden in een originele dop (dop vastklemmen, langzaam
+boren, rand nawerken met een mesje), duw de nozzle er van BINNENUIT in zodat de
+flens aan de waterkant blijft, dicht af met een dun laagje siliconenkit of
+PTFE-tape, laten uitharden, dop op de fles.
+
+Meet twee maten aan jouw dop na en pas ze zo nodig aan bovenin het script:
+`DOP_T` (dikte van de bovenkant, staat op 2,2) en `DOP_BINNEN_D` (vrije
+binnendiameter, staat op 25,0).
+
+Maten 4 tot en met 9 mm; 9 blijft de bovengrens vanwege de Gardena-steel.
+
+Printen: Gardena-kant op het bed, 0,15 mm laagjes, GEEN supports, PETG.
