@@ -80,6 +80,7 @@ hardware/
   PWS_Waterraket_Testneus.stl                          Simpele TPU-neus voor testvluchten zonder parachute
   PWS_Waterraket_Nozzle_04..10mm.stl                   Nozzles: insteek in een geboorde originele dop
   PWS_Waterraket_Nozzledop_04..10mm.stl                Nozzles: volledig geprinte dop met PCO1881-draad
+  PWS_Waterraket_NozzleSteunring_04..09mm.stl          Nozzles: Gardena-steel, zitting op de steunring (BESTE)
   PWS_Waterraket_NozzleGardenaDop_04..09mm.stl         Nozzles: Gardena-steel in geboorde originele dop (WERKT)
   PWS_Waterraket_NozzleGardena_04..09mm.stl            Nozzles MET Gardena-steel (voor onze launcher) - draad print scheef
   genereer_*.py                                        Generatorscripts (maten bovenin aanpasbaar)

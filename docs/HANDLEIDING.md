@@ -518,3 +518,43 @@ binnendiameter, staat op 25,0).
 Maten 4 tot en met 9 mm; 9 blijft de bovengrens vanwege de Gardena-steel.
 
 Printen: Gardena-kant op het bed, 0,15 mm laagjes, GEEN supports, PETG.
+
+### E. Gardena-nozzle die rust op de STEUNRING (`genereer_nozzles_steunring.py`)
+
+Idee van Dennis, en het beste van de vijf. Niet uitrichten op de flesrand of op
+een pen in de flesmond, maar op de **steunring**: die brede kraag onder de
+schroefdraad.
+
+Waarom dat beter werkt:
+
+- De ring is **33,07 mm** in doorsnede tegen 21,74 mm voor de flesmond. Een
+  bredere zitting verzet zich veel sterker tegen kantelen, want de hefboom is
+  anderhalf keer zo groot.
+- De ring is spuitgegoten, dus vlak en haaks op de as.
+- Er is **geen geleidingsbossing meer nodig**, en juist die maakte in variant C
+  een diepe ringsleuf waar support in moest dat niet te verwijderen was. Het
+  inwendige is nu gewoon een boring met draad.
+
+Rolverdeling, elk onderdeel doet een ding:
+
+| Functie | Waar |
+|---|---|
+| Positioneren | de rok landt op de steunring (hard en vlak) |
+| Afdichten | O-ring op de flesrand, met 0,3 mm spleet zodat hij kan knijpen |
+| Vasthouden | de schroefdraad, die verder nergens tegenaan loopt |
+
+Gemeten aan de Fernandes-fles: steunring 33,07 mm, flesrand tot bovenkant
+steunring 14,00 mm. Beide staan bovenin het script.
+
+Nagerekend: zittingvlak van 28,8 tot 38,3 mm, dus contact op de ring over een
+ring van ruim 2 mm breed; ruimte over de schroefdraad 28,8 mm (draad is 27,43);
+draadruggen op 25,9 mm en netjes doorlopend rond de omtrek; alle steile
+overhangen liggen buiten de boring.
+
+**Printen: Gardena-kant op het bed, rok naar boven open.** De draad zit dan aan
+de binnenkant met de overhang naar beneden onder circa 50 graden, en dat print
+zonder support. Geen holte waar je niet bij kunt. 0,15 mm laagjes, PETG.
+
+**Controle**: hij hoort te STOPPEN op de steunring, met een spleetje van 0,3 mm
+tussen dop en flesrand dat de O-ring vult. Loopt hij door tot op de rand, dan is
+`RING_AFST` te groot; stopt hij te vroeg, dan te klein. Meet en corrigeer.
