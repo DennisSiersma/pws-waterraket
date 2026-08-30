@@ -78,6 +78,8 @@ hardware/
   PWS_Waterraket_Vinnen_klein/midden/groot.stl         Fin can, drie maten met bekend vinoppervlak
   PWS_Waterraket_Recovery_Romp.stl / _Deur.stl         Recovery: parachutekamer met servo-zijdeur
   PWS_Waterraket_Testneus.stl                          Simpele TPU-neus voor testvluchten zonder parachute
+  PWS_Waterraket_Nozzle_04..10mm.stl                   Nozzles: insteek in een geboorde originele dop
+  PWS_Waterraket_Nozzledop_04..10mm.stl                Nozzles: volledig geprinte dop met PCO1881-draad
   genereer_*.py                                        Generatorscripts (maten bovenin aanpasbaar)
 logsheets/
   PWS_Waterraket_Logsheets.xlsx                        Vluchtlog + hoogte-/spreidingsberekening

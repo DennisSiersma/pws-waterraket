@@ -407,3 +407,45 @@ Print langzaam op de eerste lagen van de schuifrand.
 
 Let op: deze neus weegt anders dan de recovery-romp. Houd testvluchten en
 meetvluchten dus gescheiden, of noteer per vlucht welke neus erop zat.
+
+## 18. Nozzles: twee ontwerpen
+
+De nozzle bepaalt hoe snel het water eruit gaat en is een onderzoeksvariabele.
+Voorwaarde: hij moet KAARSRECHT op de fles staan, anders staat de stuwkracht
+scheef en vliegt de raket niet zuiver.
+
+**Waarom geprinte doppen scheef gaan staan.** De PCO1881-hals heeft vier losse
+draadsegmenten, bedoeld om een dop aan te trekken, niet om iets haaks te
+positioneren. Een geprinte draad heeft laaglijnen en een naadlijn en loopt
+daardoor ergens vroeg aan. Hij richt zich dan uit op de draad in plaats van op
+de flesmond.
+
+Er staan nu twee oplossingen in de repo. Print ze allebei en vergelijk ze; dat
+levert meteen een mooie paragraaf voor het verslag op.
+
+### A. Insteek in een geboorde originele dop (`genereer_nozzles.py`)
+
+Maten 4 tot en met 10 mm. Een originele dop is spuitgegoten en zit altijd haaks;
+wij printen alleen het gekalibreerde gaatje. Boor 16,0 mm in de dop, duw de
+nozzle er van BINNENUIT in (flens aan de waterkant, dan drukt de druk hem
+vanzelf tegen de dop) en dicht af met wat siliconenkit of PTFE-tape. Er steekt
+15 mm geleiding in de flesmond.
+
+### B. Volledig geprinte dop met schroefdraad (`genereer_nozzledoppen.py`)
+
+Maten 4, 6, 8 en 10 mm. Draad volgens ISBT PCO 1881: spoed 2,7 mm, een
+draadgang, draad 27,43 / kern 24,94 / halsboring 21,74 mm. Drie maatregelen
+tegen scheefstaan: een geleidingsbossing van 12 mm in de flesmond (dit is de
+belangrijkste), een vlakke zitting op de flesrand met O-ringgroef (23 x 2 mm),
+en vrijloop boven de draad zodat hij niet op de draad kan bottomen.
+
+Print met de DICHTE KANT OP HET BED, opening naar boven: de draad zit dan
+binnen en print als flauwe overhang, zonder supports. Reken op een proefprint
+voor de pasvorm: te strak of te los stel je bij met `DRAAD_SPEL`, in stappen van
+0,1 mm. De spoed van 2,7 mm blijft ongewijzigd.
+
+### Controle op haaksheid
+
+Zet de fles met nozzle op zijn kop op een vlakke tafel en draai de fles rond.
+Blijft de nozzle op zijn plek, dan staat hij recht. Wandelt hij, dan zit er
+speling. Doe dit voor beide varianten en noteer het verschil.
