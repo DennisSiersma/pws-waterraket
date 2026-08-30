@@ -80,6 +80,7 @@ hardware/
   PWS_Waterraket_Testneus.stl                          Simpele TPU-neus voor testvluchten zonder parachute
   PWS_Waterraket_Nozzle_04..10mm.stl                   Nozzles: insteek in een geboorde originele dop
   PWS_Waterraket_Nozzledop_04..10mm.stl                Nozzles: volledig geprinte dop met PCO1881-draad
+  PWS_Waterraket_NozzleGardena_04..09mm.stl            Nozzles MET Gardena-steel (voor onze launcher)
   genereer_*.py                                        Generatorscripts (maten bovenin aanpasbaar)
 logsheets/
   PWS_Waterraket_Logsheets.xlsx                        Vluchtlog + hoogte-/spreidingsberekening

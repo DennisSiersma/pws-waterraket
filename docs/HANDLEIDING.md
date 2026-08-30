@@ -449,3 +449,37 @@ voor de pasvorm: te strak of te los stel je bij met `DRAAD_SPEL`, in stappen van
 Zet de fles met nozzle op zijn kop op een vlakke tafel en draai de fles rond.
 Blijft de nozzle op zijn plek, dan staat hij recht. Wandelt hij, dan zit er
 speling. Doe dit voor beide varianten en noteer het verschil.
+
+### C. Gardena-nozzle die recht staat (`genereer_nozzles_gardena.py`)
+
+**Dit is de versie voor onze launcher.** De Gardena-koppeling is bij ons ook het
+vergrendelmechanisme, dus de nozzle moet een Gardena-steel hebben. De varianten A
+en B hierboven gaan uit van een launcher die de fleshals klemt en passen dus niet.
+
+Vastgesteld probleem bij de nozzles van Raketfued: **de dop raakt de flesrand
+niet**. Hij hangt volledig aan de geprinte schroefdraad. De vier losse
+draadsegmenten van een PCO1881-hals zijn gemaakt om aan te trekken, niet om iets
+haaks te positioneren, en dat is met beter printen niet op te lossen. Bijkomend
+nadeel: zonder contact op de rand is er ook geen vlakke afdichting.
+
+Deze versie neemt hun Gardena-steel over (opgemeten uit hun `Nozzle_8mm.stl`,
+per 0,4 mm hoogte; onze steel komt tot op 0,1 mm overeen) en zet er drie
+maatregelen op:
+
+| Maatregel | Maat | Effect |
+|---|---|---|
+| Geleidingsbossing | 21,3 mm, 12 mm lang | steekt in de flesmond (21,74) en dwingt hem recht |
+| Vlakke zitting | landt wel op de flesrand | bepaalt de stand, niet de draad |
+| O-ringgroef | 22,8 tot 26,8 mm | dicht af op een vlak; O-ring 23 x 2 mm |
+| Draadvrijloop | boven de draad | kan niet op de draad bottomen |
+
+Maten 4 tot en met 9 mm. **Negen is de bovengrens**: bij de O-ringgroef is de
+Gardena-steel maar 11,4 mm dik, dus daarboven wordt de wand te dun. Dat is meteen
+de bovengrens van het onderzoeksbereik zolang we een Gardena-launcher gebruiken.
+
+Printen: staand, Gardena-kant op het bed, 0,15 mm laagjes, geen supports,
+olifantenpoot-compensatie aan, PETG.
+
+**Controleer bij de eerste print of de dop nu WEL op de flesrand landt.** Blijft
+er een spleet, dan grijpt de draad te vroeg: verhoog `DRAAD_START` met 0,5 mm en
+print opnieuw. Dat is de kern van de hele oplossing.
