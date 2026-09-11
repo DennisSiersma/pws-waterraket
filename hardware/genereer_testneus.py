@@ -17,9 +17,18 @@ import numpy as np, trimesh
 
 # ---------------- maten in mm ----------------
 FLES_D    = 88.5     # Fernandes 1,5 L bij de bodem
-FLES_SPEL = 1.4      # RUIMER dan bij PLA/PETG: TPU grijpt sterk en zet iets uit
+FLES_SPEL = 1.0      # ruim: hij moet er altijd overheen kunnen; de KLEM doet het werk
+# Klemrand: de fles is bij de bodem smaller dan de 88,5 mm van de brede band,
+# waardoor een vaste maat er gewoon afvalt. Vier lippen plus een tiewrap vangen
+# een verschil van ruim 6 mm in diameter op.
+SLEUF_N   = 4        # aantal zaagsneden
+SLEUF_B   = 5.0      # breedte van een zaagsnede
+SLEUF_H   = 34.0     # hoe ver ze omhoog lopen
+TIE_Z     = 12.0     # hoogte van de tiewrap-groef
+TIE_H     = 5.0
+TIE_D     = 1.3
 WAND      = 2.0      # 2,0 mm = 4 banen van 0,5: stevig genoeg in TPU, scheelt gewicht
-SKIRT_H   = 45.0     # lange rand: de wrijving van TPU doet het klemwerk
+SKIRT_H   = 48.0     # lange rand: ruimte voor lippen en tiewrap
 VLOER     = 3.0      # tussenschot boven de fles
 OGIEF_H   = 110.0    # hoogte van de punt
 TIP_R     = 3.0      # afgeronde neus: een scherpe punt scheurt in TPU
@@ -67,15 +76,21 @@ binnenholte = omw(binnen)
 
 neus = trimesh.boolean.difference([romp, flesholte, binnenholte], engine='manifold')
 
-# ---- gaten: ontluchting in de schuifrand en in het tussenschot ----
+# ---- gaten: klemrand, ontluchting ----
 gaten = []
-for i in range(3):
-    a = 2*np.pi*i/3
-    g = trimesh.creation.cylinder(radius=VENT_D/2, height=OD+4, sections=24)
-    g.apply_transform(trimesh.transformations.rotation_matrix(np.pi/2, [0,1,0]))
-    g.apply_transform(trimesh.transformations.rotation_matrix(a, [0,0,1]))
-    g.apply_translation((0, 0, SKIRT_H/2))
-    gaten.append(g)
+# tiewrap-groef rondom
+bu = trimesh.creation.cylinder(radius=OD/2 + 1, height=TIE_H, sections=SEG)
+bi = trimesh.creation.cylinder(radius=OD/2 - TIE_D, height=TIE_H + 2, sections=SEG)
+bu.apply_translation((0,0,TIE_Z)); bi.apply_translation((0,0,TIE_Z))
+gaten.append(trimesh.boolean.difference([bu, bi], engine='manifold'))
+# zaagsneden: maken de lippen die naar binnen kunnen buigen
+for i in range(SLEUF_N):
+    a = 2*np.pi*i/SLEUF_N
+    sl = trimesh.creation.box(extents=(OD, SLEUF_B, SLEUF_H + 2))
+    sl.apply_translation((OD/2, 0, (SLEUF_H + 2)/2 - 1))
+    sl.apply_transform(trimesh.transformations.rotation_matrix(a, [0,0,1]))
+    gaten.append(sl)
+# (de zaagsneden ontluchten al; losse gaten in de rand zijn niet meer nodig)
 g = trimesh.creation.cylinder(radius=VENT_D/2, height=VLOER+4, sections=24)
 g.apply_translation((ID/2 - 9, 0, z_vloer + VLOER/2))
 gaten.append(g)

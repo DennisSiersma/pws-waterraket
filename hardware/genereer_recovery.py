@@ -28,6 +28,11 @@ KOORD_D = 4.0
 SEG = 96
 
 # ---------------- parachutekamer ----------------
+# Klemrand: de fles is bij de bodem smaller dan de brede band, dus een vaste
+# maat houdt niet. Vier lippen plus een tiewrap vangen ruim 6 mm verschil op.
+SLEUF_N, SLEUF_B, SLEUF_H = 4, 5.0, 36.0
+TIE_Z, TIE_H, TIE_D = 13.0, 5.0, 1.3
+
 KAMER_H   = 110.0
 DEUR_B    = 58.0     # koorde van de deuropening
 DEUR_H    = 78.0
@@ -130,6 +135,21 @@ for kant in (-1, 1):
 g = trimesh.creation.cylinder(radius=4.5, height=VLOER+4, sections=24)
 g.apply_translation((-(R_IN-12), 0, z_kvloer + VLOER/2))
 gaten.append(g)
+
+# ---- KLEMRAND: verdikte band, tiewrap-groef en zaagsneden ----
+# De wand is hier maar 1,6 mm; zonder verdikking blijft er onder de groef
+# nauwelijks materiaal over en scheurt hij bij het aantrekken.
+delen.append(pijp(OD + 3.0, ID, TIE_H + 4, TIE_Z - 2))
+bu = trimesh.creation.cylinder(radius=OD/2 + 3, height=TIE_H, sections=SEG)
+bi = trimesh.creation.cylinder(radius=OD/2 + 1.5 - TIE_D, height=TIE_H + 2, sections=SEG)
+bu.apply_translation((0,0,TIE_Z)); bi.apply_translation((0,0,TIE_Z))
+gaten.append(trimesh.boolean.difference([bu, bi], engine='manifold'))
+for i in range(SLEUF_N):
+    a = 2*np.pi*i/SLEUF_N + np.pi/4      # niet in lijn met de deur
+    sl = trimesh.creation.box(extents=(OD, SLEUF_B, SLEUF_H + 2))
+    sl.apply_translation((OD/2, 0, (SLEUF_H + 2)/2 - 1))
+    sl.apply_transform(trimesh.transformations.rotation_matrix(a, [0,0,1]))
+    gaten.append(sl)
 
 romp = trimesh.boolean.union(delen, engine='manifold')
 romp = trimesh.boolean.difference([romp] + gaten, engine='manifold')

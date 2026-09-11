@@ -558,3 +558,34 @@ zonder support. Geen holte waar je niet bij kunt. 0,15 mm laagjes, PETG.
 **Controle**: hij hoort te STOPPEN op de steunring, met een spleetje van 0,3 mm
 tussen dop en flesrand dat de O-ring vult. Loopt hij door tot op de rand, dan is
 `RING_AFST` te groot; stopt hij te vroeg, dan te klein. Meet en corrigeer.
+
+
+## 19. Klemmende schuifrand (testneus en recovery-romp)
+
+Bij de eerste pasproef viel de testneus er gewoon af zodra je de fles omdraaide.
+Oorzaak: de fles is bij de BODEM smaller dan de 88,5 mm van de brede band, en
+daar schuiven neus en romp overheen. Een vaste maat werkt daar dus niet.
+
+Oplossing: dezelfde als bij de vinnen, namelijk klemmen in plaats van passen.
+
+- vier zaagsneden van 5 mm in de schuifrand, zodat er vier lippen ontstaan
+- een groef rondom voor een tiewrap
+- klembereik ongeveer 6,4 mm in diameter (van 89,5 tot circa 83 mm)
+
+Daarmee hoeft de exacte flesdiameter op die hoogte niet bekend te zijn. Schuif
+het onderdeel op tot tegen het tussenschot, tiewrap in de groef, aantrekken tot
+het niet meer draait.
+
+Twee dingen die uit de controle kwamen en die in het ontwerp zitten:
+
+- **Verdikte band onder de tiewrap-groef bij de recovery-romp.** De wand is daar
+  1,6 mm; een groef van 1,3 mm diep zou 0,3 mm overlaten en bij het aantrekken
+  scheuren. Met de band blijft er 1,75 mm over.
+- **De sleuven van de recovery-romp staan 45 graden gedraaid**, zodat ze niet in
+  lijn liggen met de deuropening.
+
+De losse ontluchtingsgaten in de schuifrand van de testneus zijn vervallen: de
+zaagsneden ontluchten al.
+
+Wordt de fles later opgemeten (omtrek op 1 en 4 cm vanaf de bodem), dan kan
+`FLES_SPEL` krapper en wordt de tiewrap een borging in plaats van de hoofdklem.
