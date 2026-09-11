@@ -578,9 +578,10 @@ het niet meer draait.
 
 Twee dingen die uit de controle kwamen en die in het ontwerp zitten:
 
-- **Verdikte band onder de tiewrap-groef bij de recovery-romp.** De wand is daar
-  1,6 mm; een groef van 1,3 mm diep zou 0,3 mm overlaten en bij het aantrekken
-  scheuren. Met de band blijft er 1,75 mm over.
+- **Verdikte band onder de tiewrap-groef, bij allebei.** De wand is 1,6 mm
+  (romp) en 2,0 mm (testneus); een groef van 1,3 mm diep zou daar 0,3 en 0,7 mm
+  van overlaten en bij het aantrekken scheuren. Met de band blijft er 1,75 mm
+  respectievelijk 2,15 mm over.
 - **De sleuven van de recovery-romp staan 45 graden gedraaid**, zodat ze niet in
   lijn liggen met de deuropening.
 

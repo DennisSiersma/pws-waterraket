@@ -78,9 +78,18 @@ neus = trimesh.boolean.difference([romp, flesholte, binnenholte], engine='manifo
 
 # ---- gaten: klemrand, ontluchting ----
 gaten = []
+# verdikte band onder de tiewrap-groef: zonder band blijft er maar 0,7 mm
+# wand over en scheurt hij bij het aantrekken
+band_bu = trimesh.creation.cylinder(radius=OD/2 + 1.5, height=TIE_H + 4, sections=SEG)
+band_bi = trimesh.creation.cylinder(radius=ID/2, height=TIE_H + 6, sections=SEG)
+band_bu.apply_translation((0,0,TIE_Z)); band_bi.apply_translation((0,0,TIE_Z))
+neus = trimesh.boolean.union(
+    [neus, trimesh.boolean.difference([band_bu, band_bi], engine='manifold')],
+    engine='manifold')
+
 # tiewrap-groef rondom
-bu = trimesh.creation.cylinder(radius=OD/2 + 1, height=TIE_H, sections=SEG)
-bi = trimesh.creation.cylinder(radius=OD/2 - TIE_D, height=TIE_H + 2, sections=SEG)
+bu = trimesh.creation.cylinder(radius=OD/2 + 2.5, height=TIE_H, sections=SEG)
+bi = trimesh.creation.cylinder(radius=OD/2 + 1.5 - TIE_D, height=TIE_H + 2, sections=SEG)
 bu.apply_translation((0,0,TIE_Z)); bi.apply_translation((0,0,TIE_Z))
 gaten.append(trimesh.boolean.difference([bu, bi], engine='manifold'))
 # zaagsneden: maken de lippen die naar binnen kunnen buigen
