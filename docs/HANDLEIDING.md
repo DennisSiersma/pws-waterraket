@@ -610,7 +610,7 @@ Heb je een printer met meer hoogte, dan kun je `KAMER_H` bovenin het script weer
 op 110 zetten.
 
 
-## 21. De punt op de recovery-romp
+## 21. De punt op de recovery-romp (VERVALLEN, zie 22)
 
 Bovenop komt `PWS_Waterraket_Neuskegel_Tip.stl`, het ogief van 119 mm dat ook op
 de oude neuskegel paste. Die punt heeft ZELF een insteekrand aan de onderkant.
@@ -626,3 +626,48 @@ De punt hoeft niet los te kunnen: de parachute gaat door de zijdeur naar buiten.
 Je kunt hem dus vastzetten met een druppel lijm of met twee kleine zelftappers
 door de rompwand in de insteekrand. Wil je schroefgaten in het model, dan zijn
 die zo toe te voegen.
+
+
+## 22. Verwisselbare schroefneus en los schotje
+
+De neus wordt in de romp GESCHROEFD, zodat je verschillende neusvormen kunt
+proberen. Daarmee wordt neusvorm een onderzoeksvariabele in plaats van een vaste
+keuze.
+
+### De draad
+
+Grof en meergangs: spoed 5 mm, drie gangen, 12 mm lang. Een kwartslag pakt al,
+een halve slag zit hij vast. Fijne geprinte draad loopt snel vast door
+laaglijnen; deze niet. Kern 87,2 mm, rug 88,8 mm, boring van de romp 89,5 mm.
+
+Nagerekend met de neus daadwerkelijk ingedraaid (dus draaien en tegelijk zakken
+langs de schroeflijn): resterende overlap 0,19 cm3, en dat is de meetstap.
+
+### Drie neusvormen
+
+| Bestand | Vorm | Hoogte | Massa |
+|---|---|---|---|
+| `PWS_Waterraket_Neus_Ogief.stl` | klassiek raketprofiel | 133 mm | ~34 g |
+| `PWS_Waterraket_Neus_Kegel.stl` | rechte kegel | 133 mm | ~23 g |
+| `PWS_Waterraket_Neus_Elliptisch.stl` | stomp en kort | 103 mm | ~26 g |
+
+Let op bij het vergelijken: de massa verschilt, en massa in de neus beinvloedt de
+stabiliteit en de hoogte. Wil je zuiver de VORM meten, voeg dan ballast toe zodat
+alle drie even zwaar zijn, en noteer dat.
+
+### Los schotje (belangrijk)
+
+De elektronicaruimte zat tussen twee dichte vloeren, waardoor je de houder er
+niet in kon krijgen. De kamervloer is nu een LOS schotje
+(`PWS_Waterraket_Recovery_Schot.stl`, 89,1 mm, rust op een richel, 0,4 mm
+speling) met twee koordgaten en een doorvoer voor de servodraad.
+
+Volgorde bij het opbouwen: neus eraf, schotje eruit, houder op de rails schuiven,
+schotje terug, parachute erin, neus erop.
+
+### Wat er nog meer veranderde
+
+Door de kamer van 110 naar 85 mm te brengen paste de deur niet meer: die was
+78 mm hoog en begon 12 mm boven de kamervloer, samen 90 mm. De deuropening stak
+daardoor boven de rompbuis uit. De deur is nu 58 x 56 mm en begint 8 mm boven de
+vloer. De romp is 231,8 mm, ruim binnen de 256 mm van een X1.

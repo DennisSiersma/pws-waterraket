@@ -35,7 +35,7 @@ TIE_Z, TIE_H, TIE_D = 13.0, 5.0, 1.3
 
 KAMER_H   = 85.0     # 110 gaf een romp van 271 mm; die past niet op een X1 (256 mm)
 DEUR_B    = 58.0     # koorde van de deuropening
-DEUR_H    = 78.0
+DEUR_H    = 56.0     # past binnen de kamer van 85 mm, met ruimte voor servoplank en draad
 DEUR_DIK  = 2.4
 DEUR_SPEL = 0.45     # rondom in het kozijn
 LIJST     = 2.5      # kozijnrand (ledge) waar de deur op rust
@@ -47,6 +47,19 @@ SERVO_FLENS = 32.5
 
 # insteekrand voor de bestaande ogief-punt (zelfde maten als genereer_neuskegel)
 SPIGOT_H, SPIGOT_SPEL = 14.0, 0.35
+
+# --- schroefverbinding voor de VERWISSELBARE neus ---
+NEUS_SPOED  = 5.0     # grove draad: snel vast te draaien
+NEUS_GANGEN = 3       # drie gangen, dus na een kwartslag al bijna vast
+NEUS_SLAG   = 12.0    # hoogte waarover de draad loopt
+NEUS_DIEPTE = 1.5     # hoe ver de draad naar binnen steekt
+
+# --- los schotje tussen elektronica en parachutekamer ---
+# Zonder dit deel zou de elektronicaruimte tussen twee dichte vloeren zitten
+# en krijg je de houder er niet in.
+SCHOT_RICHEL = 3.0    # breedte van de richel waar het schotje op rust
+SCHOT_DIK    = 3.0
+SCHOT_SPEL   = 0.4
 
 ID = FLES_D + FLES_SPEL
 OD = ID + 2 * WAND
@@ -84,10 +97,49 @@ def pijp(d_out, d_in, h, z0):
 delen, gaten = [], []
 delen.append(pijp(OD, ID, z_top, 0))                       # doorlopende buis
 delen.append(omw([(R_IN+0.1, z_vloer), (R_IN+0.1, z_vloer+VLOER)]))    # vloer bay
-delen.append(omw([(R_IN+0.1, z_kvloer), (R_IN+0.1, z_kvloer+VLOER)]))  # vloer kamer
-# GEEN insteekrand hier: de ogief-punt heeft er zelf al een (mannelijk).
-# De rompbuis is bovenaan gewoon een gladde boring van ID, en daar schuift
-# de punt met zijn eigen rand in. Twee mannelijke randen zouden botsen.
+delen.append(omw([(R_IN+0.1, z_kvloer), (R_IN+0.1, z_kvloer+VLOER)]))  # richel
+# midden eruit: het schotje is een LOS deel, anders is de elektronicaruimte
+# tussen twee dichte vloeren opgesloten en krijg je de houder er niet in
+gaten.append(omw([(R_IN - SCHOT_RICHEL, z_kvloer - 1),
+                  (R_IN - SCHOT_RICHEL, z_kvloer + VLOER + 1)]))
+# ---- binnendraad bovenin: hier schroef je de verwisselbare neus in ----
+def draadgang(r_bore, r_crest, hoogte, z0, spoed, gangen, buiten=False):
+    """Meergangs draad, punt voor punt opgebouwd. buiten=True voor een asdraad."""
+    kruin, flank = spoed * 0.14, spoed * 0.26
+    basis = r_bore - 0.4 if buiten else r_bore + 0.4
+    prof = [(basis, -(kruin + flank)), (r_crest, -kruin),
+            (r_crest, kruin), (basis, kruin + flank)]
+    n_ = len(prof)
+    stukken = []
+    for g in range(gangen):
+        start = 2 * np.pi * g / gangen
+        omwn = hoogte / (spoed * gangen)
+        stappen = max(int(omwn * 160), 40)
+        t = np.linspace(0.0, omwn * 2 * np.pi, stappen)
+        V, F = [], []
+        for hoek in t:
+            c, sn = np.cos(hoek + start), np.sin(hoek + start)
+            zc = z0 + hoek / (2 * np.pi) * spoed * gangen
+            for (pr, pz) in prof:
+                V.append((pr * c, pr * sn, zc + pz))
+        for i in range(stappen - 1):
+            for k in range(n_):
+                a_ = i * n_ + k; b_ = i * n_ + (k + 1) % n_
+                c_ = (i + 1) * n_ + (k + 1) % n_; d_ = (i + 1) * n_ + k
+                F.append((a_, b_, c_)); F.append((a_, c_, d_))
+        for (idx, keer) in ((0, False), (stappen - 1, True)):
+            bs = idx * n_
+            for k in range(1, n_ - 1):
+                tri = (bs, bs + k, bs + k + 1)
+                F.append(tri[::-1] if keer else tri)
+        m_ = trimesh.Trimesh(vertices=np.array(V), faces=np.array(F), process=True)
+        trimesh.repair.fix_normals(m_)
+        stukken.append(m_)
+    return stukken
+
+z_draad = z_top - NEUS_SLAG - 4.0   # zo valt hij samen met de draad op de neus
+delen += draadgang(R_IN, R_IN - NEUS_DIEPTE, NEUS_SLAG, z_draad,
+                   NEUS_SPOED, NEUS_GANGEN)
 
 # rails + dwarssteun (identiek aan de neuskegel)
 rail_b, rail_d, rail_h = 3.0, 9.0, BAY_H - 10
@@ -99,7 +151,7 @@ for kant in (-1, 1):
 delen.append(balk(gleuf + 2*rail_b, 3.0, 6.0, -(gleuf + 2*rail_b)/2, -1.5, z_bay))
 
 # deuropening (+X-zijde), met kozijnrand net binnen de wand
-z_d0 = z_kamer + 12.0
+z_d0 = z_kamer + 8.0
 opening = balk(60, DEUR_B, DEUR_H, R_IN - 20, -DEUR_B/2, z_d0)
 lijstblok = balk(60, DEUR_B - 2*LIJST, DEUR_H - 2*LIJST,
                  R_IN - 30, -(DEUR_B - 2*LIJST)/2, z_d0 + LIJST)
@@ -157,6 +209,25 @@ romp = trimesh.boolean.union(delen, engine='manifold')
 romp = trimesh.boolean.difference([romp] + gaten, engine='manifold')
 
 romp.export('PWS_Waterraket_Recovery_Romp.stl')
+
+# ---- los schotje tussen elektronica en parachutekamer ----
+schot = trimesh.creation.cylinder(radius=R_IN - SCHOT_SPEL/2,
+                                  height=SCHOT_DIK, sections=SEG)
+schot.apply_translation((0, 0, SCHOT_DIK/2))
+gaatjes = []
+for kant in (-1, 1):                       # koordgaten voor de parachutelijn
+    g = trimesh.creation.cylinder(radius=KOORD_D/2, height=SCHOT_DIK+2, sections=24)
+    g.apply_translation((kant*(R_IN-14), 0, SCHOT_DIK/2))
+    gaatjes.append(g)
+g = trimesh.creation.cylinder(radius=4.5, height=SCHOT_DIK+2, sections=24)
+g.apply_translation((0, R_IN-16, SCHOT_DIK/2))     # doorvoer servodraad
+gaatjes.append(g)
+schot = trimesh.boolean.difference([schot] + gaatjes, engine='manifold')
+schot.merge_vertices(); schot.update_faces(schot.nondegenerate_faces())
+schot.update_faces(schot.unique_faces()); schot.remove_unreferenced_vertices()
+trimesh.repair.fix_normals(schot)
+schot.export('PWS_Waterraket_Recovery_Schot.stl')
+print("schot: %.1f mm doorsnede, %.1f mm dik" % (schot.bounding_box.extents[0], SCHOT_DIK))
 
 # ================= DEUR =================
 # vlak paneel met dezelfde kromming, DEUR_SPEL kleiner dan de opening
