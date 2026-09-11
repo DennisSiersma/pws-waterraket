@@ -85,7 +85,9 @@ delen, gaten = [], []
 delen.append(pijp(OD, ID, z_top, 0))                       # doorlopende buis
 delen.append(omw([(R_IN+0.1, z_vloer), (R_IN+0.1, z_vloer+VLOER)]))    # vloer bay
 delen.append(omw([(R_IN+0.1, z_kvloer), (R_IN+0.1, z_kvloer+VLOER)]))  # vloer kamer
-delen.append(pijp(ID - SPIGOT_SPEL, ID - SPIGOT_SPEL - 2*WAND, SPIGOT_H, z_top))
+# GEEN insteekrand hier: de ogief-punt heeft er zelf al een (mannelijk).
+# De rompbuis is bovenaan gewoon een gladde boring van ID, en daar schuift
+# de punt met zijn eigen rand in. Twee mannelijke randen zouden botsen.
 
 # rails + dwarssteun (identiek aan de neuskegel)
 rail_b, rail_d, rail_h = 3.0, 9.0, BAY_H - 10

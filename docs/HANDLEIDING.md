@@ -608,3 +608,21 @@ De deuropening (58 x 78 mm) is niet gewijzigd.
 
 Heb je een printer met meer hoogte, dan kun je `KAMER_H` bovenin het script weer
 op 110 zetten.
+
+
+## 21. De punt op de recovery-romp
+
+Bovenop komt `PWS_Waterraket_Neuskegel_Tip.stl`, het ogief van 119 mm dat ook op
+de oude neuskegel paste. Die punt heeft ZELF een insteekrand aan de onderkant.
+
+Bij een controle bleek de romp daar ook een uitstekende rand te hebben, en twee
+uitstekende randen passen niet in elkaar: ze botsten over ruim 5 cm3. De romp is
+bovenaan nu een gladde boring van 89,5 mm waar de punt met zijn eigen rand van
+88,95 mm in schuift, met 0,55 mm speling.
+
+Totale hoogte romp plus punt: 352 mm, waarvan 50 mm over de fles valt.
+
+De punt hoeft niet los te kunnen: de parachute gaat door de zijdeur naar buiten.
+Je kunt hem dus vastzetten met een druppel lijm of met twee kleine zelftappers
+door de rompwand in de insteekrand. Wil je schroefgaten in het model, dan zijn
+die zo toe te voegen.
