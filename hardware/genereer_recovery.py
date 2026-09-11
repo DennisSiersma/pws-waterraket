@@ -33,7 +33,7 @@ SEG = 96
 SLEUF_N, SLEUF_B, SLEUF_H = 4, 5.0, 36.0
 TIE_Z, TIE_H, TIE_D = 13.0, 5.0, 1.3
 
-KAMER_H   = 110.0
+KAMER_H   = 85.0     # 110 gaf een romp van 271 mm; die past niet op een X1 (256 mm)
 DEUR_B    = 58.0     # koorde van de deuropening
 DEUR_H    = 78.0
 DEUR_DIK  = 2.4
@@ -153,6 +153,7 @@ for i in range(SLEUF_N):
 
 romp = trimesh.boolean.union(delen, engine='manifold')
 romp = trimesh.boolean.difference([romp] + gaten, engine='manifold')
+
 romp.export('PWS_Waterraket_Recovery_Romp.stl')
 
 # ================= DEUR =================

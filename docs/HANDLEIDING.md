@@ -590,3 +590,21 @@ zaagsneden ontluchten al.
 
 Wordt de fles later opgemeten (omtrek op 1 en 4 cm vanaf de bodem), dan kan
 `FLES_SPEL` krapper en wordt de tiewrap een borging in plaats van de hoofdklem.
+
+
+## 20. Printhoogte: kamer teruggebracht naar 85 mm
+
+De romp was 271 mm hoog en past daarmee niet op een Bambu X1 (256 mm bouwhoogte).
+In plaats van hem te splitsen is de parachutekamer teruggebracht van 110 naar
+85 mm. Dat scheelt 24 mm en de romp is nu 246,8 mm: ruim 9 mm speling.
+
+Splitsen met een insteekverbinding was het alternatief, maar dat introduceert een
+naad precies op de plek waar de parachuteklap aangrijpt. Een kortere kamer is
+eenvoudiger en sterker.
+
+Past de parachute nog? De kamer is 85 x 89,5 mm, oftewel 535 cm3. Een opgevouwen
+nylon chute van 60 cm is ruwweg 300 tot 400 cm3, dus dat past met ruimte over.
+De deuropening (58 x 78 mm) is niet gewijzigd.
+
+Heb je een printer met meer hoogte, dan kun je `KAMER_H` bovenin het script weer
+op 110 zetten.
