@@ -78,11 +78,8 @@ hardware/
   PWS_Waterraket_Recovery_Schot.stl                    Los schotje tussen elektronica en parachutekamer
   PWS_Waterraket_Neus_Ogief/Kegel/Elliptisch.stl       Verwisselbare schroefneuzen, drie vormen
   PWS_Waterraket_Testneus.stl                          Simpele TPU-neus voor testvluchten zonder parachute
-  PWS_Waterraket_Nozzle_04..10mm.stl                   Nozzles: insteek in een geboorde originele dop
-  PWS_Waterraket_Nozzledop_04..10mm.stl                Nozzles: volledig geprinte dop met PCO1881-draad
-  PWS_Waterraket_NozzleSteunring_04..09mm.stl          Nozzles: Gardena-steel, zitting op de steunring (BESTE)
-  PWS_Waterraket_NozzleGardenaDop_04..09mm.stl         Nozzles: Gardena-steel in geboorde originele dop (WERKT)
-  PWS_Waterraket_NozzleGardena_04..09mm.stl            Nozzles MET Gardena-steel (voor onze launcher) - draad print scheef
+  PWS_Waterraket_NozzleSteunring_04..09mm.stl          Nozzles, 4 t/m 9 mm (zitting op de steunring)
+  archief/                                             niet gebruikte ontwerpen, met uitleg waarom
   genereer_*.py                                        Generatorscripts (maten bovenin aanpasbaar)
 logsheets/
   PWS_Waterraket_Logsheets.xlsx                        Vluchtlog + hoogte-/spreidingsberekening
