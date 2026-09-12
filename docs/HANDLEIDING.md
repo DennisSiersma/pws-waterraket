@@ -188,7 +188,11 @@ om I2C af te dwingen, en SDO vastzetten: naar GND is adres 0x76, naar VCC 0x77.
 Bij **Gravity-modules** van DFRobot is dat al op de print geregeld (standaard
 0x77) en volstaan de vier draden.
 
-## 12. Neuskegel met payloadruimte
+## 12. Neuskegel met payloadruimte (VERVALLEN)
+
+Deze losse neuskegel is vervangen door de recovery-romp met verwisselbare
+schroefneus (hoofdstuk 22). De bestanden zijn uit de repo verwijderd; de tekst
+hieronder blijft staan als verantwoording van de ontwerpstappen.
 
 Twee geprinte delen, te maken met `hardware/genereer_neuskegel.py`:
 

@@ -73,8 +73,6 @@ firmware/
   PWS_Waterraket_ESP32_sketch.ino                      (alternatief, niet gebruikt)
 hardware/
   PWS_Waterraket_Houder.stl                            Payloadhouder (bord + sensor + accu)
-  PWS_Waterraket_Neuskegel_Bay.stl                     Neuskegel: romp met payloadruimte + statische poorten
-  PWS_Waterraket_Neuskegel_Tip.stl                     Neuskegel: ogief-punt
   PWS_Waterraket_Vinnen_klein/midden/groot.stl         Fin can, drie maten met bekend vinoppervlak
   PWS_Waterraket_Recovery_Romp.stl / _Deur.stl         Recovery: parachutekamer met servo-zijdeur
   PWS_Waterraket_Recovery_Schot.stl                    Los schotje tussen elektronica en parachutekamer

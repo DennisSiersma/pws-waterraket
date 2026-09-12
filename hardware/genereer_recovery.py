@@ -6,7 +6,7 @@ Opbouw van onder naar boven, alles in een romp:
   - schuifrand over de Fernandes-fles (bewezen ontwerp uit de neuskegel)
   - elektronicaruimte met rails, dwarssteun en statische poorten
   - parachutekamer met vlakke ZIJDEUR (scharnier onderaan, servogrendel bovenaan)
-  - insteekrand waar de bestaande ogief-punt (Neuskegel_Tip) op past
+  - binnendraad waar de verwisselbare neus in geschroefd wordt
 
 De deur ligt vlak in de wand (zoals Phoenix: geen randen die de uitworp hinderen)
 en scharniert op een stuk 1,75 mm filament. Een SG90-servo op een plankje boven
@@ -45,7 +45,7 @@ SCHARNIER_PIN = 2.0  # gat voor 1,75 mm filament
 SERVO_B, SERVO_D, SERVO_H = 23.2, 12.6, 24.0
 SERVO_FLENS = 32.5
 
-# insteekrand voor de bestaande ogief-punt (zelfde maten als genereer_neuskegel)
+# (rest van de oude insteekrand; de neus gaat nu op schroefdraad)
 SPIGOT_H, SPIGOT_SPEL = 14.0, 0.35
 
 # --- schroefverbinding voor de VERWISSELBARE neus ---
