@@ -66,15 +66,15 @@ STEEL = [
 ]
 
 # ---------------- dopmaten (NAMETEN) ----------------
-DOP_D     = 30.0     # buitendiameter van de dop
-DOP_H     = 11.5     # hoogte van de dop
+DOP_D     = 29.0     # buitendiameter van de dop, gemeten
+DOP_H     = 9.15     # hoogte van de dop, gemeten
 DOP_SPEL  = 0.4      # speling van de rok over de dop; de lijm vult dit
 DOPGAT_D  = 10.0     # gat dat je in de dop boort
 
 # ---------------- nozzledeel ----------------
 PLAAT     = 4.0
 ROK_WAND  = 2.8
-ROK_DIEP  = 9.5      # hoe ver de rok over de dop valt (lijmvlak)
+ROK_DIEP  = 8.6      # iets korter dan de dop, zodat de rok niet voorbij de doprand steekt
 GROEF_N   = 3        # lijmgroeven in de rok
 GROEF_D   = 0.8
 SCHROEF_D = 2.2
@@ -138,7 +138,7 @@ def bouw(d_gat):
     # lijmgroeven: ringen aan de BINNENkant van de rok, zodat de lijm blijft staan
     weg = []
     for i in range(GROEF_N):
-        z = z_dop + 2.0 + i * 2.6
+        z = z_dop + 1.8 + i * 2.4
         weg.append(ring(r_rok_bi + GROEF_D, r_rok_bi - 0.1, 1.2, z))
     # schroefgaten ALLEEN door de rokwand: een doorlopend gat zou binnenin de
     # dop tegen de fleshals komen
@@ -147,7 +147,7 @@ def bouw(d_gat):
         g = trimesh.creation.cylinder(radius=SCHROEF_D / 2, height=ROK_WAND + 4,
                                       sections=24)
         g.apply_transform(trimesh.transformations.rotation_matrix(np.pi / 2, [0, 1, 0]))
-        g.apply_translation((r_rok_bi + ROK_WAND / 2, 0, z_dop + ROK_DIEP - 3.5))
+        g.apply_translation((r_rok_bi + ROK_WAND / 2, 0, z_dop + ROK_DIEP - 3.0))
         g.apply_transform(trimesh.transformations.rotation_matrix(a, [0, 0, 1]))
         weg.append(g)
     n = trimesh.boolean.difference([n] + weg, engine='manifold')
