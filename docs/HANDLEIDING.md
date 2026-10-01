@@ -675,3 +675,42 @@ Door de kamer van 110 naar 85 mm te brengen paste de deur niet meer: die was
 78 mm hoog en begon 12 mm boven de kamervloer, samen 90 mm. De deuropening stak
 daardoor boven de rompbuis uit. De deur is nu 58 x 56 mm en begint 8 mm boven de
 vloer. De romp is 231,8 mm, ruim binnen de 256 mm van een X1.
+
+## 23. Nozzle als opzetstuk over de originele dop (voorkeursroute)
+
+Ook de steunring-variant (hoofdstuk 18E) kregen we in de praktijk niet recht op
+de fles. De gemene deler bleef: er zat geprinte schroefdraad in.
+
+Deze versie heeft helemaal geen geprinte draad meer:
+
+1. Je draait een ORIGINELE dop op de fles. Spuitgegoten, dus haaks, en hij dicht
+   af met zijn eigen liner.
+2. In die dop boor je een gat van 10 mm.
+3. Het geprinte opzetstuk valt OVER de dop en haakt met vier vingers onder de
+   steunring. Daarmee kan de druk het er niet afduwen.
+4. Onderaan zit de Gardena-steel voor de launcher.
+
+Uitlijning komt van de steunring (33,07 mm, spuitgegoten en rond). Nagemeten:
+rok binnen 33,70 mm (0,63 mm speling), lip binnen 31,47 mm (grijpt 0,8 mm per
+zijde onder de ring), tiewrap-groef aanwezig, sleuven open.
+
+**Afdichting op twee plekken**: de originele dop op de flesrand, en een O-ring
+(16 x 2 mm) tussen het opzetstuk en de bovenkant van de dop. De druk duwt het
+opzetstuk tegen de vingers, en die trekken de O-ring juist aan. Dat is gunstig:
+meer druk is betere afdichting.
+
+**Montage**: gat boren, O-ring plaatsen, dop op de fles, opzetstuk eroverheen
+drukken tot de vingers klikken, tiewrap in de groef zodat ze niet kunnen
+openwijken.
+
+**Twee maten nameten** (bovenin het script):
+- `DOP_HOOGTE`, van de bovenkant van de dop tot de bovenkant van de steunring;
+  staat op 16,0 mm. Reken op de 14,0 mm van flesrand tot ring plus de dikte van
+  de dopbovenkant.
+- `RING_DIK`, de dikte van de steunring; staat op 1,8 mm.
+
+Klopt de eerste niet, dan klikt hij niet of zit hij los.
+
+Maten 4 tot en met 9 mm; 9 blijft de bovengrens door de Gardena-steel.
+
+Printen: Gardena-kant op het bed, geen supports, PETG, 0,2 mm laagjes.

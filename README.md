@@ -78,6 +78,7 @@ hardware/
   PWS_Waterraket_Recovery_Schot.stl                    Los schotje tussen elektronica en parachutekamer
   PWS_Waterraket_Neus_Ogief/Kegel/Elliptisch.stl       Verwisselbare schroefneuzen, drie vormen
   PWS_Waterraket_Testneus.stl                          Simpele TPU-neus voor testvluchten zonder parachute
+  PWS_Waterraket_NozzleOpzet_04..09mm.stl              Nozzles: opzetstuk over de originele dop (voorkeur)
   PWS_Waterraket_NozzleSteunring_04..09mm.stl          Nozzles, 4 t/m 9 mm (zitting op de steunring)
   archief/                                             niet gebruikte ontwerpen, met uitleg waarom
   genereer_*.py                                        Generatorscripts (maten bovenin aanpasbaar)
