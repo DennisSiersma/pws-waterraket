@@ -26,8 +26,8 @@ import trimesh
 
 # ---------------- moet overeenkomen met genereer_recovery.py ----------------
 FLES_D, FLES_SPEL, WAND = 88.5, 1.0, 1.6
-NEUS_SPOED, NEUS_GANGEN, NEUS_SLAG, NEUS_DIEPTE = 5.0, 3, 12.0, 1.5
-NEUS_SPEL = 0.35
+NEUS_SPOED, NEUS_GANGEN, NEUS_SLAG, NEUS_DIEPTE = 5.0, 3, 12.0, 2.2
+NEUS_SPEL = 0.7      # geprinte draad op deze maat heeft dit echt nodig
 
 ID = FLES_D + FLES_SPEL          # boring van de romp
 OD = ID + 2 * WAND

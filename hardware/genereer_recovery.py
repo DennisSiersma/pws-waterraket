@@ -52,7 +52,7 @@ SPIGOT_H, SPIGOT_SPEL = 14.0, 0.35
 NEUS_SPOED  = 5.0     # grove draad: snel vast te draaien
 NEUS_GANGEN = 3       # drie gangen, dus na een kwartslag al bijna vast
 NEUS_SLAG   = 12.0    # hoogte waarover de draad loopt
-NEUS_DIEPTE = 1.5     # hoe ver de draad naar binnen steekt
+NEUS_DIEPTE = 2.2     # dieper, zodat er ruimte is voor meer speling
 
 # --- los schotje tussen elektronica en parachutekamer ---
 # Zonder dit deel zou de elektronicaruimte tussen twee dichte vloeren zitten
@@ -138,16 +138,22 @@ def draadgang(r_bore, r_crest, hoogte, z0, spoed, gangen, buiten=False):
     return stukken
 
 z_draad = z_top - NEUS_SLAG - 4.0   # zo valt hij samen met de draad op de neus
+# aanloop: de bovenste 1,5 mm van de boring iets wijder
+gaten.append(omw([(R_IN + 0.9, z_top - 1.5), (R_IN + 0.9, z_top + 1)]))
 delen += draadgang(R_IN, R_IN - NEUS_DIEPTE, NEUS_SLAG, z_draad,
                    NEUS_SPOED, NEUS_GANGEN)
 
 # rails + dwarssteun (identiek aan de neuskegel)
-rail_b, rail_d, rail_h = 3.0, 9.0, BAY_H - 10
+# Rails lopen vanaf de houderrand DOOR tot in de rompwand: losstaande ribben
+# van 82 mm hoog printen slecht en wiebelen. Nu zijn het wandribben.
+rail_b, rail_h = 3.0, BAY_H - 10
 gleuf = HOUDER_T + RAIL_SPEL
+y_rand = HOUDER_B * 0.42
+rail_d = R_IN + 1.0 - y_rand          # tot 1 mm in de wand
 for kant in (-1, 1):
     x = kant * (gleuf/2 + rail_b/2)
-    for y in (-HOUDER_B*0.42, HOUDER_B*0.42 - rail_d):
-        delen.append(balk(rail_b, rail_d, rail_h, x - rail_b/2, y, z_bay))
+    delen.append(balk(rail_b, rail_d, rail_h, x - rail_b/2,  y_rand, z_bay))
+    delen.append(balk(rail_b, rail_d, rail_h, x - rail_b/2, -y_rand - rail_d, z_bay))
 delen.append(balk(gleuf + 2*rail_b, 3.0, 6.0, -(gleuf + 2*rail_b)/2, -1.5, z_bay))
 
 # deuropening (+X-zijde), met kozijnrand net binnen de wand
@@ -246,9 +252,20 @@ vak_k = balk(60, kb, kh + 2, R_IN - 25, -kb/2, LIJST - 1)
 kern = trimesh.boolean.intersection([schil_dik, vak_k], engine='manifold')
 deur = trimesh.boolean.union([flens, kern], engine='manifold')
 # scharnieroog midden-onder + grendellip midden-boven (naar binnen)
+# oog en lip lopen door tot IN het deurpaneel (dat begint op straal 44,0);
+# anders zweven ze los en worden ze als aparte stukjes geprint
+# Oog en lip moeten het paneel in TWEE richtingen raken: radiaal tot in de
+# buitenflens (straal 45,45 tot 46,25) en in de hoogte overlappend met het
+# paneel. Anders zijn het losse stukjes. Het oog begint daarom op z=-7 en loopt
+# door tot z=+1; de lip steekt tot straal 46,05.
+# Het oog blijft BINNEN de boring (straal < 44,75), want onder de deuropening
+# is de rompwand massief. Het pakt de dikke kern van het paneel (vanaf straal
+# 43,85, vanaf z=2,5) van binnenuit: tot straal 44,55 en tot z=5.
+# De lip zit boven de opening, waar een sleuf in de wand zit, en mag wel tot
+# in de buitenflens.
 deur = trimesh.boolean.union([deur,
-    balk(6, 10, 6, R_IN - 7.5, -5, -7),
-    balk(10, 6, 8, R_IN - 12, -3, deur_h - 2)], engine='manifold')
+    balk((R_IN - 0.2) - (R_IN - 7.5), 10, 12, R_IN - 7.5, -5, -7),
+    balk((R_IN + 1.3) - (R_IN - 12), 6, 8, R_IN - 12, -3, deur_h - 2)], engine='manifold')
 deur = trimesh.boolean.difference([deur,
     cil_x(SCHARNIER_PIN, 40, 0, -5 - DEUR_SPEL),   # na verplaatsing exact op romphoogte
     cil_x(2.2, 40, 0, deur_h + 2)], engine='manifold')   # gat in de lip voor de servohoorn

@@ -751,3 +751,26 @@ zelftappers, en pas daarna op de fles draaien.
 
 **Nameten**: `DOP_D` (30,0) en `DOP_H` (11,5) bovenin het script. Te ruim is geen
 probleem, want de lijm vult dat op; te krap gaat er niet overheen.
+
+## 25. Drie printfouten hersteld (recovery-romp, deur, neus)
+
+Uit de eerste print van de recovery-set kwamen drie problemen. Alle drie zaten
+in het model, niet in de printer.
+
+**De neus schroefde er niet in.** 0,35 mm speling is te weinig voor een geprinte
+draad van 89 mm doorsnede: een PETG-binnendraad krimpt naar binnen en de
+buitenlaag van de neus komt dikker uit dan getekend. De draad is nu 2,2 mm diep
+(was 1,5) met 0,7 mm speling, en de romp heeft bovenaan een aanloopschuinte zodat
+de neus makkelijk aanzet. Nagerekend met de neus ingedraaid langs de schroeflijn.
+
+**De deurtabs kwamen los.** Het scharnieroog hing onder de onderrand van het
+paneel en de grendellip raakte de buitenflens net niet. In het model waren het
+dus losse stukjes, en zo printte de slicer ze ook. Dat had de controle moeten
+vangen; die keek alleen naar de romp en niet naar de deur. Nu: oog en lip steken
+in het paneel, de deur is aantoonbaar een geheel.
+
+**De rails printten slecht.** Het waren vrije ribben van 82 mm hoog en 3 mm dik
+die alleen op de bodem stonden. Die wiebelen bij het printen. Ze lopen nu door
+tot in de rompwand en zijn daarmee wandribben.
+
+De controle checkt voortaan bij alle delen of ze uit een stuk bestaan.
