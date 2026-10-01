@@ -35,14 +35,14 @@ R_IN = ID / 2
 
 KRAAG_H = 3.0                    # kraag die op de romprand landt
 DRAAD_START = 2.0                # begint zover boven de kraag
-WAND_NEUS = 2.0
+WAND_NEUS = 1.6                  # zelfde als de oude punt; 2,0 was onnodig zwaar
 SEG = 96
 
 # (naam, hoogte, vorm)
 VORMEN = [
-    ("Ogief",      115.0, "ogief"),
-    ("Kegel",      115.0, "kegel"),
-    ("Elliptisch",  85.0, "ellips"),
+    ("Ogief",      105.0, "ogief"),
+    ("Kegel",      105.0, "kegel"),
+    ("Elliptisch",  78.0, "ellips"),
 ]
 
 
