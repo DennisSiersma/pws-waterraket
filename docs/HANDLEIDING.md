@@ -714,3 +714,40 @@ Klopt de eerste niet, dan klikt hij niet of zit hij los.
 Maten 4 tot en met 9 mm; 9 blijft de bovengrens door de Gardena-steel.
 
 Printen: Gardena-kant op het bed, geen supports, PETG, 0,2 mm laagjes.
+
+## 24. Nozzle om op de dop te LIJMEN
+
+Variant op hoofdstuk 23, maar dan vastgelijmd in plaats van vastgeklikt. Geen
+vingers, geen tiewrap, geen maat die precies moet kloppen.
+
+Opbouw: Gardena-steel, een plaat op de bovenkant van de dop, en een rok die
+9,5 mm over de dop valt. Die rok is het lijmvlak, circa 895 mm2.
+
+**Belangrijk: lijm hecht slecht op doppen.** Flesdoppen zijn van HDPE of PP, en
+die hebben een lage oppervlakte-energie. Gewone tweecomponentenlijm pakt daar
+nauwelijks op aan, hoe goed je ook schuurt. Opties van sterk naar zwak:
+
+1. Lijm die voor polyolefinen gemaakt is: 3M DP8010, of secondelijm met een
+   primer zoals Loctite 770.
+2. Gewone epoxy, maar dan schuren EN kort vlammen met een aansteker, en direct
+   lijmen.
+3. Gewone epoxy op een onbehandelde dop: dit laat los.
+
+Daarom zitten er **drie schroefgaten** van 2,2 mm in de rok als achtervang.
+Die gaan alleen door de rokwand, niet dwars door het hele deel: een doorlopend
+gat zou binnenin tegen de fleshals komen. Zet er na het lijmen drie korte
+zelftappers in, de dopwand in.
+
+Rekensom ter geruststelling: bij 7 bar en een afdichting op 16 mm staat er circa
+14 kg kracht op het deel. Over 895 mm2 lijmvlak is dat 0,13 N/mm2. Weinig, maar
+op onbehandeld PP haal je zelfs dat niet.
+
+Er zitten drie lijmgroeven in de rok, zodat de lijm ergens in kan blijven staan
+in plaats van er bij het opdrukken helemaal uit te worden geperst.
+
+**Montage**: 10 mm boren, dop ruw schuren en ontvetten, O-ring 16 x 2 mm in de
+groef, lijmen, 24 uur uitharden (niet de snelle vijfminutenvariant), dan de drie
+zelftappers, en pas daarna op de fles draaien.
+
+**Nameten**: `DOP_D` (30,0) en `DOP_H` (11,5) bovenin het script. Te ruim is geen
+probleem, want de lijm vult dat op; te krap gaat er niet overheen.
