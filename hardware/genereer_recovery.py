@@ -21,9 +21,9 @@ import numpy as np, trimesh
 # ---------------- basis ----------------
 FLES_D, FLES_SPEL, WAND = 88.5, 1.0, 1.6
 SKIRT_H, VLOER = 50.0, 2.4   # 50 mm: de fles schuift diep genoeg voor een stijve, lijmbare verbinding
-BAY_H = 92.0
+BAY_H = 26.0           # tray van 13 mm ligt plat; was 92 met de staande houder
 HOUDER_B, HOUDER_T, RAIL_SPEL = 71.4, 12.0, 0.8
-POORT_D, POORT_N, POORT_H = 3.0, 4, 55.0
+POORT_D, POORT_N, POORT_H = 3.0, 4, 8.0   # op sensorhoogte in de tray
 KOORD_D = 4.0
 SEG = 96
 
@@ -33,9 +33,9 @@ SEG = 96
 SLEUF_N, SLEUF_B, SLEUF_H = 4, 5.0, 36.0
 TIE_Z, TIE_H, TIE_D = 13.0, 5.0, 1.3
 
-KAMER_H   = 100.0    # romp 246,8 mm: past op een X1 (256). Bij 85 paste deur+servo+draad niet boven elkaar.
-DEUR_B    = 58.0     # koorde van de deuropening
-DEUR_H    = 56.0     # past binnen de kamer van 85 mm, met ruimte voor servoplank en draad
+KAMER_H   = 80.0     # servo zit nu NAAST de deur, dus geen stapel meer boven de deur
+DEUR_B    = 54.0     # koorde van de deuropening
+DEUR_H    = 50.0
 DEUR_DIK  = 2.4
 DEUR_SPEL = 0.45     # rondom in het kozijn
 LIJST     = 2.5      # kozijnrand (ledge) waar de deur op rust
@@ -78,6 +78,12 @@ def omw(punten):
 def balk(sx, sy, sz, x, y, z):
     m = trimesh.creation.box(extents=(sx, sy, sz))
     m.apply_translation((x + sx/2, y + sy/2, z + sz/2))
+    return m
+
+def cil_y(d, l, x, z):
+    m = trimesh.creation.cylinder(radius=d / 2, height=l, sections=32)
+    m.apply_transform(trimesh.transformations.rotation_matrix(np.pi / 2, [1, 0, 0]))
+    m.apply_translation((x, 0, z))
     return m
 
 def cil_x(d, l, y, z):
@@ -144,17 +150,7 @@ delen += draadgang(R_IN, R_IN - NEUS_DIEPTE, NEUS_SLAG, z_draad,
                    NEUS_SPOED, NEUS_GANGEN)
 
 # rails + dwarssteun (identiek aan de neuskegel)
-# Rails lopen vanaf de houderrand DOOR tot in de rompwand: losstaande ribben
-# van 82 mm hoog printen slecht en wiebelen. Nu zijn het wandribben.
-rail_b, rail_h = 3.0, BAY_H - 10
-gleuf = HOUDER_T + RAIL_SPEL
-y_rand = HOUDER_B * 0.42
-rail_d = R_IN + 1.0 - y_rand          # tot 1 mm in de wand
-for kant in (-1, 1):
-    x = kant * (gleuf/2 + rail_b/2)
-    delen.append(balk(rail_b, rail_d, rail_h, x - rail_b/2,  y_rand, z_bay))
-    delen.append(balk(rail_b, rail_d, rail_h, x - rail_b/2, -y_rand - rail_d, z_bay))
-delen.append(balk(gleuf + 2*rail_b, 3.0, 6.0, -(gleuf + 2*rail_b)/2, -1.5, z_bay))
+# geen rails meer: de elektronica ligt plat in een tray op de vloer
 
 # deuropening (+X-zijde), met kozijnrand net binnen de wand
 z_d0 = z_kamer + 8.0
@@ -169,29 +165,37 @@ binnensnede = trimesh.boolean.intersection(
     [lijstblok, pijp(OD+2, ID-8, DEUR_H+4, z_d0-2)], engine='manifold')
 gaten += [buitensnede, binnensnede]
 
-# scharnierogen aan de romp: twee blokjes onder de opening met dwarsgat
-for y in (-DEUR_B/2 + 6, DEUR_B/2 - 12):
-    delen.append(balk(6, 6, 8, R_IN - 7.5, y, z_d0 - 9))
-# pengat alleen door de scharnierblokjes en de wand aan de DEURKANT (daar steek
-# je de filamentpen in). Een doorlopend gat priemde ook door de overkant.
-pen = cil_x(SCHARNIER_PIN, 16, 0, z_d0 - 5)
-pen.apply_translation((R_IN - 2.0, 0, 0))
-gaten.append(pen)
+# Scharnier. De as loopt TANGENTIEEL (langs y) door twee blokjes naast het
+# deuroog, op x=36. De blokjes worden met de boring afgesneden zodat ze in de
+# wand versmelten maar er niet buiten uitsteken (de oude blokjes op y=21 staken
+# 1,8 mm buiten de romp en hadden een radiaal pengat: dat scharnier kon niet).
+PEN_X = 36.0
+for yk in (-24.0, 18.0):
+    blok = balk(10.0, 6.0, 8.0, 31.0, yk, z_d0 - 9)
+    blok = trimesh.boolean.intersection([blok, pijp(ID + 1.2, 0.1, 20, z_d0 - 15)], engine='manifold')
+    delen.append(blok)
+# pengat langs y door de blokjes, het deuroog en de wand aan beide kanten (daar
+# steek je het stukje filament in)
+gaten.append(cil_y(SCHARNIER_PIN, 100, PEN_X, z_d0 - 5))
 
-# servoplank boven de opening (hoorn wijst omlaag door een sleuf)
-# Servo LIGGEND op een plankje boven de deur, as tangentieel: het lichaam is
-# dan maar 12,6 mm hoog, en het vak blijft binnen straal 43 zodat het de
-# draadzone in de wand niet raakt. De oude staande opstelling sneed het
-# servovak dwars door de schroefdraad en de bovenrand.
-plank_z = z_d0 + DEUR_H + 2
-PLANK_X = 26.0
-delen.append(balk(PLANK_X, 26.0, 3.0, R_IN - PLANK_X, -14.0, plank_z))   # tot y=12: de lip loopt erlangs
-gaten.append(balk(23.0, SERVO_B, SERVO_D + 1.0, R_IN - 24.5, -SERVO_B/2, plank_z + 3.0))
-for ys in (-9.0, 7.0):                                        # tiewrapsleuven in het plankje
-    gaten.append(balk(3.0, 2.0, 6.0, R_IN - 16.0, ys, plank_z - 1.0))
-# sleuf in de wand voor de grendellip, aan de kant waar de servo-as uitsteekt
-LIP_Y = 16.0   # voorbij het servolichaam (tot y=11,6) en de hoorn
-gaten.append(balk(14, 8, 13, R_IN - 8, LIP_Y - 4, z_d0 + DEUR_H - 4))   # loopt door tot in het kozijn
+# Servo NAAST de deur, op dezelfde hoogte als de deur: dat scheelt de hele
+# stapel boven de deur. Hij ligt tangentieel op een plankje tegen de wand,
+# as wijst naar de deur; de hoorn draait in het radiaal-verticale vlak vlak
+# naast de deurrand en pakt een lip aan de binnenkant van de deur.
+S_HOEK = np.radians(53.0)              # middelpunt van de servo, rond de omtrek
+S_R    = 43.0                          # buitenvlak van het servovak (binnen de boring)
+z_mid  = z_d0 + DEUR_H / 2
+def rot_z(m, a):
+    m.apply_transform(trimesh.transformations.rotation_matrix(a, [0, 0, 1])); return m
+plank = balk(27.0, 28.0, 3.0, R_IN + 1.5 - 27.0, -14.0, z_mid - SERVO_D / 2 - 3.5)
+plank = trimesh.boolean.intersection([plank, pijp(ID + 1.0, 0.1, 40, z_mid - 20)], engine='manifold')
+delen.append(rot_z(plank, S_HOEK))
+vak = balk(24.0, 23.6, SERVO_D + 1.0, S_R - 24.0, -11.8, z_mid - SERVO_D / 2 - 0.5)
+gaten.append(rot_z(vak, S_HOEK))
+for ys in (-9.0, 7.0):                                        # tiewrapsleuven
+    sl = balk(3.0, 2.0, 8.0, S_R - 13.0, ys, z_mid - SERVO_D / 2 - 5.0)
+    gaten.append(rot_z(sl, S_HOEK))
+LIP_Y = 23.0                           # lip aan de deurzijde die naar de servo wijst
 
 # statische poorten, koordgaten, servodraadgat
 for i in range(POORT_N):
@@ -284,14 +288,14 @@ deur = trimesh.boolean.union([flens, kern], engine='manifold')
 # De lip zit boven de opening, waar een sleuf in de wand zit, en mag wel tot
 # in de buitenflens.
 deur = trimesh.boolean.union([deur,
-    balk((R_IN - 0.2) - (R_IN - 7.5), 10, 12, R_IN - 7.5, -5, -7),
-    balk((R_IN + 1.3) - (R_IN - 12), 6, 8, R_IN - 12, LIP_Y - 3, deur_h - 2)], engine='manifold')
+    balk((R_IN - 0.2) - 31.0, 10, 12, 31.0, -5, -7),
+    balk((R_IN + 0.6) - (R_IN - 11), 3, 10, R_IN - 11, LIP_Y - 1.5, deur_h / 2 - 5)], engine='manifold')
 # gat in de lip loopt TANGENTIEEL (langs y), evenwijdig aan de servo-as
 lipgat = trimesh.creation.cylinder(radius=1.1, height=20, sections=24)
 lipgat.apply_transform(trimesh.transformations.rotation_matrix(np.pi/2, [1, 0, 0]))
-lipgat.apply_translation((R_IN - 6.0, LIP_Y, deur_h + 2))
+lipgat.apply_translation((R_IN - 6.5, LIP_Y, deur_h / 2))
 deur = trimesh.boolean.difference([deur,
-    cil_x(SCHARNIER_PIN, 40, 0, -5 - DEUR_SPEL),   # na verplaatsing exact op romphoogte
+    cil_y(SCHARNIER_PIN, 40, 36.0, -5 - DEUR_SPEL),   # as langs y, zelfde x als de blokjes
     lipgat], engine='manifold')
 deur.apply_translation((0, 0, z_d0 + DEUR_SPEL))
 deur.export('PWS_Waterraket_Recovery_Deur.stl')

@@ -40,9 +40,9 @@ SEG = 96
 
 # (naam, hoogte, vorm)
 VORMEN = [
-    ("Ogief",      105.0, "ogief"),
-    ("Kegel",      105.0, "kegel"),
-    ("Elliptisch",  78.0, "ellips"),
+    ("Ogief",       80.0, "ogief"),
+    ("Kegel",       80.0, "kegel"),
+    ("Elliptisch",  60.0, "ellips"),
 ]
 
 

@@ -811,3 +811,38 @@ waar de servo-as uitsteekt, met het gat in de lip evenwijdig aan die as.
 draadzone rondom heel op 72 hoeken; servovak raakt de wand niet; deur valt vrij
 in het kozijn; houder past; neus draait er langs de schroeflijn in; top van elke
 neus massief; geen plat plafond in de holte.
+
+## 27. Compact: van 302 naar 193 mm boven de fles
+
+De hele constructie was groter dan de fles zelf. Drie ingrepen:
+
+| Deel | Was | Nu | Hoe |
+|---|---|---|---|
+| Elektronicaruimte | 92 mm | 26 mm | bord, accu en sensor liggen PLAT in een rond bakje (`PWS_Waterraket_Tray.stl`, 13 mm) in plaats van rechtop in een houder |
+| Parachutekamer | 100 mm | 80 mm | servo zit NAAST de deur op dezelfde hoogte, niet meer erboven |
+| Neus | 105 mm | 80 mm | korter ogief; bij deze snelheden niet meetbaar |
+
+Romp 160,8 mm (was 246,8), ogief 96,7 mm incl. draad (was 121). Boven de fles
+nu 193 mm. Massa: romp ~58 g, tray ~45 g (slicer-infill maakt dat minder), deur
+5 g, neus 19 g.
+
+**De tray** vervangt de houder. Het scherm kijkt omhoog: neus eraf en je ziet
+het. Alle vakken liggen binnen straal 42 (rand op 42,5), met vingergaten in de
+bodem om de onderdelen eruit te tillen en twee kabelgoten naar het bord. Hij
+ligt los op de vloer van de elektronicaruimte; het schotje erboven houdt hem op
+zijn plek. De statische poorten zitten nu op 8 mm boven die vloer, op sensorhoogte.
+De oude houder staat in het archief.
+
+**De servo** ligt tangentieel op een plankje tegen de wand, op 53 graden naast
+de deur, as naar de deur. De hoorn draait in het radiaal-verticale vlak vlak
+naast de deurrand en pakt een lip aan de BINNENKANT van de deur (y=23, binnen
+het kozijnvenster zodat hij bij het openen niet achter de rand blijft haken).
+
+**Het scharnier bleek al vanaf het begin fout.** De blokjes stonden op y=21 waar
+de ronde wand al naar binnen loopt, en staken daardoor 1,8 mm buiten de romp.
+Belangrijker: het pengat liep radiaal, terwijl een scharnieras tangentieel moet
+lopen door beide blokjes en het deuroog. Dat scharnier had nooit kunnen draaien.
+Nu: as langs y op x=36, blokjes met de boring afgesneden zodat ze in de wand
+versmelten, oog dieper naar binnen. Gecontroleerd: as over 60 mm vrij, materiaal
+eromheen in beide blokjes en het oog, niets buiten de romp. Het stukje filament
+steek je van buitenaf door de wand in.
