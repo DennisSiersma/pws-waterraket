@@ -774,3 +774,40 @@ die alleen op de bodem stonden. Die wiebelen bij het printen. Ze lopen nu door
 tot in de rompwand en zijn daarmee wandribben.
 
 De controle checkt voortaan bij alle delen of ze uit een stuk bestaan.
+
+## 26. Tweede printronde: gat in de neus, gat in de draad
+
+Twee fouten uit de tweede print, allebei in het model.
+
+**Gat in de top van de neus.** Het ogiefprofiel was bij de top vrijwel vlak (op
+1 mm onder de punt nog 11 mm straal). De holte binnenin eindigde daardoor in een
+plat plafond van bijna 2 cm, en dat kan een printer alleen met support maken. Dat
+support zit in een gesloten holte: bij het verwijderen prik je er doorheen.
+
+Nu: een echt tangent-ogief (cirkelboog, rakend in de romp, eindigend in een
+punt, afgeplat op 2,5 mm straal). De holte volgt de buitenvorm met vaste wand,
+maar het plafond mag nergens vlakker worden dan 52 graden en de top is massief.
+Het script zoekt per vorm het hoogste punt waar de holte veilig kan sluiten.
+Gecontroleerd: top dicht, een geheel, binnenin alleen een kleine brug van 8 mm.
+
+**Gat in de schroefdraad van de romp.** Met de kamer op 85 mm paste de stapel
+niet: deur (56) plus servoplank en servovak (34) plus draad (16) is 106 mm. Het
+servovak sneed dwars door de draadzone en de bovenrand. Twee wijzigingen:
+de kamer is weer 100 mm (romp 246,8 mm, past op een X1), en de servo ligt nu
+plat op een plankje boven de deur met zijn as tangentieel. Het lichaam is dan
+maar 12,6 mm hoog en het vak blijft binnen straal 43, los van de wand.
+
+De grendellip zit daardoor niet meer in het midden maar op y=16, aan de kant
+waar de servo-as uitsteekt, met het gat in de lip evenwijdig aan die as.
+
+**Nog twee kleinere dingen die de strengere controle vond:**
+- het scharnierpengat was 200 mm lang en priemde ook door de wand aan de
+  overkant; het is nu 16 mm, alleen door de blokjes en de wand aan de deurkant
+- de romp werd na het wegschrijven lek (float32-afronding rond het pengat); de
+  export heeft nu dezelfde opschoonstap als de andere delen, met controle na
+  het inlezen
+
+**Controles die voortaan bij elke run draaien:** elk deel een geheel; wand in de
+draadzone rondom heel op 72 hoeken; servovak raakt de wand niet; deur valt vrij
+in het kozijn; houder past; neus draait er langs de schroeflijn in; top van elke
+neus massief; geen plat plafond in de holte.

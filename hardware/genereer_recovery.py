@@ -33,7 +33,7 @@ SEG = 96
 SLEUF_N, SLEUF_B, SLEUF_H = 4, 5.0, 36.0
 TIE_Z, TIE_H, TIE_D = 13.0, 5.0, 1.3
 
-KAMER_H   = 85.0     # 110 gaf een romp van 271 mm; die past niet op een X1 (256 mm)
+KAMER_H   = 100.0    # romp 246,8 mm: past op een X1 (256). Bij 85 paste deur+servo+draad niet boven elkaar.
 DEUR_B    = 58.0     # koorde van de deuropening
 DEUR_H    = 56.0     # past binnen de kamer van 85 mm, met ruimte voor servoplank en draad
 DEUR_DIK  = 2.4
@@ -172,13 +172,26 @@ gaten += [buitensnede, binnensnede]
 # scharnierogen aan de romp: twee blokjes onder de opening met dwarsgat
 for y in (-DEUR_B/2 + 6, DEUR_B/2 - 12):
     delen.append(balk(6, 6, 8, R_IN - 7.5, y, z_d0 - 9))
-gaten.append(cil_x(SCHARNIER_PIN, 200, 0, z_d0 - 5))       # doorlopend pengat
+# pengat alleen door de scharnierblokjes en de wand aan de DEURKANT (daar steek
+# je de filamentpen in). Een doorlopend gat priemde ook door de overkant.
+pen = cil_x(SCHARNIER_PIN, 16, 0, z_d0 - 5)
+pen.apply_translation((R_IN - 2.0, 0, 0))
+gaten.append(pen)
 
 # servoplank boven de opening (hoorn wijst omlaag door een sleuf)
-plank_z = z_d0 + DEUR_H + 6
-delen.append(balk(SERVO_B + 8, SERVO_D + 6, 4, R_IN - SERVO_B - 10, -(SERVO_D+6)/2, plank_z))
-gaten.append(balk(SERVO_B, SERVO_D, 30, R_IN - SERVO_B - 6, -SERVO_D/2, plank_z - 1))
-gaten.append(balk(14, 8, 10, R_IN - 8, -4, z_d0 + DEUR_H - 1))   # sleuf voor de grendellip
+# Servo LIGGEND op een plankje boven de deur, as tangentieel: het lichaam is
+# dan maar 12,6 mm hoog, en het vak blijft binnen straal 43 zodat het de
+# draadzone in de wand niet raakt. De oude staande opstelling sneed het
+# servovak dwars door de schroefdraad en de bovenrand.
+plank_z = z_d0 + DEUR_H + 2
+PLANK_X = 26.0
+delen.append(balk(PLANK_X, 26.0, 3.0, R_IN - PLANK_X, -14.0, plank_z))   # tot y=12: de lip loopt erlangs
+gaten.append(balk(23.0, SERVO_B, SERVO_D + 1.0, R_IN - 24.5, -SERVO_B/2, plank_z + 3.0))
+for ys in (-9.0, 7.0):                                        # tiewrapsleuven in het plankje
+    gaten.append(balk(3.0, 2.0, 6.0, R_IN - 16.0, ys, plank_z - 1.0))
+# sleuf in de wand voor de grendellip, aan de kant waar de servo-as uitsteekt
+LIP_Y = 16.0   # voorbij het servolichaam (tot y=11,6) en de hoorn
+gaten.append(balk(14, 8, 13, R_IN - 8, LIP_Y - 4, z_d0 + DEUR_H - 4))   # loopt door tot in het kozijn
 
 # statische poorten, koordgaten, servodraadgat
 for i in range(POORT_N):
@@ -214,7 +227,14 @@ for i in range(SLEUF_N):
 romp = trimesh.boolean.union(delen, engine='manifold')
 romp = trimesh.boolean.difference([romp] + gaten, engine='manifold')
 
+# opschonen voor de export: STL rondt af naar float32 en piepkleine driehoekjes
+# (bijvoorbeeld rond het pengat) vallen dan samen, waardoor het model lek wordt
+romp.merge_vertices(); romp.update_faces(romp.nondegenerate_faces())
+romp.update_faces(romp.unique_faces()); romp.remove_unreferenced_vertices()
+trimesh.repair.fill_holes(romp); trimesh.repair.fix_normals(romp)
 romp.export('PWS_Waterraket_Recovery_Romp.stl')
+_t = trimesh.load('PWS_Waterraket_Recovery_Romp.stl')
+print("romp NA export: waterdicht %s, delen %d" % (_t.is_watertight, _t.body_count))
 
 # ---- los schotje tussen elektronica en parachutekamer ----
 schot = trimesh.creation.cylinder(radius=R_IN - SCHOT_SPEL/2,
@@ -265,10 +285,14 @@ deur = trimesh.boolean.union([flens, kern], engine='manifold')
 # in de buitenflens.
 deur = trimesh.boolean.union([deur,
     balk((R_IN - 0.2) - (R_IN - 7.5), 10, 12, R_IN - 7.5, -5, -7),
-    balk((R_IN + 1.3) - (R_IN - 12), 6, 8, R_IN - 12, -3, deur_h - 2)], engine='manifold')
+    balk((R_IN + 1.3) - (R_IN - 12), 6, 8, R_IN - 12, LIP_Y - 3, deur_h - 2)], engine='manifold')
+# gat in de lip loopt TANGENTIEEL (langs y), evenwijdig aan de servo-as
+lipgat = trimesh.creation.cylinder(radius=1.1, height=20, sections=24)
+lipgat.apply_transform(trimesh.transformations.rotation_matrix(np.pi/2, [1, 0, 0]))
+lipgat.apply_translation((R_IN - 6.0, LIP_Y, deur_h + 2))
 deur = trimesh.boolean.difference([deur,
     cil_x(SCHARNIER_PIN, 40, 0, -5 - DEUR_SPEL),   # na verplaatsing exact op romphoogte
-    cil_x(2.2, 40, 0, deur_h + 2)], engine='manifold')   # gat in de lip voor de servohoorn
+    lipgat], engine='manifold')
 deur.apply_translation((0, 0, z_d0 + DEUR_SPEL))
 deur.export('PWS_Waterraket_Recovery_Deur.stl')
 

@@ -87,13 +87,19 @@ def draadgang(r_kern, r_kruin, hoogte, z0, spoed, gangen):
     return stukken
 
 
-def straal(vorm, x, r0):
+def straal(vorm, x, r0, L):
     """x loopt van 0 (basis) tot 1 (punt); geeft de straal."""
     if vorm == "kegel":
         return r0 * (1 - x)
     if vorm == "ellips":
         return r0 * np.sqrt(max(0.0, 1 - x ** 2))
-    return r0 * np.sqrt(max(0.0, 1 - x ** 2)) ** 0.72      # ogief
+    # tangent-ogief: cirkelboog die rakend in de romp overgaat en in een punt
+    # eindigt. Het oude profiel was bij de top bijna vlak (op 1 mm onder de
+    # punt nog 11 mm straal), waardoor de holte een plat plafond kreeg dat
+    # alleen met support te printen was.
+    rho = (r0 ** 2 + L ** 2) / (2 * r0)
+    z = x * L
+    return max(0.0, np.sqrt(max(0.0, rho ** 2 - z ** 2)) + r0 - rho)
 
 
 def bouw(naam, hoogte, vorm):
@@ -109,11 +115,15 @@ def bouw(naam, hoogte, vorm):
 
     prof = [(r_kern, 0.0), (r_kern, z_kraag0),
             (r_kraag, z_kraag0), (r_kraag, z_body)]
-    n = 48
+    n = 120
+    TOP_R = 2.5                                  # afgeplatte top: geen naald
     for i in range(n + 1):
         x = i / n
-        r = straal(vorm, x, r_kraag)
-        prof.append((max(r, 0.5), z_body + x * hoogte))
+        r = straal(vorm, x, r_kraag, hoogte)
+        if r < TOP_R:
+            prof.append((TOP_R, z_body + x * hoogte))
+            break
+        prof.append((r, z_body + x * hoogte))
     body = omw(prof)
 
     delen = [body] + draadgang(r_kern, r_kruin, NEUS_SLAG, z_dr,
@@ -121,13 +131,52 @@ def bouw(naam, hoogte, vorm):
     neus = trimesh.boolean.union(delen, engine='manifold')
 
     # uithollen: scheelt gewicht en printtijd
-    binnen = [(r_kern - WAND_NEUS, -1.0), (r_kern - WAND_NEUS, z_body)]
-    for i in range(n + 1):
-        x = i / n
-        r = straal(vorm, x, r_kraag) - WAND_NEUS
-        if r < 2.0:
-            break
-        binnen.append((r, z_body + x * hoogte))
+    # Holte. Eisen: (a) wand overal >= WAND_NEUS, (b) het plafond nergens
+    # vlakker dan 45 graden (anders support in een gesloten holte), (c) de top
+    # massief over minstens WAND_NEUS. De holte volgt de buitenvorm en sluit
+    # met een 45-gradenkegel; het startpunt van die kegel is het HOOGSTE punt
+    # waar aan alle drie de eisen voldaan is. Dat wordt per vorm uitgerekend.
+    def r_uit(z):
+        return straal(vorm, (z - z_body) / hoogte, r_kraag, hoogte)
+    z_e = prof[-1][1]                            # hoogte van de afgeplatte top
+    W = WAND_NEUS
+    stap = 0.5
+    HELLING = 1.3        # radiale krimp per mm hoogte: tan(52 gr). Printers halen dit.
+    BRUG = 4.0           # een vlakke sluiting tot 8 mm doorsnede overbrugt elke printer
+
+    def kegel_ok(zc):
+        rc = r_uit(zc) - W
+        if rc < 1.0:
+            return False
+        h = 0.0
+        while rc - h * HELLING > BRUG:
+            if zc + h > z_e - W:                 # komt door de top
+                return False
+            if r_uit(zc + h) - (rc - h * HELLING) < W:   # komt door de wand
+                return False
+            h += stap
+        return zc + h <= z_e - W
+
+    zc = z_e - W
+    while zc > z_body + 5.0 and not kegel_ok(zc):
+        zc -= stap
+
+    binnen = [(r_kern - W, -1.0), (r_kern - W, z_body)]
+    z = z_body + stap
+    r_prev = r_kern - W
+    while z < zc:
+        r_w = r_uit(z) - W
+        r_w = min(r_w, r_prev + stap)            # wijder mag, maar hoogstens 45 gr
+        if r_prev - r_w > stap * HELLING:        # smaller: nooit vlakker dan 52 gr
+            r_w = r_prev - stap * HELLING
+        binnen.append((r_w, z)); r_prev = r_w
+        z += stap
+    rc = min(r_uit(zc) - W, r_prev)
+    h = 0.0
+    while rc - h * HELLING > BRUG:
+        binnen.append((rc - h * HELLING, zc + h)); h += stap
+    binnen.append((max(rc - h * HELLING, 0.6), zc + h))   # kleine vlakke brug
+    massief_top = z_e - (zc + h)
     neus = trimesh.boolean.difference([neus, omw(binnen)], engine='manifold')
 
     neus.merge_vertices(); neus.update_faces(neus.nondegenerate_faces())
@@ -138,9 +187,9 @@ def bouw(naam, hoogte, vorm):
     neus.export(best)
     t = trimesh.load(best)
     e = t.bounding_box.extents
-    print("%-34s %5.1f x %5.1f x %5.1f mm  %5.1f cm3 (~%2.0f g PETG)  waterdicht: %s"
+    print("%-34s %5.1f x %5.1f x %5.1f mm  %5.1f cm3 (~%2.0f g)  massieve top %.1f mm  waterdicht: %s"
           % (best, e[0], e[1], e[2], t.volume / 1000,
-             t.volume / 1000 * 1.27 * 0.4, t.is_watertight))
+             t.volume / 1000 * 1.27 * 0.4, massief_top, t.is_watertight))
     return t
 
 
