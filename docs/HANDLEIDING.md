@@ -846,3 +846,29 @@ Nu: as langs y op x=36, blokjes met de boring afgesneden zodat ze in de wand
 versmelten, oog dieper naar binnen. Gecontroleerd: as over 60 mm vrij, materiaal
 eromheen in beide blokjes en het oog, niets buiten de romp. Het stukje filament
 steek je van buitenaf door de wand in.
+
+## 28. Laatste controle voor het printen
+
+Twee dingen gevonden bij een laatste ronde:
+
+- **Het schotje botste met het scharnier.** Het schotje ligt op de richel
+  (vloer tot vloer+3 mm); de scharnierblokjes begonnen 1 mm onder de vloer en
+  het deuroog erboven. Dat zat erin sinds het schotje bestaat, maar schotje en
+  deur waren nooit samen gecontroleerd. De deur begint nu 14 mm boven de vloer
+  (was 8), de kamer is 86 mm, de romp 166,8 mm. Overlap schot-romp en
+  schot-deur nu 0.
+- **Het servoplankje zweefde.** Een horizontaal plateau van 27 mm vrij uit de
+  wand print niet. Er zit nu een 45-gradenwig onder, in de wand geklemd.
+
+De controle draait nu twaalf punten: alle delen een geheel; deur in kozijn;
+schotje op de richel en vrij van de deur; tray in de romp en onder het schotje;
+draadzone rondom heel; niets buiten de romp; scharnieras vrij door blokjes,
+oog en beide wanden; platte plafonds binnenin verklaard; neus draait erin.
+
+**Slicer-instelling voor de romp**: supports AAN, maar "alleen vanaf het
+printbed" (Bambu: support on build plate only). De enige plek die support nodig
+heeft is de vloer boven de fles: die overspant de volle boring en wordt van
+onderaf geprint. Dat support staat in de open schuifrand en breekt er zo uit.
+Binnenin de romp komt dan nergens support, en dat is precies de bedoeling.
+
+Boven de fles nu 199 mm.

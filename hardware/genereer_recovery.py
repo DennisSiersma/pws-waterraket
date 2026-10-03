@@ -33,7 +33,7 @@ SEG = 96
 SLEUF_N, SLEUF_B, SLEUF_H = 4, 5.0, 36.0
 TIE_Z, TIE_H, TIE_D = 13.0, 5.0, 1.3
 
-KAMER_H   = 80.0     # servo zit nu NAAST de deur, dus geen stapel meer boven de deur
+KAMER_H   = 86.0     # deur begint 14 mm boven de vloer zodat scharnier en schotje elkaar niet raken
 DEUR_B    = 54.0     # koorde van de deuropening
 DEUR_H    = 50.0
 DEUR_DIK  = 2.4
@@ -153,7 +153,7 @@ delen += draadgang(R_IN, R_IN - NEUS_DIEPTE, NEUS_SLAG, z_draad,
 # geen rails meer: de elektronica ligt plat in een tray op de vloer
 
 # deuropening (+X-zijde), met kozijnrand net binnen de wand
-z_d0 = z_kamer + 8.0
+z_d0 = z_kamer + 14.0   # scharnierblokjes (z_d0-9) blijven boven het schotje (vloer+3)
 opening = balk(60, DEUR_B, DEUR_H, R_IN - 20, -DEUR_B/2, z_d0)
 lijstblok = balk(60, DEUR_B - 2*LIJST, DEUR_H - 2*LIJST,
                  R_IN - 30, -(DEUR_B - 2*LIJST)/2, z_d0 + LIJST)
@@ -190,6 +190,15 @@ def rot_z(m, a):
 plank = balk(27.0, 28.0, 3.0, R_IN + 1.5 - 27.0, -14.0, z_mid - SERVO_D / 2 - 3.5)
 plank = trimesh.boolean.intersection([plank, pijp(ID + 1.0, 0.1, 40, z_mid - 20)], engine='manifold')
 delen.append(rot_z(plank, S_HOEK))
+# 45-gradenwig onder het plankje: zonder steun is het een vrij zwevend plateau
+# van 27 mm en dat print niet zonder support
+import shapely.geometry as _sg
+wig2d = _sg.Polygon([(R_IN + 1.5, 0.0), (R_IN + 1.5, -26.0), (R_IN + 1.5 - 26.0, 0.0)])
+wig = trimesh.creation.extrude_polygon(wig2d, height=28.0)         # extrudeert langs z
+wig.apply_transform(trimesh.transformations.rotation_matrix(np.pi / 2, [1, 0, 0]))  # z -> -y
+wig.apply_translation((0, 14.0, z_mid - SERVO_D / 2 - 3.5))
+wig = trimesh.boolean.intersection([wig, pijp(ID + 1.0, 0.1, 60, z_mid - 50)], engine='manifold')
+delen.append(rot_z(wig, S_HOEK))
 vak = balk(24.0, 23.6, SERVO_D + 1.0, S_R - 24.0, -11.8, z_mid - SERVO_D / 2 - 0.5)
 gaten.append(rot_z(vak, S_HOEK))
 for ys in (-9.0, 7.0):                                        # tiewrapsleuven
