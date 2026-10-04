@@ -872,3 +872,29 @@ onderaf geprint. Dat support staat in de open schuifrand en breekt er zo uit.
 Binnenin de romp komt dan nergens support, en dat is precies de bedoeling.
 
 Boven de fles nu 199 mm.
+
+## 29. Waarom de neus er nooit in draaide: een rekenfout, geen printprobleem
+
+De neus paste bij geen enkele print, ook niet met meer speling. Een proefstuk
+(draadring plus drie neusstompjes met 0,7, 0,9 en 1,1 mm speling) legde het
+bloot: de overlap werd GROTER bij meer speling. Dat kan alleen bij een fout in
+de geometrie.
+
+Die fout: de kern van de neusdraad lag op straal `R_IN - diepte + speling`, dus
+BOVEN de ruggen van de romp (die tot `R_IN - diepte` naar binnen steken). De
+rompruggen botsten daardoor over de hele lengte 0,7 mm in de neuskern. Elke
+neus die tot nu toe geprint is, kon er op papier al niet in. De eerdere
+controle gaf 0,37 cm3 overlap, en dat is ten onrechte als "aanrakende flanken"
+weggeschreven in plaats van als botsing.
+
+Correct: kern op `R_IN - diepte - speling`. Na de correctie: overlap 0,026 cm3
+bij 0,7 mm, 0,007 bij 0,9 en 0,000 bij 1,1, netjes aflopend. De neuzen staan nu
+op 0,9 mm.
+
+**Proefstukken** staan in `genereer_test_draad.py`: `Test_Draadring` (de
+bovenste 18 mm van de romp) en `Test_Neusstomp_07/09/11`. Print bij twijfel
+eerst de ring (11 g) met een neus; past die, dan past de romp. Dat scheelt een
+romp van 64 g per poging.
+
+De romp hoeft NIET opnieuw: de rompdraad was goed, de fout zat alleen in de
+neus.
