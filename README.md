@@ -75,7 +75,8 @@ hardware/
   PWS_Waterraket_Houder.stl                            Payloadhouder (bord + sensor + accu)
   PWS_Waterraket_Vinnen_klein/midden/groot.stl         Fin can, drie maten met bekend vinoppervlak
   PWS_Waterraket_Recovery_Romp.stl / _Deur.stl         Recovery: parachutekamer met servo-zijdeur
-  PWS_Waterraket_Recovery_Schot.stl                    Los schotje tussen elektronica en parachutekamer
+  PWS_Waterraket_Recovery_Schot_A/B.stl                Los schotje in twee helften (past zo door de draad)
+  PWS_Waterraket_Tray_A/B.stl                          Elektronicatray in twee helften: A bord, B accu+sensor
   PWS_Waterraket_Neus_Ogief/Kegel/Elliptisch.stl       Verwisselbare schroefneuzen, drie vormen
   PWS_Waterraket_Testneus.stl                          Simpele TPU-neus voor testvluchten zonder parachute
   PWS_Waterraket_NozzleOpzet_04..09mm.stl              Nozzles: opzetstuk over de originele dop (voorkeur)

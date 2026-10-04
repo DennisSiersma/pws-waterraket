@@ -912,3 +912,36 @@ De grendellip zit op `DEUR_B/2 - 4`, binnen het kozijnvenster.
 Gecontroleerd na de wijziging: deur een geheel en vrij in het kozijn, schotje
 en tray vrij, draadzone heel, niets buiten de romp, scharnieras vrij, wand naast
 de deur (buiten 51 graden) rondom heel, neus draait erin.
+
+
+## 31. Schotje en tray in helften: wat er niet door de opening paste
+
+Het schotje kreeg je er met geen mogelijkheid in. Terecht: het was 89 mm rond,
+de schroefdraad laat 85 mm door en het deurvenster 65. Het paste in geen enkele
+opening. En bij het nalopen bleek de tray (ook 89 mm) hetzelfde probleem te
+hebben, plus een tweede: het servoplankje steekt 27 mm de boring in, dus zelfs
+een kleinere ronde schijf komt er niet langs.
+
+De regel die voortaan bij elke run gecontroleerd wordt: **elk los deel moet door
+een opening van de romp passen.**
+
+Oplossing voor allebei: twee helften.
+
+**Schotje** (`Recovery_Schot_A/B`): twee halve schijven van 89 mm met een
+overlapnaad van 8 mm in het midden. Elke helft is 48 mm breed en gaat zo door
+de draad. Een halve schijf ligt stabiel op de richel: haar zwaartepunt ligt op
+19 mm van de rechte kant, ruim binnen de steunboog. Koordgat in elke helft,
+servodraadgat in A.
+
+**Tray** (`Tray_A/B`): 82 mm, zodat hij ook plat door het richelgat (83,5) kan.
+De naad ligt niet in het midden: het bord (41 x 33) past niet in een halve
+schijf omdat zijn hoeken buiten de boog steken, dus het ligt over het midden
+heen in de grote helft A (43,5 mm breed). Helft B (38,5 mm) draagt accu (een
+kwartslag gedraaid) en sensor. Alle vakken hebben minstens 1,5 mm wand tot de
+naad en 1,8 mm tot de rand.
+
+**Inbrengen**: neus eraf. Eerst tray B, aan de kant tegenover het servoplankje
+laten zakken en over de bayvloer naar zijn plek schuiven. Dan tray A, zelfde
+kant, blijft daar liggen. Dan de schothelften op de richel, A met de lip boven.
+Daarna parachute en neus. De oude ronde tray en het ronde schotje staan in het
+archief.

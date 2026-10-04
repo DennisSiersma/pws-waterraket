@@ -150,7 +150,9 @@ delen += draadgang(R_IN, R_IN - NEUS_DIEPTE, NEUS_SLAG, z_draad,
                    NEUS_SPOED, NEUS_GANGEN)
 
 # rails + dwarssteun (identiek aan de neuskegel)
-# geen rails meer: de elektronica ligt plat in een tray op de vloer
+# geen rails meer: de elektronica ligt plat in twee trayhelften op de vloer.
+# Geen centreerrand: de kleine helft moet over de vloer kunnen schuiven om het
+# servoplankje te ontwijken bij het inbrengen.
 
 # deuropening (+X-zijde), met kozijnrand net binnen de wand
 z_d0 = z_kamer + 14.0   # scharnierblokjes (z_d0-9) blijven boven het schotje (vloer+3)
@@ -249,24 +251,34 @@ romp.export('PWS_Waterraket_Recovery_Romp.stl')
 _t = trimesh.load('PWS_Waterraket_Recovery_Romp.stl')
 print("romp NA export: waterdicht %s, delen %d" % (_t.is_watertight, _t.body_count))
 
-# ---- los schotje tussen elektronica en parachutekamer ----
-schot = trimesh.creation.cylinder(radius=R_IN - SCHOT_SPEL/2,
-                                  height=SCHOT_DIK, sections=SEG)
-schot.apply_translation((0, 0, SCHOT_DIK/2))
-gaatjes = []
-for kant in (-1, 1):                       # koordgaten voor de parachutelijn
-    g = trimesh.creation.cylinder(radius=KOORD_D/2, height=SCHOT_DIK+2, sections=24)
-    g.apply_translation((kant*(R_IN-14), 0, SCHOT_DIK/2))
-    gaatjes.append(g)
-g = trimesh.creation.cylinder(radius=4.5, height=SCHOT_DIK+2, sections=24)
-g.apply_translation((0, R_IN-16, SCHOT_DIK/2))     # doorvoer servodraad
-gaatjes.append(g)
-schot = trimesh.boolean.difference([schot] + gaatjes, engine='manifold')
-schot.merge_vertices(); schot.update_faces(schot.nondegenerate_faces())
-schot.update_faces(schot.unique_faces()); schot.remove_unreferenced_vertices()
-trimesh.repair.fix_normals(schot)
-schot.export('PWS_Waterraket_Recovery_Schot.stl')
-print("schot: %.1f mm doorsnede, %.1f mm dik" % (schot.bounding_box.extents[0], SCHOT_DIK))
+# ---- los schotje in TWEE HELFTEN ----
+# Een hele schijf van 89 mm past door geen enkele opening: de schroefdraad laat
+# 85 mm door en het deurvenster 65. Twee helften (45 mm breed) gaan door
+# allebei. Ze overlappen in het midden 8 mm (halve dikte), zodat de naad dicht
+# is en ze elkaar niet kunnen passeren. Een halve schijf ligt stabiel op de
+# richel: haar zwaartepunt ligt op 19 mm van de rechte kant, ruim binnen de
+# steunboog.
+r_schot = R_IN - SCHOT_SPEL/2
+schijf = trimesh.creation.cylinder(radius=r_schot, height=SCHOT_DIK, sections=SEG)
+schijf.apply_translation((0, 0, SCHOT_DIK/2))
+LAP = 4.0                                  # halve breedte van de overlap
+groot = 2*R_IN + 10
+helftA = trimesh.boolean.intersection([schijf, balk(groot, groot, 10, -groot + LAP, -groot/2, -2)], engine='manifold')
+helftA = trimesh.boolean.difference([helftA, balk(2*LAP, groot, SCHOT_DIK/2 + 1, -LAP, -groot/2, -1)], engine='manifold')
+helftB = trimesh.boolean.intersection([schijf, balk(groot, groot, 10, -LAP, -groot/2, -2)], engine='manifold')
+helftB = trimesh.boolean.difference([helftB, balk(2*LAP, groot, SCHOT_DIK/2 + 1, -LAP, -groot/2, SCHOT_DIK/2)], engine='manifold')
+# koordgat in elke helft, servodraadgat in helft A
+gA = trimesh.creation.cylinder(radius=KOORD_D/2, height=SCHOT_DIK+2, sections=24); gA.apply_translation((-(R_IN-14), 0, SCHOT_DIK/2))
+gB = trimesh.creation.cylinder(radius=KOORD_D/2, height=SCHOT_DIK+2, sections=24); gB.apply_translation(( (R_IN-14), 0, SCHOT_DIK/2))
+gS = trimesh.creation.cylinder(radius=4.5, height=SCHOT_DIK+2, sections=24); gS.apply_translation((-12.0, R_IN-16, SCHOT_DIK/2))
+helftA = trimesh.boolean.difference([helftA, gA, gS], engine='manifold')
+helftB = trimesh.boolean.difference([helftB, gB], engine='manifold')
+for m, naam in ((helftA, 'PWS_Waterraket_Recovery_Schot_A.stl'), (helftB, 'PWS_Waterraket_Recovery_Schot_B.stl')):
+    m.merge_vertices(); m.update_faces(m.nondegenerate_faces())
+    m.update_faces(m.unique_faces()); m.remove_unreferenced_vertices()
+    trimesh.repair.fix_normals(m); m.export(naam)
+    t = trimesh.load(naam); e = t.bounding_box.extents
+    print("%s: %.1f x %.1f x %.1f mm, waterdicht %s" % (naam, e[0], e[1], e[2], t.is_watertight))
 
 # ================= DEUR =================
 # vlak paneel met dezelfde kromming, DEUR_SPEL kleiner dan de opening
