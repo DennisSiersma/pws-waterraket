@@ -898,3 +898,17 @@ romp van 64 g per poging.
 
 De romp hoeft NIET opnieuw: de rompdraad was goed, de fout zat alleen in de
 neus.
+
+
+## 30. Deur verbreed naar 70 mm
+
+Na het compacter maken was de deur 54 x 50 mm geworden, te krap voor een
+parachute van 60 cm. Nu 70 x 50 mm (deuropening), kozijnvenster 65 x 45 mm.
+
+De servo is meegeschoven om de omtrek: hij staat nu op de deurhalfhoek plus 21
+graden, dus altijd net voorbij de deurrand, ook als `DEUR_B` later verandert.
+De grendellip zit op `DEUR_B/2 - 4`, binnen het kozijnvenster.
+
+Gecontroleerd na de wijziging: deur een geheel en vrij in het kozijn, schotje
+en tray vrij, draadzone heel, niets buiten de romp, scharnieras vrij, wand naast
+de deur (buiten 51 graden) rondom heel, neus draait erin.

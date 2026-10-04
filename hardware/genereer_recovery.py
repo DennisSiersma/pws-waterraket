@@ -34,7 +34,7 @@ SLEUF_N, SLEUF_B, SLEUF_H = 4, 5.0, 36.0
 TIE_Z, TIE_H, TIE_D = 13.0, 5.0, 1.3
 
 KAMER_H   = 86.0     # deur begint 14 mm boven de vloer zodat scharnier en schotje elkaar niet raken
-DEUR_B    = 54.0     # koorde van de deuropening
+DEUR_B    = 70.0     # koorde van de deuropening; parachute moet er makkelijk uit
 DEUR_H    = 50.0
 DEUR_DIK  = 2.4
 DEUR_SPEL = 0.45     # rondom in het kozijn
@@ -182,7 +182,7 @@ gaten.append(cil_y(SCHARNIER_PIN, 100, PEN_X, z_d0 - 5))
 # stapel boven de deur. Hij ligt tangentieel op een plankje tegen de wand,
 # as wijst naar de deur; de hoorn draait in het radiaal-verticale vlak vlak
 # naast de deurrand en pakt een lip aan de binnenkant van de deur.
-S_HOEK = np.radians(53.0)              # middelpunt van de servo, rond de omtrek
+S_HOEK = np.radians(np.degrees(np.arcsin((DEUR_B/2) / R_IN)) + 21.0)   # net voorbij de deurrand
 S_R    = 43.0                          # buitenvlak van het servovak (binnen de boring)
 z_mid  = z_d0 + DEUR_H / 2
 def rot_z(m, a):
@@ -204,7 +204,7 @@ gaten.append(rot_z(vak, S_HOEK))
 for ys in (-9.0, 7.0):                                        # tiewrapsleuven
     sl = balk(3.0, 2.0, 8.0, S_R - 13.0, ys, z_mid - SERVO_D / 2 - 5.0)
     gaten.append(rot_z(sl, S_HOEK))
-LIP_Y = 23.0                           # lip aan de deurzijde die naar de servo wijst
+LIP_Y = DEUR_B/2 - 4.0                 # lip vlak bij de deurrand aan de servokant, binnen het kozijnvenster
 
 # statische poorten, koordgaten, servodraadgat
 for i in range(POORT_N):
