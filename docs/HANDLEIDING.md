@@ -945,3 +945,17 @@ laten zakken en over de bayvloer naar zijn plek schuiven. Dan tray A, zelfde
 kant, blijft daar liggen. Dan de schothelften op de richel, A met de lip boven.
 Daarna parachute en neus. De oude ronde tray en het ronde schotje staan in het
 archief.
+
+
+## 32. Lijmnozzle zonder schroefgaten
+
+In de praktijk lekten de drie schroefgaten lucht: een zelftapper in 1 mm
+PP-dopwand dicht niet. Er is daarom een tweede set,
+`PWS_Waterraket_NozzleLijmDicht_04..09mm.stl`, identiek maar zonder gaten.
+Nagerekend: de rokwand is op de oude gathoogte rondom dicht.
+
+Zonder schroeven moet de lijm het alleen houden, en op PP lukt dat niet met
+gewone epoxy of siliconen. Gebruik dan een lijm voor polyolefinen (3M DP8010,
+of secondelijm met Loctite 770-primer), de dop ruw schuren en ontvetten, 24 uur
+uitharden, en test op de grond achter een afscherming voordat er iemand naast
+staat.

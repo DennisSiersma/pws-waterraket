@@ -100,7 +100,7 @@ def ring(r_bu, r_bi, h, z):
     return trimesh.boolean.difference([bu, bi], engine='manifold')
 
 
-def bouw(d_gat):
+def bouw(d_gat, schroeven=True):
     r_rok_bi = DOP_D / 2 + DOP_SPEL / 2
     r_rok_bu = r_rok_bi + ROK_WAND
 
@@ -141,8 +141,9 @@ def bouw(d_gat):
         z = z_dop + 1.8 + i * 2.4
         weg.append(ring(r_rok_bi + GROEF_D, r_rok_bi - 0.1, 1.2, z))
     # schroefgaten ALLEEN door de rokwand: een doorlopend gat zou binnenin de
-    # dop tegen de fleshals komen
-    for i in range(SCHROEF_N):
+    # dop tegen de fleshals komen. Weglaten kan: elk gat is een lekpad en een
+    # zelftapper in 1 mm PP dicht niet. Dan moet de lijm het alleen houden.
+    for i in range(SCHROEF_N if schroeven else 0):
         a = 2 * np.pi * i / SCHROEF_N
         g = trimesh.creation.cylinder(radius=SCHROEF_D / 2, height=ROK_WAND + 4,
                                       sections=24)
@@ -156,7 +157,7 @@ def bouw(d_gat):
     n.update_faces(n.unique_faces()); n.remove_unreferenced_vertices()
     trimesh.repair.fix_normals(n)
 
-    naam = 'PWS_Waterraket_NozzleLijm_%02dmm.stl' % round(d_gat)
+    naam = 'PWS_Waterraket_NozzleLijm%s_%02dmm.stl' % ('' if schroeven else 'Dicht', round(d_gat))
     n.export(naam)
     t = trimesh.load(naam)
     e = t.bounding_box.extents
@@ -169,4 +170,7 @@ def bouw(d_gat):
 print("rok valt %.1f mm over een dop van %.1f mm; %d lijmgroeven, %d schroefgaten\n"
       % (ROK_DIEP, DOP_D, GROEF_N, SCHROEF_N))
 for d in MATEN:
-    bouw(d)
+    bouw(d, schroeven=True)
+print()
+for d in MATEN:
+    bouw(d, schroeven=False)     # zonder schroefgaten: geen lekpaden
